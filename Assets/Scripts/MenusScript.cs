@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Buttons : MonoBehaviour
+public class MenusScript : MonoBehaviour
 {
     public void Begin()
     {
@@ -11,5 +11,10 @@ public class Buttons : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = Time.timeScale == 0 ? 1 : 0;
     }
 }
