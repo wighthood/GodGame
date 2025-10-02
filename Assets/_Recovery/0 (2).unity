@@ -2857,7 +2857,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapEditorScript
   tilemap: {fileID: 130282014}
   tiles:
-  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 06f4c31f4b5002c47b71beacb6400a7f, type: 2}
   - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
   selectionBar: {fileID: 1337844821}
   buttonPrefab: {fileID: 1394653423478889474, guid: ecb8ff15570edc5459b1094c7bae3e6d, type: 3}
