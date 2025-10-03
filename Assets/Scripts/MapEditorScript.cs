@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -31,7 +32,10 @@ public class MapEditorScript : MonoBehaviour
     public void Paint(InputAction.CallbackContext context)
     {
         if (_selectedTile == null) return;
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        if (!context.performed) return;
+        if (Camera.main == null) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         Vector3Int cellpos =  tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
         tilemap.SetTile(cellpos, _selectedTile);
     }
