@@ -12,23 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: GrassRule
   m_EditorClassIdentifier: Unity.2D.Tilemap.Extras::UnityEngine.RuleTile
-  m_DefaultSprite: {fileID: -5768082668038737290, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
+  m_DefaultSprite: {fileID: -4392916288368767458, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
   - m_Id: 0
     m_Sprites:
-    - {fileID: 5191705718487773550, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: 7146468678315557594, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: -5768082668038737290, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: -5768082668038737290, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: 733025630473995310, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: -1867666506164317971, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
-    - {fileID: 1028970425552242395, guid: d93f6eb5a9f04e943a7867b3f739ce9c, type: 3}
+    - {fileID: 1032644837368795737, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -7789114717890241821, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -7789114717890241821, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -4392916288368767458, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -4392916288368767458, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -3757307401498462830, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -3460269090296136426, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
+    - {fileID: -4392916288368767458, guid: a815690e55cda7d498c7198e3eb82726, type: 3}
     m_GameObject: {fileID: 0}
     m_MinAnimationSpeed: 1
     m_MaxAnimationSpeed: 1
-    m_PerlinScale: 0.96
+    m_PerlinScale: 0.9
     m_Output: 1
     m_ColliderType: 1
     m_RandomTransform: 0

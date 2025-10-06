@@ -1,34 +1,50 @@
-using System;
-using AI;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Wander : ActionBase
+namespace AI.Action
 {
-    private float _wanderRadius = 10f;
-    private float _wanderInterval = 5f;
+    public class Wander : ActionBase
+    {
+        private readonly float _wanderRadius = 8f;
+        private readonly float _distanceThreshold = .5f;
 
-    private NavMeshAgent _agent;
-    private float _timer;
+        private NavMeshAgent _agent;
+        private Vector3 _target;
     
-    private void Start()
-    {
-        _agent = GetComponent<NavMeshAgent>();
-        _timer = _wanderInterval;
-    }
+        private void Start()
+        {
+            actionName = "Wander";
+            cost = 100f; 
+
+            _agent = GetComponent<NavMeshAgent>();
+        }
     
-    public override bool CheckCondition()
-    {
-        return true;
-    }
+        public override bool CheckCondition()
+        {
+            _target = RandomNavSphere(transform.position, _wanderRadius);
+            return true;
+        }
 
-    public override void DoAction()
-    {
-        
-    }
+        public override bool DoAction()
+        {
+            if (_agent == null) return true;
+            
+            if (!_agent.hasPath)
+            {
+                _agent.SetDestination(_target);
+            }
 
-    public override void ApplyEffect()
-    {
+            return !_agent.pathPending && _agent.remainingDistance <= _distanceThreshold;
+        }
+    
+        private static Vector3 RandomNavSphere(Vector3 origin, float dist)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * dist;
+            randomDirection += origin;
 
+            NavMesh.SamplePosition(randomDirection, out var navHit, dist, NavMesh.AllAreas);
+
+            return navHit.position;
+        }
     }
 }
