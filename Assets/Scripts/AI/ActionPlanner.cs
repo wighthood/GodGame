@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AI.Action;
 
-public static class GoapPlanner
+public class GoapPlanner
 {
     public static Queue<ActionBase> Plan(
         Dictionary<string, bool> worldState,
@@ -38,7 +38,7 @@ public static class GoapPlanner
         {
             if (InState(action.Preconditions, parent.state))
             {
-                Dictionary<string, bool> newState = new Dictionary<string, bool>(parent.state);
+                Dictionary<string, float> newState = new Dictionary<string, float>(parent.state);
                 foreach (var eff in action.Effects)
                     newState[eff.Key] = eff.Value;
 
@@ -61,7 +61,7 @@ public static class GoapPlanner
         return foundPath;
     }
 
-    private static bool InState(Dictionary<string, bool> test, Dictionary<string, bool> state)
+    private static bool InState(Dictionary<string, float> test, Dictionary<string, bool> state)
     {
         foreach (var t in test)
         {

@@ -34,6 +34,7 @@ namespace AI.Action
                 _agent.SetDestination(_target);
             }
 
+            
             return !_agent.pathPending && _agent.remainingDistance <= _distanceThreshold;
         }
     
