@@ -6,47 +6,47 @@ namespace AI
     [Serializable]
     public class WorldState
     {
-        private Dictionary<string, object> states = new Dictionary<string, object>();
+        private Dictionary<string, object> _states = new Dictionary<string, object>();
 
         public T Get<T>(string key, T defaultValue = default)
         {
-            if (states.ContainsKey(key) && states[key] is T value)
+            if (_states.ContainsKey(key) && _states[key] is T value)
                 return value;
             return defaultValue;
         }
 
         public void Set(string key, object value)
         {
-            states[key] = value;
+            _states[key] = value;
         }
 
         public bool Has(string key)
         {
-            return states.ContainsKey(key);
+            return _states.ContainsKey(key);
         }
 
         public void Remove(string key)
         {
-            states.Remove(key);
+            _states.Remove(key);
         }
 
-        public Dictionary<string, object> GetAll() => new Dictionary<string, object>(states);
+        public Dictionary<string, object> GetAll() => new Dictionary<string, object>(_states);
 
         public WorldState Clone()
         {
             WorldState clone = new WorldState();
-            foreach (var kvp in states)
+            foreach (var kvp in _states)
             {
-                clone.states[kvp.Key] = kvp.Value;
+                clone._states[kvp.Key] = kvp.Value;
             }
             return clone;
         }
 
         public bool MeetsGoal(WorldState goal)
         {
-            foreach (var kvp in goal.states)
+            foreach (var kvp in goal._states)
             {
-                if (!states.ContainsKey(kvp.Key) || !states[kvp.Key].Equals(kvp.Value))
+                if (!_states.ContainsKey(kvp.Key) || !_states[kvp.Key].Equals(kvp.Value))
                     return false;
             }
             return true;

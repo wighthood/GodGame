@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using AI;
 using AI.Action;
 
-public class GoapPlanner
+public class Planner
 {
     public static Queue<ActionBase> Plan(
-        Dictionary<string, bool> worldState,
+        WorldState worldState,
         List<ActionBase> availableActions,
-        Dictionary<string, bool> goal)
+        WorldState goal)
     {
         List<Node> leaves = new List<Node>();
-        Node start = new Node(null, 0, new Dictionary<string, bool>(worldState), null);
+        Node start = new Node(null, 0, worldState.Clone(), null);
 
         bool success = BuildGraph(start, leaves, availableActions, goal);
 
@@ -30,21 +31,21 @@ public class GoapPlanner
         return new Queue<ActionBase>(result);
     }
 
-    private static bool BuildGraph(Node parent, List<Node> leaves, List<ActionBase> actions, Dictionary<string, bool> goal)
+    private static bool BuildGraph(Node parent, List<Node> leaves, List<ActionBase> actions, WorldState goal)
     {
         bool foundPath = false;
 
         foreach (ActionBase action in actions)
         {
-            if (InState(action.Preconditions, parent.state))
+            if (MeetsPreconditions(action.Preconditions, parent.state))
             {
-                Dictionary<string, float> newState = new Dictionary<string, float>(parent.state);
+                WorldState newState = parent.state.Clone();
                 foreach (var eff in action.Effects)
-                    newState[eff.Key] = eff.Value;
+                    newState.Set(eff.Key, eff.Value);
 
                 Node node = new Node(parent, parent.cost + action.cost, newState, action);
 
-                if (InState(goal, newState))
+                if (newState.MeetsGoal(goal))
                 {
                     leaves.Add(node);
                     foundPath = true;
@@ -61,13 +62,16 @@ public class GoapPlanner
         return foundPath;
     }
 
-    private static bool InState(Dictionary<string, float> test, Dictionary<string, bool> state)
+    private static bool MeetsPreconditions(Dictionary<string, object> preconditions, WorldState state)
     {
-        foreach (var t in test)
+        foreach (var precondition in preconditions)
         {
-            if (!state.ContainsKey(t.Key)) return false;
-            if (state[t.Key] != t.Value) return false;
+            if (!state.Has(precondition.Key)) return false;
+
+            object stateValue = state.Get<object>(precondition.Key);
+            if (!precondition.Value.Equals(stateValue)) return false;
         }
+
         return true;
     }
 
@@ -75,10 +79,10 @@ public class GoapPlanner
     {
         public Node parent;
         public float cost;
-        public Dictionary<string, bool> state;
+        public WorldState state;
         public ActionBase action;
 
-        public Node(Node parent, float cost, Dictionary<string, bool> state, ActionBase action)
+        public Node(Node parent, float cost, WorldState state, ActionBase action)
         {
             this.parent = parent;
             this.cost = cost;

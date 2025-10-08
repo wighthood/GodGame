@@ -10,6 +10,7 @@ namespace AI.Action
 
         private NavMeshAgent _agent;
         private Vector3 _target;
+
     
         private void Start()
         {
@@ -33,9 +34,13 @@ namespace AI.Action
             {
                 _agent.SetDestination(_target);
             }
-
             
-            return !_agent.pathPending && _agent.remainingDistance <= _distanceThreshold;
+            if (!_agent.pathPending && _agent.remainingDistance <= _distanceThreshold)
+            {
+                _agent.ResetPath();
+            }
+            
+            return false;
         }
     
         private static Vector3 RandomNavSphere(Vector3 origin, float dist)
