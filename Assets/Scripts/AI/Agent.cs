@@ -134,7 +134,7 @@ namespace AI
         private void PostRequestForUnsatisfiedNeed(Need need)
         {
             if (RequestBoard.Instance == null) return;
-
+            
             Request request = new Request(
                 this,
                 RequestType.NeedResource,

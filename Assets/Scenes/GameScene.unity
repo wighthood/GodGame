@@ -3433,8 +3433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68de7bc371c73814da226fef8ebabfa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AI.GlobalState
-  foodCount: 10
-  waterCount: 10
+  foodCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

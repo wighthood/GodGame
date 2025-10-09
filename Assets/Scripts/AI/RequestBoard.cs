@@ -27,6 +27,19 @@ namespace AI
         {
             if (request == null) return;
 
+            bool hasSimilarRequest = activeRequests.Any(r => 
+                !r.isFulfilled && 
+                r.requester == request.requester && 
+                r.type == request.type && 
+                r.description == request.description
+            );
+
+            if (hasSimilarRequest)
+            {
+                Debug.Log($"[RequestBoard] Request already exists for {request.requester.name}: {request.description}");
+                return;
+            }
+            
             activeRequests.Add(request);
             Debug.Log($"[RequestBoard] New request posted: {request.description} (Priority: {request.priority})");
         }
