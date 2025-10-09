@@ -2944,6 +2944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfc94524e76ab14f847651f9cdb16d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agent
+  _HungerDelay: 1
   actions: []
 --- !u!114 &1058054531
 MonoBehaviour:
@@ -3356,6 +3357,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d46d44ceeb7a140852881a78dfae2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenusScript
+--- !u!1 &2106598271
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2106598273}
+  - component: {fileID: 2106598272}
+  m_Layer: 0
+  m_Name: JobBoard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2106598272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106598271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900d78c1c7e0bc1449dd257833eb2520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AI.JobBoard
+--- !u!4 &2106598273
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106598271}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.6759, y: 1.01439, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3367,3 +3412,4 @@ SceneRoots:
   - {fileID: 679938721}
   - {fileID: 1502037528}
   - {fileID: 865834969}
+  - {fileID: 2106598273}

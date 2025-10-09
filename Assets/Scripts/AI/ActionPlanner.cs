@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AI;
 using AI.Action;
+using UnityEngine;
 
 public class Planner
 {
@@ -16,7 +17,6 @@ public class Planner
         bool success = BuildGraph(start, leaves, availableActions, goal);
 
         if (!success) return null;
-
         Node cheapest = leaves.OrderBy(l => l.cost).First();
 
         List<ActionBase> result = new List<ActionBase>();
@@ -39,6 +39,7 @@ public class Planner
         {
             if (MeetsPreconditions(action.Preconditions, parent.state))
             {
+               
                 WorldState newState = parent.state.Clone();
                 foreach (var eff in action.Effects)
                     newState.Set(eff.Key, eff.Value);
@@ -47,6 +48,7 @@ public class Planner
 
                 if (newState.MeetsGoal(goal))
                 {
+
                     leaves.Add(node);
                     foundPath = true;
                 }

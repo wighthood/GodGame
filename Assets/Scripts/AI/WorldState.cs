@@ -20,6 +20,11 @@ namespace AI
             _states[key] = value;
         }
 
+        public void Add(string key, object value)
+        {
+            _states.Add(key, value);
+        }
+
         public bool Has(string key)
         {
             return _states.ContainsKey(key);

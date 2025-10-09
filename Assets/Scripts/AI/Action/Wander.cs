@@ -18,6 +18,8 @@ namespace AI.Action
             cost = 100f; 
 
             _agent = GetComponent<NavMeshAgent>();
+            
+            Effects.Add("Wander", true);
         }
     
         public override bool CheckCondition()
@@ -34,13 +36,11 @@ namespace AI.Action
             {
                 _agent.SetDestination(_target);
             }
-            
-            if (!_agent.pathPending && _agent.remainingDistance <= _distanceThreshold)
-            {
-                _agent.ResetPath();
-            }
-            
-            return false;
+
+            if (_agent.pathPending || !(_agent.remainingDistance <= _distanceThreshold)) return false;
+            _agent.ResetPath();
+            return true;
+
         }
     
         private static Vector3 RandomNavSphere(Vector3 origin, float dist)
