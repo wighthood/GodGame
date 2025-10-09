@@ -64,6 +64,7 @@ namespace AI
                 {
                     Debug.Log($"{name}: Action completed -> {_currentAction.actionName}");
                     _currentAction = null;
+                    _currentPlan = null;
                     UpdateWorldState();
                 }
             }
