@@ -14,6 +14,7 @@ public class MapEditorScript : MonoBehaviour
     private Camera _camera;
     private TileBase _selectedTile;
     private bool _isPainting = false;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
