@@ -1,131 +1,162 @@
-using System.Collections;
 using System.Collections.Generic;
 using AI.Action;
-using AI.Jobs;
-using UnityEditor.Rendering.Universal;
 using UnityEngine;
 
 namespace AI
 {
     public class Agent : MonoBehaviour
     {
-        [SerializeField] private int _HungerDelay= 10;
-        [HideInInspector] public List<ActionBase> actions = new List<ActionBase>();
-        private WorldState _worldState = new WorldState();
-        private Coroutine _hungerCoroutine;
+        [Header("Agent Configuration")]
+        [SerializeField] private float planningInterval = 2f;
 
-        private WorldState _currentGoal;
-        private WorldState _FeedingGoal;
+        [HideInInspector] public List<ActionBase> actions = new List<ActionBase>();
+
         private Queue<ActionBase> _currentPlan;
-        private Job _currentJob;
+        private ActionBase _currentAction;
+        private NeedsManager _needsManager;
+        private WorldState _worldState;
+        private float _planningTimer;
 
         void Start()
         {
             actions.AddRange(GetComponents<ActionBase>());
-            _worldState.Set("HungerBar", 0);
-        
-            _currentGoal = new WorldState();
-            _currentGoal.Set("Wander", true);
-            
-            _hungerCoroutine = StartCoroutine(HungerCoroutine());
-        }
+            _needsManager = GetComponent<NeedsManager>();
 
+            if (_needsManager == null)
+            {
+                _needsManager = gameObject.AddComponent<NeedsManager>();
+            }
+
+            _worldState = new WorldState();
+            UpdateWorldState();
+        }
 
         void Update()
         {
+            _planningTimer += Time.deltaTime;
+            
+            if (_currentPlan == null || _currentPlan.Count == 0 || _planningTimer >= planningInterval)
+            {
+                _planningTimer = 0f;
+                CreateNewPlan();
+            }
+            
+            if (_currentPlan != null && _currentPlan.Count > 0)
+            {
+                if (_currentAction == null)
+                {
+                    _currentAction = _currentPlan.Dequeue();
+                    Debug.Log($"{name}: Starting action -> {_currentAction.actionName}");
+                }
+                
+                if (!_currentAction.CheckCondition())
+                {
+                    Debug.Log($"{name}: Cannot perform {_currentAction.actionName}, posting request");
+                    PostRequestForFailedAction(_currentAction);
+                    _currentAction = null;
+                    _currentPlan = null;
+                    return;
+                }
+
+                bool finished = _currentAction.DoAction();
+
+                if (finished)
+                {
+                    Debug.Log($"{name}: Action completed -> {_currentAction.actionName}");
+                    _currentAction = null;
+                    UpdateWorldState();
+                }
+            }
+        }
+
+        private void CreateNewPlan()
+        {
+            UpdateWorldState();
+            
+            Need urgentNeed = _needsManager.GetMostUrgentNeed();
+            if (urgentNeed == null || !urgentNeed.IsCritical())
+            {
+                // Pas de besoin urgent, utiliser l'action par défaut (Wander)
+                CreateDefaultPlan();
+                return;
+            }
+
+            WorldState goal = new WorldState();
+            goal.Set($"Satisfy{urgentNeed.needName}", true);
+
+            Debug.Log($"{name}: Planning to satisfy {urgentNeed.needName} (urgency: {urgentNeed.GetUrgency():F2})");
+
+            _currentPlan = Planner.Plan(_worldState, actions, goal);
+
             if (_currentPlan == null || _currentPlan.Count == 0)
             {
-                if (_currentJob == null)
-                {
-                    if (_worldState.Get<int>("HungerBar") > 75)
-                    {
-                        Debug.Log("I'm hungry");
-                        _currentGoal = new WorldState();
-                        _currentGoal.Set("HungerBar", 0);
-                        _currentJob = new Job("eat",_currentGoal,.1f);
-                    }
-                    else
-                    {
-                        TryGetJobFromBoard();
-                    }
-                }
+                Debug.Log($"{name}: No plan found for {urgentNeed.needName}, posting request");
+                PostRequestForUnsatisfiedNeed(urgentNeed);
 
-                if (_currentJob != null)
-                {
-                    _currentGoal = _currentJob.requiredGoal;
-                    _currentJob.status = JobStatus.InProgress;
-                }
-                else
-                {
-                    _currentGoal = new WorldState();
-                    _currentGoal.Set("Wander", true);
-                    _currentJob = new Job("wander",_currentGoal);
-                }
-
-                _currentPlan = Planner.Plan(_worldState, actions, _currentGoal);
+                // Retourner au comportement par défaut
+                CreateDefaultPlan();
             }
+            else
+            {
+                Debug.Log($"{name}: Plan created with {_currentPlan.Count} actions");
+            }
+        }
+
+        private void CreateDefaultPlan()
+        {
+            // Trouver l'action Wander ou toute autre action par défaut
+            ActionBase defaultAction = actions.Find(a => a.actionName == "Wander");
+
+            if (defaultAction != null)
+            {
+                _currentPlan = new Queue<ActionBase>();
+                _currentPlan.Enqueue(defaultAction);
+                Debug.Log($"{name}: No urgent needs, wandering...");
+            }
+        }
+
+        private void UpdateWorldState()
+        {
+            _worldState = new WorldState();
             
-            var action = _currentPlan.Peek();
-            action.CheckCondition();
-            bool finished = action.DoAction();
-
-            if (!finished) return;
-            Debug.Log(name + " : action terminée -> " + action.actionName);
-            
-            foreach (var eff in action.Effects)
-                _worldState.Set(eff.Key, eff.Value);
-
-            _currentPlan.Dequeue();
-            if (_currentPlan.Count == 0 && _currentJob != null)
+            if (GlobalState.Instance != null)
             {
-                JobBoard.Instance?.CompleteJob(_currentJob);
-                _currentJob = null;
+                _worldState.Set("FoodAvailable", GlobalState.Instance.GetFoodCount() > 0);
+            }
+
+            foreach (var need in _needsManager.GetCriticalNeeds())
+            {
+                _worldState.Set(need.needName, need.currentValue);
             }
         }
 
-        private void TryGetJobFromBoard()
+        private void PostRequestForUnsatisfiedNeed(Need need)
         {
-            if (JobBoard.Instance == null) return;
-            Job job = JobBoard.Instance.GetBestAvailableJob(this);
-            if (job != null && JobBoard.Instance.AssignJob(job, this))
-            {
-                _currentJob = job;
-            }
+            if (RequestBoard.Instance == null) return;
+
+            Request request = new Request(
+                this,
+                RequestType.NeedResource,
+                $"{name} needs help with {need.needName}",
+                need.GetUrgency()
+            );
+
+            request.resourceName = need.needName;
+            RequestBoard.Instance.PostRequest(request);
         }
 
-        public void PostJob(string jobType, WorldState goal, float priority = 1f)
+        private void PostRequestForFailedAction(ActionBase action)
         {
-            if (JobBoard.Instance == null) return;
-            JobBoard.Instance.PostJob(jobType, goal, priority);
-        }
+            if (RequestBoard.Instance == null) return;
 
-        private IEnumerator HungerCoroutine()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(_HungerDelay);
+            Request request = new Request(
+                this,
+                RequestType.NeedAction,
+                $"{name} cannot perform {action.actionName}",
+                0.8f
+            );
 
-                if (_worldState.Get<int>("HungerBar") >= 100) continue;
-                _worldState.Add("HungerBar", 1); ;
-            }
-        }
-        
-        private void StopHunger()
-        {
-            if (_hungerCoroutine == null) return;
-            StopCoroutine(_hungerCoroutine);
-            _hungerCoroutine = null;
-        }
-
-        public void RestartHunger()
-        {
-            StopHunger();
-            _hungerCoroutine = StartCoroutine(HungerCoroutine());
-        }
-
-        private void OnDestroy()
-        {
-            StopHunger();
+            RequestBoard.Instance.PostRequest(request);
         }
     }
 }

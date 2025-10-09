@@ -1,62 +1,63 @@
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AI
 {
-    [Serializable]
     public class WorldState
     {
-        private Dictionary<string, object> _states = new Dictionary<string, object>();
-
-        public T Get<T>(string key, T defaultValue = default)
-        {
-            if (_states.ContainsKey(key) && _states[key] is T value)
-                return value;
-            return defaultValue;
-        }
+        private Dictionary<string, object> states = new Dictionary<string, object>();
 
         public void Set(string key, object value)
         {
-            _states[key] = value;
-        }
-
-        public void Add(string key, object value)
-        {
-            _states.Add(key, value);
+            if (states.ContainsKey(key))
+                states[key] = value;
+            else
+                states.Add(key, value);
         }
 
         public bool Has(string key)
         {
-            return _states.ContainsKey(key);
+            return states.ContainsKey(key);
+        }
+
+        public T Get<T>(string key)
+        {
+            if (states.ContainsKey(key))
+                return (T)states[key];
+            return default(T);
         }
 
         public void Remove(string key)
         {
-            _states.Remove(key);
+            if (states.ContainsKey(key))
+                states.Remove(key);
         }
-
-        public Dictionary<string, object> GetAll() => new Dictionary<string, object>(_states);
 
         public WorldState Clone()
         {
-            WorldState clone = new WorldState();
-            foreach (var kvp in _states)
+            WorldState newState = new WorldState();
+            foreach (var kvp in states)
             {
-                clone._states[kvp.Key] = kvp.Value;
+                newState.Set(kvp.Key, kvp.Value);
             }
-            return clone;
+            return newState;
         }
 
         public bool MeetsGoal(WorldState goal)
         {
-            foreach (var kvp in goal._states)
+            foreach (var g in goal.states)
             {
-                if (!_states.ContainsKey(kvp.Key) || !_states[kvp.Key].Equals(kvp.Value))
-                    return false;
+                if (!Has(g.Key)) return false;
+
+                object ourValue = Get<object>(g.Key);
+                if (!g.Value.Equals(ourValue)) return false;
             }
             return true;
         }
 
+        public Dictionary<string, object> GetAllStates()
+        {
+            return new Dictionary<string, object>(states);
+        }
     }
 }
-

@@ -16,9 +16,12 @@ public class Eat : ActionBase
     {
         actionName = "Eat";
         cost = 1f;
-        
-        Preconditions.Add("Food", foodAmount);
-        Effects.Add("Hunger", -hungerReduction);
+
+        // Préconditions: besoin de nourriture disponible
+        Preconditions.Add("FoodAvailable", true);
+
+        // Effets: satisfait la faim
+        Effects.Add("SatisfyHunger", true);
     }
 
     public override bool CheckCondition()
@@ -26,11 +29,34 @@ public class Eat : ActionBase
         Agent agent = GetComponent<Agent>();
         if (agent == null) return false;
 
+        int availableFood = GlobalState.Instance.GetFoodCount();
+        if (availableFood < foodAmount) return false;
         return true;
     }
 
     public override bool DoAction()
     {
-        throw new System.NotImplementedException();
+        _eatingTimer += Time.deltaTime;
+
+        if (_eatingTimer >= eatingDuration)
+        {
+            Debug.Log($"{GetComponent<Agent>().name} is eating");
+            int currentFood = GlobalState.Instance.GetFoodCount();
+            if (currentFood < foodAmount) return false;
+
+            GlobalState.Instance.AddFoodCount(-foodAmount);
+
+            // Réduire la faim de l'agent
+            NeedsManager needsManager = GetComponent<NeedsManager>();
+            if (needsManager != null)
+            {
+                needsManager.ReduceNeed("Hunger", hungerReduction);
+            }
+
+            _eatingTimer = 0;
+            return true;
+        }
+
+        return false;
     }
 }

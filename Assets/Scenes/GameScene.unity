@@ -2815,6 +2815,7 @@ GameObject:
   - component: {fileID: 1058054528}
   - component: {fileID: 1058054530}
   - component: {fileID: 1058054529}
+  - component: {fileID: 1058054532}
   - component: {fileID: 1058054531}
   m_Layer: 0
   m_Name: Capsule
@@ -2944,7 +2945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfc94524e76ab14f847651f9cdb16d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agent
-  _HungerDelay: 1
+  planningInterval: 2
   actions: []
 --- !u!114 &1058054531
 MonoBehaviour:
@@ -2958,6 +2959,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: NavMeshPlus::NavMeshPlus.Extensions.AgentOverride2d
+--- !u!114 &1058054532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058054525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222e79a445520e449a9913e4dc4a2d6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Eat
+  actionName: Default
+  cost: 1
+  foodAmount: 1
+  hungerReduction: 50
+  eatingDuration: 1
 --- !u!1 &1337844820
 GameObject:
   m_ObjectHideFlags: 0
@@ -3366,7 +3384,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2106598273}
-  - component: {fileID: 2106598272}
+  - component: {fileID: 2106598275}
+  - component: {fileID: 2106598274}
   m_Layer: 0
   m_Name: JobBoard
   m_TagString: Untagged
@@ -3374,18 +3393,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2106598272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106598271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 900d78c1c7e0bc1449dd257833eb2520, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AI.JobBoard
 --- !u!4 &2106598273
 Transform:
   m_ObjectHideFlags: 0
@@ -3401,6 +3408,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2106598274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106598271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2db9e0701a50964ba3ab3544b82813c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AI.RequestBoard
+  activeRequests: []
+--- !u!114 &2106598275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106598271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68de7bc371c73814da226fef8ebabfa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AI.GlobalState
+  foodCount: 10
+  waterCount: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
