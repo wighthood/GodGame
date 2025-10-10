@@ -1,8 +1,6 @@
-using System;
 using AI;
 using AI.Action;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Eat : ActionBase
 {

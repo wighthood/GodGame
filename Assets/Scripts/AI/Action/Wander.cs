@@ -10,6 +10,7 @@ namespace AI.Action
 
         private NavMeshAgent _agent;
         private Vector3 _target;
+        private Transform _spriteTransform;
 
     
         private void Start()
@@ -18,6 +19,7 @@ namespace AI.Action
             cost = 100f; 
 
             _agent = GetComponent<NavMeshAgent>();
+            _spriteTransform = transform;
             
             Effects.Add("Wander", true);
         }
@@ -36,7 +38,14 @@ namespace AI.Action
             {
                 _agent.SetDestination(_target);
             }
-
+            
+            if (_agent.velocity.sqrMagnitude > 0.01f)
+            {
+                Vector3 scale = _spriteTransform.localScale;
+                scale.x = _agent.velocity.x > 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+                _spriteTransform.localScale = scale;
+            }
+            
             if (_agent.pathPending || !(_agent.remainingDistance <= _distanceThreshold)) return false;
             _agent.ResetPath();
             return true;
@@ -47,7 +56,7 @@ namespace AI.Action
         {
             Vector3 randomDirection = Random.insideUnitSphere * dist;
             randomDirection += origin;
-
+            
             NavMesh.SamplePosition(randomDirection, out var navHit, dist, NavMesh.AllAreas);
 
             return navHit.position;

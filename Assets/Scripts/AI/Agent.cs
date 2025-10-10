@@ -40,34 +40,31 @@ namespace AI
                 _planningTimer = 0f;
                 CreateNewPlan();
             }
-            
-            if (_currentPlan != null && _currentPlan.Count > 0)
+
+
+            if (_currentPlan == null || _currentPlan.Count <= 0) return;
+            if (_currentAction == null)
             {
-                if (_currentAction == null)
-                {
-                    _currentAction = _currentPlan.Dequeue();
-                    Debug.Log($"{name}: Starting action -> {_currentAction.actionName}");
-                }
-                
-                if (!_currentAction.CheckCondition())
-                {
-                    Debug.Log($"{name}: Cannot perform {_currentAction.actionName}, posting request");
-                    PostRequestForFailedAction(_currentAction);
-                    _currentAction = null;
-                    _currentPlan = null;
-                    return;
-                }
-
-                bool finished = _currentAction.DoAction();
-
-                if (finished)
-                {
-                    Debug.Log($"{name}: Action completed -> {_currentAction.actionName}");
-                    _currentAction = null;
-                    _currentPlan = null;
-                    UpdateWorldState();
-                }
+                _currentAction = _currentPlan.Dequeue();
+                Debug.Log($"{name}: Starting action -> {_currentAction.actionName}");
             }
+                
+            if (!_currentAction.CheckCondition())
+            {
+                Debug.Log($"{name}: Cannot perform {_currentAction.actionName}, posting request");
+                PostRequestForFailedAction(_currentAction);
+                _currentAction = null;
+                _currentPlan = null;
+                return;
+            }
+
+            bool finished = _currentAction.DoAction();
+
+            if (!finished) return;
+            Debug.Log($"{name}: Action completed -> {_currentAction.actionName}");
+            _currentAction = null;
+            _currentPlan = null;
+            UpdateWorldState();
         }
 
         private void CreateNewPlan()
