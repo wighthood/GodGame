@@ -8,8 +8,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float maxZoom = 1f;
     [SerializeField] private float minZoom = 10f;
     [SerializeField] private GameObject pauseMenu;
-    //[SerializeField] private Texture2D pressedMouseCursor;
-    //[SerializeField] private Texture2D normalMouseCursor;
+    [SerializeField] private Texture2D pressedMouseCursor;
+    [SerializeField] private Texture2D normalMouseCursor;
     
     
     private Vector2 _direction;
@@ -40,7 +40,7 @@ public class PlayerControl : MonoBehaviour
         MenusScript.Pause();
     }
 
-    /*public void Click(InputAction.CallbackContext context)
+    public void Click(InputAction.CallbackContext context)
     {
         if (context.started)
         {
@@ -56,7 +56,7 @@ public class PlayerControl : MonoBehaviour
     private void Start()
     {
         Cursor.SetCursor(normalMouseCursor, Vector2.zero, CursorMode.Auto);
-    }*/
+    }
 
     private void Update()
     {
