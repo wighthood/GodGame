@@ -3,7 +3,18 @@ using Random = System.Random;
 
 public static class Noise {
 
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mapWidth">Width of the noise map you want to generate</param>
+    /// <param name="mapHeight">Height of the noise map you want to generate</param>
+    /// <param name="seed">seed for random generation</param>
+    /// <param name="scale">how homogenous your noise map is</param>
+    /// <param name="octaves">amount of perlin noise</param>
+    /// <param name="persistance"></param>
+    /// <param name="lacunarity"></param>
+    /// <param name="offset">move noise map according to offset</param>
+    /// <returns></returns>
     public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset) {
         float[,] noiseMap = new float[mapWidth,mapHeight];
         Debug.Log(mapWidth);
@@ -69,16 +80,7 @@ public static class Noise {
         // Normalisation
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
-                if (normalizeMode == NormalizeMode.Local)
-                {
-                    noiseMap [x, y] = Mathf.InverseLerp (minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap [x, y]);
-                }
-                else
-                {
-                    float normalizedHeight = (noiseMap[x, y] + 1)/(2f*maxPossibleHeight/2f);
-                    noiseMap[x,y]=normalizedHeight;
-                }
-                
+                noiseMap [x, y] = Mathf.InverseLerp (minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap [x, y]);
             }
         }
 
