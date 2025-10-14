@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NavMeshPlus.Components;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -12,6 +13,7 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private float lacunarity;
     [SerializeField] private Vector2 offset;
     [SerializeField] private List<TileWithWeight> tiles = new();
+    [SerializeField] private NavMeshSurface navMesh;
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,5 +41,6 @@ public class WorldGeneration : MonoBehaviour
                 }
             }
         }
+        navMesh.BuildNavMesh();
     }
 }
