@@ -46,12 +46,10 @@ namespace AI
             if (_currentAction == null)
             {
                 _currentAction = _currentPlan.Dequeue();
-                Debug.Log($"{name}: Starting action -> {_currentAction.actionName}");
             }
                 
             if (!_currentAction.CheckCondition())
             {
-                Debug.Log($"{name}: Cannot perform {_currentAction.actionName}, posting request");
                 PostRequestForFailedAction(_currentAction);
                 _currentAction = null;
                 _currentPlan = null;
@@ -61,7 +59,6 @@ namespace AI
             bool finished = _currentAction.DoAction();
 
             if (!finished) return;
-            Debug.Log($"{name}: Action completed -> {_currentAction.actionName}");
             _currentAction = null;
             _currentPlan = null;
             UpdateWorldState();
@@ -74,7 +71,6 @@ namespace AI
             Need urgentNeed = _needsManager.GetMostUrgentNeed();
             if (urgentNeed == null || !urgentNeed.IsCritical())
             {
-                // Pas de besoin urgent, utiliser l'action par défaut (Wander)
                 CreateDefaultPlan();
                 return;
             }
@@ -82,27 +78,18 @@ namespace AI
             WorldState goal = new WorldState();
             goal.Set($"Satisfy{urgentNeed.needName}", true);
 
-            Debug.Log($"{name}: Planning to satisfy {urgentNeed.needName} (urgency: {urgentNeed.GetUrgency():F2})");
-
             _currentPlan = Planner.Plan(_worldState, actions, goal);
 
             if (_currentPlan == null || _currentPlan.Count == 0)
             {
-                Debug.Log($"{name}: No plan found for {urgentNeed.needName}, posting request");
                 PostRequestForUnsatisfiedNeed(urgentNeed);
-
-                // Retourner au comportement par défaut
+                
                 CreateDefaultPlan();
-            }
-            else
-            {
-                Debug.Log($"{name}: Plan created with {_currentPlan.Count} actions");
             }
         }
 
         private void CreateDefaultPlan()
         {
-            // Trouver l'action Wander ou toute autre action par défaut
             ActionBase defaultAction = actions.Find(a => a.actionName == "Wander");
 
             if (defaultAction != null)

@@ -54,7 +54,7 @@ namespace AI.Action
     
         private static Vector3 RandomNavSphere(Vector3 origin, float dist)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * dist;
+            Vector3 randomDirection = Random.insideUnitCircle * dist;
             randomDirection += origin;
             
             NavMesh.SamplePosition(randomDirection, out var navHit, dist, NavMesh.AllAreas);

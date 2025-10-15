@@ -36,12 +36,10 @@ namespace AI
 
             if (hasSimilarRequest)
             {
-                Debug.Log($"[RequestBoard] Request already exists for {request.requester.name}: {request.description}");
                 return;
             }
             
             activeRequests.Add(request);
-            Debug.Log($"[RequestBoard] New request posted: {request.description} (Priority: {request.priority})");
         }
 
         public Request GetHighestPriorityRequest()
@@ -75,8 +73,7 @@ namespace AI
 
         private void Update()
         {
-            // Nettoyer périodiquement les demandes satisfaites
-            if (Time.frameCount % 300 == 0) // Toutes les ~5 secondes à 60fps
+            if (Time.frameCount % 300 == 0)
             {
                 CleanupFulfilledRequests();
             }

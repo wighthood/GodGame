@@ -4,9 +4,9 @@ namespace AI
 {
     public enum RequestType
     {
-        NeedResource,    // Besoin d'une ressource (nourriture, eau, etc.)
-        NeedAction,      // Besoin qu'une action soit effectuée
-        NeedHelp         // Besoin d'aide générale
+        NeedResource,    
+        NeedAction,      
+        NeedHelp         
     }
 
     [System.Serializable]
@@ -25,18 +25,17 @@ namespace AI
 
         public Request(Agent requester, RequestType type, string description, float priority = 1f)
         {
-            this.requestId = System.Guid.NewGuid().ToString();
+            requestId = System.Guid.NewGuid().ToString();
             this.requester = requester;
             this.type = type;
             this.description = description;
             this.priority = priority;
-            this.isFulfilled = false;
+            isFulfilled = false;
         }
 
         public void Fulfill()
         {
             isFulfilled = true;
-            Debug.Log($"Request fulfilled: {description}");
         }
     }
 }

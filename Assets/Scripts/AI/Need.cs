@@ -8,13 +8,13 @@ namespace AI
         public string needName;
         public float currentValue;
         public float maxValue = 100f;
-        public float increaseRate = 1f; // Points par seconde
-        public float criticalThreshold = 70f; // Seuil où le besoin devient urgent
+        public float increaseRate = 1f;
+        public float criticalThreshold = 70f;
 
         public Need(string name, float increaseRate = 1f, float criticalThreshold = 70f)
         {
-            this.needName = name;
-            this.currentValue = 0f;
+            needName = name;
+            currentValue = 0f;
             this.increaseRate = increaseRate;
             this.criticalThreshold = criticalThreshold;
         }
