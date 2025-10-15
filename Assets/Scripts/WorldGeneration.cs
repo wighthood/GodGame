@@ -25,8 +25,8 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
     
     private Tilemap _tilemap;
-    private List<(int,int)> _spawned = new();
-    private List<GameObject> _SpawnedItem = new();
+    private List<(int,int)> _spawnedLocation = new();
+    private List<GameObject> _spawnedItem = new();
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -75,15 +75,15 @@ public class WorldGeneration : MonoBehaviour
                 position = (x, y);
                 Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + new Vector3(.5f, .5f, 0);
                 if (_tilemap.GetTile(new Vector3Int(x-mapWidth/2, y-mapHeight/2, 0)) == tiles[2].tile) continue;
-                if (noiseMap[x, y] <= resourceSpawnRate && !_spawned.Contains(position))
+                if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
-                    _spawned.Add(position);
-                    _SpawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity));
+                    _spawnedLocation.Add(position);
+                    _spawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity));
                 }
-                else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawned.Contains(position))
+                else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
-                    _spawned.Add(position);
-                    _SpawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity));
+                    _spawnedLocation.Add(position);
+                    _spawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity));
                 }
             }
         }
