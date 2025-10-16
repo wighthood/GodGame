@@ -437,7 +437,7 @@ MonoBehaviour:
   resources:
   - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
   - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
-  resourceSpawnRate: 0.1
+  resourceSpawnRate: 0.15
 --- !u!1 &299751676
 GameObject:
   m_ObjectHideFlags: 0
