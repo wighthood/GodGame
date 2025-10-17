@@ -24,9 +24,16 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private List<GameObject> resources = new();
     [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
     
+    [SerializeField] private GameObject agentPrefab;
+    [SerializeField] private Transform agentParent;
+    [SerializeField] private Transform resourceParent;
+    [SerializeField] private int agentCount;
+    
     private Tilemap _tilemap;
     private List<(int,int)> _spawnedLocation = new();
     private List<GameObject> _spawnedItem = new();
+    
+    private List<GameObject> _spawnedAgent = new();
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -35,6 +42,7 @@ public class WorldGeneration : MonoBehaviour
         _tilemap = GetComponent<Tilemap>();
         MapGeneration();
         RessourcesGeneration();
+        SpawnAgent();
     }
     
     private void MapGeneration()
@@ -78,14 +86,27 @@ public class WorldGeneration : MonoBehaviour
                 if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity));
+                    _spawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity, resourceParent));
                 }
                 else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity));
+                    _spawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity, resourceParent));
                 }
             }
+        }
+    }
+
+    private void SpawnAgent()
+    {
+        Vector3Int pos = new Vector3Int(Random.Range(0, mapWidth), Random.Range(0, mapHeight));
+        if (_tilemap.GetTile(pos) == tiles[2].tile) return;
+        pos.x -= mapWidth / 2;
+        pos.y -= mapHeight / 2;
+        Camera.main.transform.position = _tilemap.CellToWorld(pos) + new Vector3(0, 0, -10);
+        for (int i = 0; i < agentCount; i++)
+        {
+            _spawnedAgent.Add(Instantiate(agentPrefab, _tilemap.CellToWorld(pos), Quaternion.identity, agentParent));
         }
     }
 
