@@ -100,7 +100,7 @@ public class WorldGeneration : MonoBehaviour
     private void SpawnAgent()
     {
         Vector3Int pos = new Vector3Int(Random.Range(0, mapWidth), Random.Range(0, mapHeight));
-        if (_tilemap.GetTile(pos) == tiles[2].tile) return;
+        if (_tilemap.GetTile(pos) == tiles[2].tile) SpawnAgent();
         pos.x -= mapWidth / 2;
         pos.y -= mapHeight / 2;
         Camera.main.transform.position = _tilemap.CellToWorld(pos) + new Vector3(0, 0, -10);
