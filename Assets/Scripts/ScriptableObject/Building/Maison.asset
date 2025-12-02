@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f27347583dde64bace0549d4fb5c5c, type: 3}
+  m_Name: Maison
+  m_EditorClassIdentifier: Assembly-CSharp::NewScriptableObjectScript
+  name: Maison
+  hp: 100
+  ressourceCost: 5
+  buidingPrefab: {fileID: 2453019938693668466, guid: f24cc3838fe7fa74d84f358dd88e8e3f, type: 3}
