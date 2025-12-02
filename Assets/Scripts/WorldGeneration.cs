@@ -8,8 +8,8 @@ using Random = UnityEngine.Random;
 public class WorldGeneration : MonoBehaviour
 {
     [Header("Perlin Noise Settings")]
-    [SerializeField] private int mapWidth;
-    [SerializeField] private int mapHeight;
+    public int mapWidth;
+    public int mapHeight;
     [SerializeField] private int scale;
     [SerializeField] private int octaves;
     [SerializeField,Range(0f,1f)] private float persistence;
