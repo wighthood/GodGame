@@ -1,11 +1,9 @@
-using NavMeshPlus.Components;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using UnityEngine.WSA;
 using NavMeshSurface = NavMeshPlus.Components.NavMeshSurface;
 
 public class MapEditorScript : MonoBehaviour
@@ -16,6 +14,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private GameObject buttonPrefab;
     [SerializeField] private NavMeshSurface navMesh;
     [SerializeField] private List<GameObject> Prefabs;
+    [SerializeField] private LayerMask layermask;
     
     private Camera _camera;
     private TileBase _selectedTile;
@@ -98,7 +97,23 @@ public class MapEditorScript : MonoBehaviour
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             Vector3 cellpos = tilemap.CellToWorld(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0)));
-            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
+            if (tilemap.GetTile(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0))) == tiles[2])
+            {
+                return;
+            }
+            if (!Physics2D.Raycast(mousePosition, Camera.main.transform.forward, layermask))
+            {
+                Ressource ressource = _selectedObject.GetComponent<Ressource>();
+                if (ressource) 
+                {
+                    MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos);
+                }
+                else
+                {
+                    GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
+                    _isPainting = false;
+                }
+            }
         }
     }
 }
