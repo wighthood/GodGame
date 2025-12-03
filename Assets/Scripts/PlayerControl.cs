@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
+using static UnityEditor.PlayerSettings;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -22,8 +24,8 @@ public class PlayerControl : MonoBehaviour
     {
         if (Camera.main != null && Time.timeScale > 0f)
         {
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>()*zoomSpeed, maxZoom, minZoom);
-        }
+           Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>()*zoomSpeed, maxZoom, minZoom);
+        }       
     }
 
     public void Pause(InputAction.CallbackContext context)
@@ -61,5 +63,24 @@ public class PlayerControl : MonoBehaviour
     private void Update()
     {
         transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
+
+        Vector3 pos = transform.position;
+
+        if (pos.x > 27)
+            pos.x = 27;
+
+        if (pos.x < -27)
+            pos.x = -27;
+
+        if (pos.y > 40)
+            pos.y = 40;
+
+        if (pos.y < -40)
+            pos.y = -40;
+
+        transform.position = pos;
+
+      
+
     }
 }
