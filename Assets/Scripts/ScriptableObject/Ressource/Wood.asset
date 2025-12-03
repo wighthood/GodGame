@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScriptableObjectScript
   name: Wood
   dropValue: 5
-  ressourcePrefab: {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
+  ressourceType: 2
