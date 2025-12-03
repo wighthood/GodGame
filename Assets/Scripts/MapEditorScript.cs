@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using UnityEngine.WSA;
 using NavMeshSurface = NavMeshPlus.Components.NavMeshSurface;
 
 public class MapEditorScript : MonoBehaviour
@@ -43,7 +44,7 @@ public class MapEditorScript : MonoBehaviour
             GameObject newButton = Instantiate(buttonPrefab, selectionBar);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
-            buttonImage.sprite = prefab.GetComponent<Sprite>();
+            buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
             button.onClick.AddListener ((() => 
                 SetSelector(prefab)));
         }
