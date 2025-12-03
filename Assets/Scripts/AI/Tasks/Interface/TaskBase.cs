@@ -18,7 +18,10 @@ public abstract class TaskBase
 
     public abstract void OnFinish();
 
-    public abstract void Cancel();
+    public virtual void Cancel()
+    {
+        manager.ResetTask();
+    }
 
     public abstract float GetPriority();
 }

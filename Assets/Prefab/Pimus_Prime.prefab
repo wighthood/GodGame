@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 247577834667627498}
   - component: {fileID: 2373870067264410862}
   - component: {fileID: 2133673559166816527}
+  - component: {fileID: 711300630693085499}
+  - component: {fileID: 543139912411055940}
   m_Layer: 0
   m_Name: Pimus_Prime
   m_TagString: Untagged
@@ -190,4 +192,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b66a58c72f91a594bb648386ada43dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AgentActions
+  pimusPrefab: {fileID: 4226159496368005823}
+  ressourcesMask:
+  - serializedVersion: 2
+    m_Bits: 128
+  - serializedVersion: 2
+    m_Bits: 64
   agentBlackboard: {fileID: 0}
+--- !u!114 &711300630693085499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae271ed6cd701db4eb75279d21519e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AIInventory
+  ressourceStockedData:
+    ressource: 0
+    amount: 0
+--- !u!114 &543139912411055940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31f5d1782eef53540b38deda737a152b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AIStats
+  hunger: 0
+  health: 0
+  maxHealth: 0

@@ -10,9 +10,10 @@ public class BlackBoard : MonoBehaviour
         blackBoardValues = new Dictionary<string, object>();
     }
 
-    public object GetValue(string _varName)
+
+    public T GetValue<T>(string _varName)
     {
-        return blackBoardValues[_varName]; 
+        return (T)blackBoardValues[_varName]; 
     }
 
     public void AddValue(string _varName, object value)

@@ -6,7 +6,7 @@ public class TaskManager : MonoBehaviour
     public BlackBoard agentBlackboard;
     public BlackBoard colonieBlackboard;
 
-    public List<TaskBase> tasks;
+    public List<TaskBase> tasks = new List<TaskBase>();
 
     private bool isTaskFinished = true;
     private TaskBase currentTask;
@@ -17,9 +17,14 @@ public class TaskManager : MonoBehaviour
 
         AgentActions actions = GetComponent<AgentActions>();
 
-        tasks = new List<TaskBase>();
-        tasks.Add(new TaskATest(this, actions));
-        tasks.Add(new TaskBTest(this, actions));
+        AddNewTask(new TaskEat(this, actions));
+        AddNewTask(new TaskATest(this, actions));
+        AddNewTask(new TaskBTest(this, actions));
+    }
+
+    private void AddNewTask(TaskBase task)
+    {
+        tasks.Add(task);
     }
 
     private TaskBase GetHigherPriorityTask()
@@ -47,6 +52,11 @@ public class TaskManager : MonoBehaviour
             currentTask.OnFinish();
             currentTask = null;
         }
+    }
+
+    public void ResetTask()
+    {
+        currentTask = null;
     }
 
     private void Update()
