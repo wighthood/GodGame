@@ -107,7 +107,7 @@ public class MapEditorScript : MonoBehaviour
                 Ressource ressource = _selectedObject.GetComponent<Ressource>();
                 if (ressource) 
                 {
-                    MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos);
+                    MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + new Vector3(.5f, .5f,0));
                 }
                 else
                 {
