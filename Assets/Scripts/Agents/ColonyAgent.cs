@@ -9,7 +9,7 @@ namespace Agents
     // Composant léger à ajouter à n'importe quelle créature/agent qui doit pouvoir participer
     // à la création de colonies.
     [DisallowMultipleComponent]
-    public class ColonyAgent : MonoBehaviour
+    public class ColonyAgent : MonoBehaviour, IColonyAgent
     {
         [Header("Colony Agent settings")]
         public bool autoRegister = true;
@@ -89,15 +89,18 @@ namespace Agents
             return species != null ? species : string.Empty;
         }
 
-        // Référence à la colonie courante (si assignée)
-        private Colony _currentColony;
+        // Implémentation de l'interface
+        public bool CanFormColony => canFormColony;
 
-        public void SetCurrentColony(Colony colony)
+        // Référence à la colonie courante (si assignée)
+        private IColony _currentColony;
+
+        public void SetCurrentColony(IColony colony)
         {
             _currentColony = colony;
         }
 
-        public Colony GetCurrentColony()
+        public IColony GetCurrentColony()
         {
             return _currentColony;
         }
@@ -109,7 +112,7 @@ namespace Agents
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, 0.15f);
 
-            Colony col = GetCurrentColony();
+            var col = GetCurrentColony();
             string label = "No colony";
             if (col != null)
             {
