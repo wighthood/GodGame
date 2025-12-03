@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7755459779377129072}
   - component: {fileID: 4622015869323666495}
   - component: {fileID: 4134866646216521716}
+  - component: {fileID: 6557685617310811742}
   m_Layer: 0
   m_Name: Pimus_Prime
   m_TagString: Untagged
@@ -197,3 +198,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6557685617310811742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb3ffbf723f6488fba89ca6fbdeedb6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::System.Colonie.ColonyAgent
+  autoRegister: 1
+  canFormColony: 1
+  species: Pimu
+  positionUpdateInterval: 0.5
+  movementThreshold: 0.25

@@ -96,7 +96,6 @@ namespace AI
             {
                 _currentPlan = new Queue<ActionBase>();
                 _currentPlan.Enqueue(defaultAction);
-                Debug.Log($"{name}: No urgent needs, wandering...");
             }
         }
 
@@ -109,7 +108,7 @@ namespace AI
                 _worldState.Set("FoodAvailable", GlobalState.Instance.GetFoodCount() > 0);
             }
 
-            foreach (var need in _needsManager.GetCriticalNeeds())
+            foreach (Need need in _needsManager.GetCriticalNeeds())
             {
                 _worldState.Set(need.needName, need.currentValue);
             }
