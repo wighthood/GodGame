@@ -1,19 +1,30 @@
-using System;
 using UnityEngine;
 
 public class Ressource : MonoBehaviour
 {
-    [SerializeField] private ScriptableObject resource;
+    [SerializeField] private SO_Ressource ressource;
+    [SerializeField] private int ressourceRemaining;
 
     private void Start()
     {
-        if (resource is ScriptableObjectScript soResource)
+
+    }
+
+    public RessourceType GetRessourceType()
+    {
+        return ressource.ressourceType;
+    }
+
+    public void OnHarvrestingRessource()
+    {
+        print("harvresting");
+        ressourceRemaining--;
+
+        if (ressourceRemaining == 0)
         {
-            Debug.Log($"Resource Name: {soResource.name}, Drop Value: {soResource.dropValue}");
-        }
-        else
-        {
-            Debug.LogError("Assigned resource is not of type ScriptableObjectScript");
+            print("No ressources remaining");
+            GetComponentInParent<MapRessourceManager>().RemoveFromListForDestroy(this);
+            Destroy(gameObject, 0.5f);
         }
     }
 }
