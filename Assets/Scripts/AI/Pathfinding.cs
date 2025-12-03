@@ -1,15 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Tilemaps;
+using UnityEngine.AI;
 
 public class Pathfinding : MonoBehaviour
 {
-    public WorldGeneration worldGeneration;
-    [SerializeField] private int gridWidth = 10;
-    [SerializeField] private int gridHeight = 10;
     [SerializeField] private int cellWidth = 1;
     [SerializeField] private int cellHeight = 1;
+    [SerializeField] private int gridWidth = 100;
+    [SerializeField] private int gridHeight = 100;
 
     [SerializeField] private bool newPath;
     [SerializeField] private bool visualiseGrid;
@@ -18,192 +17,155 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private Transform textPrefab;
     [SerializeField] private Transform textParent;
 
-    private Dictionary<Vector2, Cell> cells;
+    [SerializeField] private Transform startCell;
+    [SerializeField] private Transform endCell;
 
-    public List<Vector2> cellsToSearch;
-    public List<Vector2> searchedCells;
-    public List<Vector2> finalPath;
+    public List<Vector3> linePoints = new List<Vector3>();
+    
+    public Tilemap groundTilemap;
 
-    bool pathGenerated;
+    private Dictionary<Vector2Int, Cell> cells;
+    private bool gridGenerated;
+
+    private Vector3[] navMeshCorners;
 
     private void Update()
     {
-        if (newPath && !pathGenerated)
+        if (newPath && !gridGenerated)
         {
             GenerateGrid();
-
-            FindPath(new Vector2(0, 0), new Vector2(6, 8));
-
-            if (showTexts)
-            {
-                VisualiseText();
-            }
-
-            pathGenerated = true;
+            ComputeNavMeshPath();
+            
+            gridGenerated = true;
         }
         else if (!newPath)
         {
-            pathGenerated = false;
+            gridGenerated = false;
         }
     }
 
     private void GenerateGrid()
     {
-        cells = new Dictionary<Vector2, Cell>();
+        cells = new Dictionary<Vector2Int, Cell>();
 
-        for (float x = 0; x < worldGeneration.mapWidth; x += worldGeneration.mapWidth)
+        for (int x = -50; x < gridWidth; x++)
         {
-            for (float y = 0; y < worldGeneration.mapHeight; y += worldGeneration.mapHeight)
+            for (int y = -50; y < gridHeight; y++)
             {
-                Vector2 pos = new Vector2(x, y);
-                cells.Add(pos, new Cell(pos));
-            }
-        }
+                Vector2Int gridPos = new Vector2Int(x, y);
+                Vector3Int tileCell = new Vector3Int(x, y, 0);
 
-        for (int i = 0; i < 40; i++)
-        {
-            Vector2 pos = new Vector2(Random.Range(0, worldGeneration.mapWidth), Random.Range(0, worldGeneration.mapHeight));
-            cells[pos].isWall = true;
-        }
-    }
-    
-    private void FindPath(Vector2 startPos, Vector2 endPos)
-    {
-        cellsToSearch = new List<Vector2> { startPos };
-        searchedCells = new List<Vector2>();
-        finalPath = new List<Vector2>();
+                Vector3 worldPos = groundTilemap != null
+                    ? groundTilemap.GetCellCenterWorld(tileCell)
+                    : new Vector3(x * cellWidth, y * cellHeight, 0f);
 
-        cells[startPos].gCost = 0;
-        cells[startPos].hCost = GetDistance(startPos, endPos);
-        cells[startPos].fCost = GetDistance(startPos, endPos);
+                bool walkable = IsOnNavMesh(worldPos);
 
-        while (cellsToSearch.Count > 0)
-        {
-            Vector2 cellToSearch = cellsToSearch[0];
-
-            foreach (Vector2 pos in cellsToSearch)
-            {
-                Cell c = cells[pos];
-                if (c.fCost < cells[cellToSearch].fCost ||
-                    c.fCost == cells[cellToSearch].fCost && c.hCost == cells[cellToSearch].hCost)
+                var cell = new Cell((Vector2)worldPos)
                 {
-                    cellToSearch = pos;
-                }
+                    isWall = !walkable
+                };
+
+                cells.Add(gridPos, cell);
             }
-
-
-            cellsToSearch.Remove(cellToSearch);
-            searchedCells.Add(cellToSearch);
-
-            if (cellToSearch == endPos)
-            {
-                Cell pathCell = cells[endPos];
-
-                while (pathCell.position != startPos)
-                {
-                    finalPath.Add(pathCell.position);
-                    pathCell = cells[pathCell.connection];
-                }
-
-                finalPath.Add(startPos);
-                VisualiseText();
-                return;
-            }
-
-            SearchCellNeighbors(cellToSearch, endPos);
-        }
-
-        if (finalPath.Count == 0)
-        {
-            Debug.Log("Path not found");
         }
     }
 
-    private void VisualiseText()
+    private bool IsOnNavMesh(Vector3 worldPos, float maxDistance = 0.2f)
     {
-        foreach (Transform child in textParent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        foreach (Vector2 pos in cells.Keys)
-        {
-            Transform text = Instantiate(textPrefab, pos + (Vector2)transform.position, new Quaternion(), textParent);
-            text.GetChild(0).GetComponent<Text>().text = cells[pos].gCost.ToString();
-            text.GetChild(1).GetComponent<Text>().text = cells[pos].hCost.ToString();
-            text.GetChild(2).GetComponent<Text>().text = cells[pos].fCost.ToString();
-        }
+        NavMeshHit hit;
+        return NavMesh.SamplePosition(worldPos, out hit, maxDistance, NavMesh.AllAreas);
     }
 
-    private void SearchCellNeighbors(Vector2 cellPos, Vector2 endPos)
+    private void ComputeNavMeshPath()
     {
-        for (float x = cellPos.x - cellWidth; x <= cellWidth + cellPos.x; x += cellWidth)
+        navMeshCorners = null;
+        linePoints.Clear();
+
+        if (startCell == null || endCell == null) return;
+
+        NavMeshPath path = new NavMeshPath();
+
+        NavMeshHit h1, h2;
+        if (!NavMesh.SamplePosition(startCell.position, out h1, 0.3f, NavMesh.AllAreas)) return;
+        if (!NavMesh.SamplePosition(endCell.position,   out h2, 0.3f, NavMesh.AllAreas)) return;
+
+        if (!NavMesh.CalculatePath(h1.position, h2.position, NavMesh.AllAreas, path)) return;
+        if (path.status != NavMeshPathStatus.PathComplete) return;
+
+        navMeshCorners = path.corners;
+
+        if (navMeshCorners == null || navMeshCorners.Length < 2) return;
+
+        linePoints.AddRange(navMeshCorners);
+
+        for (int i = 1; i < navMeshCorners.Length - 1; i++)
         {
-            for (float y = cellPos.y - cellHeight; y <= cellHeight + cellPos.y; y += cellHeight)
+            Vector3 prev = navMeshCorners[i]     - navMeshCorners[i - 1];
+            Vector3 next = navMeshCorners[i + 1] - navMeshCorners[i];
+
+            prev.z = 0f;
+            next.z = 0f;
+
+            if (prev.sqrMagnitude < 0.0001f || next.sqrMagnitude < 0.0001f)
+                continue;
+
+            prev.Normalize();
+            next.Normalize();
+
+            float dot = Vector3.Dot(prev, next);
+            if (dot < 0.999f)
             {
-                Vector2 neighborPos = new Vector2(x, y);
-
-                if (cells.TryGetValue(neighborPos, out Cell c) && !searchedCells.Contains(neighborPos) &&
-                    !cells[neighborPos].isWall)
-                {
-                    int GcostToNeighbour = cells[cellPos].gCost + GetDistance(cellPos, neighborPos);
-
-                    if (GcostToNeighbour < cells[neighborPos].gCost)
-                    {
-                        Cell neighbourNode = cells[neighborPos];
-
-                        neighbourNode.connection = cellPos;
-                        neighbourNode.gCost = GcostToNeighbour;
-                        neighbourNode.hCost = GetDistance(neighborPos, endPos);
-                        neighbourNode.fCost = neighbourNode.gCost + neighbourNode.hCost;
-
-                        if (!cellsToSearch.Contains(neighborPos))
-                        {
-                            cellsToSearch.Add(neighborPos);
-                        }
-                    }
-                }
+                linePoints.Add(navMeshCorners[i]);
             }
         }
-    }
 
+        linePoints.Add(navMeshCorners[navMeshCorners.Length - 1]);
+
+
+    }
 
     private void OnDrawGizmos()
     {
-        if (!visualiseGrid || cells == null)
+        if (visualiseGrid && cells != null)
         {
-            return;
+            foreach (KeyValuePair<Vector2Int, Cell> kvp in cells)
+            {
+                Gizmos.color = kvp.Value.isWall ? Color.black : Color.white;
+                float gizmoSize = showTexts ? 0.2f : 1f;
+
+                Gizmos.DrawCube(
+                    kvp.Value.position,
+                    new Vector3(cellWidth, cellHeight, 0f) * gizmoSize
+                );
+            }
         }
 
-        foreach (KeyValuePair<Vector2, Cell> kvp in cells)
+        if (startCell != null)
         {
-            if (!kvp.Value.isWall)
-            {
-                Gizmos.color = Color.white;
-            }
-            else
-            {
-                Gizmos.color = Color.black;
-            }
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(startCell.position, 0.2f);
+        }
 
-            if (finalPath.Contains(kvp.Key))
+        if (endCell != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(endCell.position, 0.2f);
+        }
+
+        if (navMeshCorners != null && navMeshCorners.Length > 1)
+        {
+            Gizmos.color = Color.green;
+            for (int i = 0; i < navMeshCorners.Length - 1; i++)
             {
-                Gizmos.color = Color.magenta;
+                Gizmos.DrawLine(navMeshCorners[i], navMeshCorners[i + 1]);
             }
-
-            float gizmoSize = showTexts ? 0.2f : 1;
-
-            Gizmos.DrawCube(kvp.Key + (Vector2)transform.position, new Vector3(cellWidth, cellHeight) * gizmoSize);
         }
     }
 
     private class Cell
     {
         public Vector2 position;
-        public int fCost = int.MaxValue;
-        public int gCost = int.MaxValue;
-        public int hCost = int.MaxValue;
-        public Vector2 connection;
         public bool isWall;
 
         public Cell(Vector2 pos)
@@ -211,16 +173,5 @@ public class Pathfinding : MonoBehaviour
             position = pos;
         }
     }
-
-    private int GetDistance(Vector2 pos1, Vector2 pos2)
-    {
-        Vector2Int dist = new Vector2Int(Mathf.Abs((int)pos1.x - (int)pos2.x), Mathf.Abs((int)pos1.y - (int)pos2.y));
-        
-        int lowest = Mathf.Min(dist.x, dist.y);
-        int highest = Mathf.Max(dist.x, dist.y);
-
-        int horizontalMovesRequired = highest - lowest;
-        
-        return lowest * 14 + horizontalMovesRequired * 10;
-    }
 }
+
