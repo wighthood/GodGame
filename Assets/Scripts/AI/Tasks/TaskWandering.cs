@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class TaskBTest : TaskBase
+public class TaskWandering : TaskBase
 {
     Vector3 targetPos;
     private bool isFinished;
     public List<Cell> pathDebug = new();
     Transform transform;
 
-    public TaskBTest(TaskManager _manager, AgentActions _actions)
+    public TaskWandering(TaskManager _manager, AgentActions _actions)
     {
         Init(_manager, _actions);
         transform = manager.agentBlackboard.GetValue<Transform>("transform");
@@ -25,14 +24,12 @@ public class TaskBTest : TaskBase
 
     public override float GetPriority()
     {
-        Vector3 pos = transform.position;
-        float distancePriorityFactory = Vector2.Distance(pos, targetPos) - 0.5f;
-        return Mathf.Clamp(distancePriorityFactory, 0, 1);
+        return 0.2f;
     }
 
     public override void OnFinish()
     {
-        //actions.ReproductSelf();
+        
     }
 
     public override void OnStart()

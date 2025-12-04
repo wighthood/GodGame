@@ -20,8 +20,7 @@ public class TaskManager : MonoBehaviour
         AgentActions actions = GetComponent<AgentActions>();
 
         AddNewTask(new TaskEat(this, actions));
-        AddNewTask(new TaskATest(this, actions));
-        AddNewTask(new TaskBTest(this, actions));
+        AddNewTask(new TaskWandering(this, actions));
     }
 
     private void AddNewTask(TaskBase task)
@@ -82,19 +81,10 @@ public class TaskManager : MonoBehaviour
             return;
         }
 
-        if(currentTask is TaskATest)
+        if(currentTask is TaskWandering)
         {
             Gizmos.color = Color.green;
-            foreach(Cell cell in ((TaskATest)currentTask).pathDebug)
-            {
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
-
-        if (currentTask is TaskBTest)
-        {
-            Gizmos.color = Color.green;
-            foreach (Cell cell in ((TaskATest)currentTask).pathDebug)
+            foreach(Cell cell in ((TaskWandering)currentTask).pathDebug)
             {
                 Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
             }
@@ -103,9 +93,9 @@ public class TaskManager : MonoBehaviour
         if (currentTask is TaskEat)
         {
             Gizmos.color = Color.green;
-            if(((TaskATest)currentTask).pathDebug.Count > 1)
+            if(((TaskEat)currentTask).pathDebug.Count > 1)
             {
-                foreach (Cell cell in ((TaskATest)currentTask).pathDebug)
+                foreach (Cell cell in ((TaskEat)currentTask).pathDebug)
                 {
                     Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
                 }
