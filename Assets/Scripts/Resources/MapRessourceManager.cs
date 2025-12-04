@@ -22,6 +22,9 @@ public class MapRessourceManager : MonoBehaviour
 
     private void Start()
     {
+        ressources[RessourceType.wood] = new List<Ressource>();
+        ressources[RessourceType.food] = new List<Ressource>();
+
         //TODO remove this v
         AddNewRessource(1, new Vector2(0, 10));
         AddNewRessource(1, new Vector2(-10, 10));

@@ -44,7 +44,7 @@ public class WorldGeneration : MonoBehaviour
         _tilemap = GetComponent<Tilemap>();
         MapGeneration();
         RessourcesGeneration();
-        //SpawnAgent();
+        SpawnAgent();
     }
     
     private void MapGeneration()

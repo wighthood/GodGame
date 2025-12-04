@@ -48,6 +48,7 @@ public class TaskManager : MonoBehaviour
     private void ExecuteTask()
     {
         isTaskFinished = currentTask.Do();
+        print("exe");
 
         if (isTaskFinished)
         {
@@ -70,6 +71,45 @@ public class TaskManager : MonoBehaviour
         else
         {
             ExecuteTask();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if(currentTask != null)
+        {
+            print("no task");
+            return;
+        }
+
+        if(currentTask is TaskATest)
+        {
+            Gizmos.color = Color.green;
+            foreach(Cell cell in ((TaskATest)currentTask).pathDebug)
+            {
+                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
+            }
+        }
+
+        if (currentTask is TaskBTest)
+        {
+            Gizmos.color = Color.green;
+            foreach (Cell cell in ((TaskATest)currentTask).pathDebug)
+            {
+                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
+            }
+        }
+
+        if (currentTask is TaskEat)
+        {
+            Gizmos.color = Color.green;
+            if(((TaskATest)currentTask).pathDebug.Count > 1)
+            {
+                foreach (Cell cell in ((TaskATest)currentTask).pathDebug)
+                {
+                    Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
+                }
+            }
         }
     }
 }

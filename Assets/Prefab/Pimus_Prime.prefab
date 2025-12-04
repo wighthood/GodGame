@@ -174,5 +174,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIStats
   hunger: 0
-  health: 0
-  maxHealth: 0
+  health: 30
+  maxHealth: 30

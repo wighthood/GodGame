@@ -59,12 +59,11 @@ public class PathFinding
         if (start == null || end == null)
             return null;
 
+
         if(IsPathValid(end))
         {
             return path;
         }
-
-        ResetUsedCells();
 
         PriorityQueue<Cell> open = new PriorityQueue<Cell>();
 
@@ -77,7 +76,10 @@ public class PathFinding
             Cell current = open.Dequeue();
 
             if (current == end)
+            {
+                ResetUsedCells();
                 return BuildPath(end);
+            }
 
             current.inClosedSet = true;
 

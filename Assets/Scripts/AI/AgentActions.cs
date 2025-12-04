@@ -20,6 +20,11 @@ public class AgentActions : MonoBehaviour
         pathFinding = new();
     }
 
+    public List<Cell> GetPath()
+    {
+        return currentPath;
+    }
+
     private void MoveAgent(Vector2 _dir)
     {
         transform.position = transform.position + (Vector3)(_dir * moveFactor * Time.deltaTime);
@@ -36,7 +41,12 @@ public class AgentActions : MonoBehaviour
 
         if(currentPath.Count == 1)
         {
-            return true;
+            Vector3 finalPos = Graph.instance.CellToWorld(currentPath[0].position);
+            if (Vector2.Distance(transform.position, finalPos) < 0.1f)
+            {
+                currentPath = null;
+                return true;
+            }
         }
 
         print(currentPath.Count);
