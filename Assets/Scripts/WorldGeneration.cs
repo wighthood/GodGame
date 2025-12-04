@@ -113,4 +113,13 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
+    public int MapWidth()
+    {
+        return mapWidth;
+    }
+
+    public int MapHeight()
+    {
+        return mapHeight;
+    }
 }
