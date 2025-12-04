@@ -5,14 +5,12 @@ public class AIStats : MonoBehaviour
 {
     private BlackBoard blackBoard;
 
-    [SerializeField, Range(0, 1)]
-    private float hunger;
+    [Range(0, 1)]
+    public float hunger;
 
-    [SerializeField]
-    private int health;
+    public int health;
 
-    [SerializeField]
-    private int maxHealth;
+    public int maxHealth;
 
     private void Start()
     {

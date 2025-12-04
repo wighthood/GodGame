@@ -120,4 +120,9 @@ public class WorldGeneration : MonoBehaviour
     {
         return new Vector2(mapWidth, mapHeight);
     }
+
+    public Tilemap GetTilemaps()
+    {
+        return _tilemap;
+    }
 }
