@@ -42,6 +42,22 @@ public class MapRessourceManager : MonoBehaviour
                 break;
         }
     }
+    public void AddNewRessource(RessourceType ressourceType, Vector2 _position)
+    {
+        GameObject newRessource;
+        switch (ressourceType)
+        {
+            case RessourceType.wood:
+                newRessource = Instantiate(ressourcePrefab[0], _position, Quaternion.identity, transform);
+                AddRessourceInDictionary(RessourceType.wood,
+    newRessource.GetComponent<Ressource>());
+                break;
+            case RessourceType.food:
+                newRessource = Instantiate(ressourcePrefab[1], _position, Quaternion.identity, transform);
+                AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
+                break;
+        }
+    }
 
     private void AddRessourceInDictionary(RessourceType type, Ressource ressource)
     {
