@@ -1005,6 +1005,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 682908377}
+  - component: {fileID: 682908378}
   m_Layer: 0
   m_Name: SystemSave
   m_TagString: Untagged
@@ -1027,6 +1028,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &682908378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682908376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveData
+  aiStats: {fileID: 543139912411055940, guid: fbb6771e487847a43896324bee886299, type: 3}
+  worldGen: {fileID: 130282017}
 --- !u!1 &836012061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
@@ -1430,14 +1445,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1629193886905299860, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2048272660}
-    - target: {fileID: 1629193886905299860, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: MainMenu
-      objectReference: {fileID: 0}
     - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1480,7 +1487,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9717.609
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1518,34 +1525,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4702654644357755194, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+    - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2048272660}
-    - target: {fileID: 4702654644357755194, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Pause
-      objectReference: {fileID: 0}
-    - target: {fileID: 7041596184129219736, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7041596184129219736, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7041596184129219736, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2048272660}
-    - target: {fileID: 7041596184129219736, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Quit
-      objectReference: {fileID: 0}
-    - target: {fileID: 7041596184129219736, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MenusScript, Assembly-CSharp
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 682908378}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1556,17 +1539,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
   m_PrefabInstance: {fileID: 2048272658}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2048272660 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8307017329690881927, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-  m_PrefabInstance: {fileID: 2048272658}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 836012061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1d46d44ceeb7a140852881a78dfae2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MenusScript
 --- !u!1 &2106598271
 GameObject:
   m_ObjectHideFlags: 0
@@ -1612,7 +1584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2db9e0701a50964ba3ab3544b82813c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AI.RequestBoard
-  activeRequests: []
 --- !u!114 &2106598275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1625,7 +1596,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68de7bc371c73814da226fef8ebabfa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AI.GlobalState
-  foodCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

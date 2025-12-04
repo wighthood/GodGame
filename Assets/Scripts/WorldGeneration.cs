@@ -113,4 +113,9 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
+    public Tilemap GetTilemaps()
+    {
+        return _tilemap;
+    }
+
 }
