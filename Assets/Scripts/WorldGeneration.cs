@@ -19,6 +19,7 @@ public class WorldGeneration : MonoBehaviour
     [Header("Map Generation Settings")]
     [SerializeField] private List<TileWithWeight> tiles = new();
     [SerializeField] private NavMeshSurface navMesh;
+    private Graph graph;
     
     [Header("Resources Generation Settings")]
     [SerializeField] private List<GameObject> resources = new();
@@ -39,10 +40,11 @@ public class WorldGeneration : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        graph = GetComponent<Graph>();
         _tilemap = GetComponent<Tilemap>();
         MapGeneration();
         RessourcesGeneration();
-        SpawnAgent();
+        //SpawnAgent();
     }
     
     private void MapGeneration()
@@ -67,7 +69,8 @@ public class WorldGeneration : MonoBehaviour
                 }
             }
         }
-        navMesh.BuildNavMesh();
+        //navMesh.BuildNavMesh();
+        graph.InitGraph();
     }
     
     private void RessourcesGeneration()
@@ -113,4 +116,8 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
+    public Vector2 GetMapSize()
+    {
+        return new Vector2(mapWidth, mapHeight);
+    }
 }

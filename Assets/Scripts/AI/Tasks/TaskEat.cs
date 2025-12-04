@@ -1,9 +1,9 @@
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class TaskEat : TaskBase
 {
     private Transform targetFoodSource;
+    private bool isArrive;
 
     public TaskEat(TaskManager _manager, AgentActions _actions)
     {
@@ -41,14 +41,14 @@ public class TaskEat : TaskBase
             {
                 GetNearestFoodIfExiste();
             }
-            Vector3 selfPosition = manager.agentBlackboard.GetValue<Vector3>("position");
-            if (Vector2.Distance(selfPosition, targetFoodSource.position) < 1)
+            Vector3 selfPosition = manager.agentBlackboard.GetValue<Transform>("transform").position;
+            if (isArrive)
             {
                 actions.HarvrestRessources(RessourceType.food);
             }
             else
             {
-                actions.MoveTo(targetFoodSource);
+                isArrive = actions.MoveTo(targetFoodSource);
             }
             return false;
         }

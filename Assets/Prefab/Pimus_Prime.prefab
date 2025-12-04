@@ -10,11 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6095676785311186884}
   - component: {fileID: 7391098169453645719}
-  - component: {fileID: 1104438238369116616}
-  - component: {fileID: 4622015869323666495}
   - component: {fileID: 4134866646216521716}
   - component: {fileID: 247577834667627498}
-  - component: {fileID: 2373870067264410862}
   - component: {fileID: 2133673559166816527}
   - component: {fileID: 711300630693085499}
   - component: {fileID: 543139912411055940}
@@ -98,40 +95,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!195 &1104438238369116616
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4226159496368005823}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.1
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &4622015869323666495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4226159496368005823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e39f6090724e4a4a8aadeb042afa2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: NavMeshPlus::NavMeshPlus.Extensions.AgentOverride2d
 --- !u!95 &4134866646216521716
 Animator:
   serializedVersion: 7
@@ -166,20 +129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29539e81c06cbe64e9839d09722dd955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TaskManager
-  agentBlackboard: {fileID: 2373870067264410862}
-  colonieBlackboard: {fileID: 0}
---- !u!114 &2373870067264410862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4226159496368005823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4d8d1d314ead70469b4b154a31564f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BlackBoard
 --- !u!114 &2133673559166816527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,13 +141,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b66a58c72f91a594bb648386ada43dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AgentActions
-  pimusPrefab: {fileID: 4226159496368005823}
   ressourcesMask:
   - serializedVersion: 2
     m_Bits: 128
   - serializedVersion: 2
     m_Bits: 64
-  agentBlackboard: {fileID: 0}
 --- !u!114 &711300630693085499
 MonoBehaviour:
   m_ObjectHideFlags: 0

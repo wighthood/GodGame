@@ -1,177 +1,155 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.AI;
 
-public class Pathfinding : MonoBehaviour
+public class PathFinding
 {
-    [SerializeField] private int cellWidth = 1;
-    [SerializeField] private int cellHeight = 1;
-    [SerializeField] private int gridWidth = 100;
-    [SerializeField] private int gridHeight = 100;
+    private List<Cell> tempNeighbors = new();
+    private List<Cell> usedCells = new();
+    private List<Cell> path = new();
 
-    [SerializeField] private bool newPath;
-    [SerializeField] private bool visualiseGrid;
-    [SerializeField] private bool showTexts;
-
-    [SerializeField] private Transform textPrefab;
-    [SerializeField] private Transform textParent;
-
-    [SerializeField] private Transform startCell;
-    [SerializeField] private Transform endCell;
-
-    public List<Vector3> linePoints = new List<Vector3>();
-    
-    public Tilemap groundTilemap;
-
-    private Dictionary<Vector2Int, Cell> cells;
-    private bool gridGenerated;
-
-    private Vector3[] navMeshCorners;
-
-    private void Update()
+    private Vector2Int[] directions =
     {
-        if (newPath && !gridGenerated)
+        Vector2Int.up,
+        Vector2Int.right,
+        Vector2Int.left,
+        Vector2Int.down,
+        new Vector2Int(1, 1),
+        new Vector2Int(1, -1),
+        new Vector2Int(-1, 1),
+        new Vector2Int(-1, -1),
+    };
+
+    private List<Cell> GetNeighbors(Cell cell)
+    {
+        tempNeighbors.Clear();
+
+        foreach (var d in directions)
         {
-            GenerateGrid();
-            ComputeNavMeshPath();
-            
-            gridGenerated = true;
+            if (Graph.instance.graphDict.TryGetValue(cell.position + d, out Cell n)
+                && n.isWalkable)
+            {
+                tempNeighbors.Add(n);
+            }
         }
-        else if (!newPath)
-        {
-            gridGenerated = false;
-        }
+        return tempNeighbors;
     }
 
-    private void GenerateGrid()
+    private int Heuristic(Cell a, Cell b)
     {
-        cells = new Dictionary<Vector2Int, Cell>();
+        return Mathf.Abs(a.position.x - b.position.x) +
+               Mathf.Abs(a.position.y - b.position.y);
+    }
 
-        for (int x = -50; x < gridWidth; x++)
+    public void GoToNextPoint()
+    {
+        if (path.Count > 0)
+            path.RemoveAt(0);
+    }
+
+    private bool IsPathValid(Cell _endPoint)
+    {
+        return path.Count > 0 && path.TrueForAll(c => c.isWalkable) && path[^1] == _endPoint; 
+    }
+
+    public List<Cell> FindPath(Vector2 startWorld, Vector2 endWorld)
+    {
+        Cell start = Graph.instance.GetCellFromWorldPos(startWorld);
+        Cell end = Graph.instance.GetCellFromWorldPos(endWorld);
+
+        if (start == null || end == null)
+            return null;
+
+        if(IsPathValid(end))
         {
-            for (int y = -50; y < gridHeight; y++)
+            return path;
+        }
+
+        ResetUsedCells();
+
+        PriorityQueue<Cell> open = new PriorityQueue<Cell>();
+
+        start.gCost = 0;
+        start.parent = null;
+        open.Enqueue(start, Heuristic(start, end));
+
+        while (open.Count > 0)
+        {
+            Cell current = open.Dequeue();
+
+            if (current == end)
+                return BuildPath(end);
+
+            current.inClosedSet = true;
+
+            foreach (Cell neighbor in GetNeighbors(current))
             {
-                Vector2Int gridPos = new Vector2Int(x, y);
-                Vector3Int tileCell = new Vector3Int(x, y, 0);
+                if (neighbor.inClosedSet) continue;
 
-                Vector3 worldPos = groundTilemap != null
-                    ? groundTilemap.GetCellCenterWorld(tileCell)
-                    : new Vector3(x * cellWidth, y * cellHeight, 0f);
+                int tentativeG = current.gCost + 1;
 
-                bool walkable = IsOnNavMesh(worldPos);
-
-                var cell = new Cell((Vector2)worldPos)
+                if (tentativeG < neighbor.gCost || !open.Contains(neighbor))
                 {
-                    isWall = !walkable
-                };
+                    neighbor.gCost = tentativeG;
+                    neighbor.parent = current;
+                    int f = neighbor.gCost + Heuristic(neighbor, end);
 
-                cells.Add(gridPos, cell);
-            }
-        }
-    }
-
-    private bool IsOnNavMesh(Vector3 worldPos, float maxDistance = 0.2f)
-    {
-        NavMeshHit hit;
-        return NavMesh.SamplePosition(worldPos, out hit, maxDistance, NavMesh.AllAreas);
-    }
-
-    private void ComputeNavMeshPath()
-    {
-        navMeshCorners = null;
-        linePoints.Clear();
-
-        if (startCell == null || endCell == null) return;
-
-        NavMeshPath path = new NavMeshPath();
-
-        NavMeshHit h1, h2;
-        if (!NavMesh.SamplePosition(startCell.position, out h1, 0.3f, NavMesh.AllAreas)) return;
-        if (!NavMesh.SamplePosition(endCell.position,   out h2, 0.3f, NavMesh.AllAreas)) return;
-
-        if (!NavMesh.CalculatePath(h1.position, h2.position, NavMesh.AllAreas, path)) return;
-        if (path.status != NavMeshPathStatus.PathComplete) return;
-
-        navMeshCorners = path.corners;
-
-        if (navMeshCorners == null || navMeshCorners.Length < 2) return;
-
-        linePoints.AddRange(navMeshCorners);
-
-        for (int i = 1; i < navMeshCorners.Length - 1; i++)
-        {
-            Vector3 prev = navMeshCorners[i]     - navMeshCorners[i - 1];
-            Vector3 next = navMeshCorners[i + 1] - navMeshCorners[i];
-
-            prev.z = 0f;
-            next.z = 0f;
-
-            if (prev.sqrMagnitude < 0.0001f || next.sqrMagnitude < 0.0001f)
-                continue;
-
-            prev.Normalize();
-            next.Normalize();
-
-            float dot = Vector3.Dot(prev, next);
-            if (dot < 0.999f)
-            {
-                linePoints.Add(navMeshCorners[i]);
+                    open.Enqueue(neighbor, f);
+                    AddToUsed(neighbor);
+                }
             }
         }
 
-        linePoints.Add(navMeshCorners[navMeshCorners.Length - 1]);
-
-
+        return null;
     }
 
-    private void OnDrawGizmos()
+    private List<Cell> BuildPath(Cell end)
     {
-        if (visualiseGrid && cells != null)
-        {
-            foreach (KeyValuePair<Vector2Int, Cell> kvp in cells)
-            {
-                Gizmos.color = kvp.Value.isWall ? Color.black : Color.white;
-                float gizmoSize = showTexts ? 0.2f : 1f;
+        path.Clear();
+        Cell c = end;
 
-                Gizmos.DrawCube(
-                    kvp.Value.position,
-                    new Vector3(cellWidth, cellHeight, 0f) * gizmoSize
-                );
-            }
+        while (c != null)
+        {
+            path.Add(c);
+            c = c.parent;
         }
 
-        if (startCell != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(startCell.position, 0.2f);
-        }
-
-        if (endCell != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(endCell.position, 0.2f);
-        }
-
-        if (navMeshCorners != null && navMeshCorners.Length > 1)
-        {
-            Gizmos.color = Color.green;
-            for (int i = 0; i < navMeshCorners.Length - 1; i++)
-            {
-                Gizmos.DrawLine(navMeshCorners[i], navMeshCorners[i + 1]);
-            }
-        }
+        path.Reverse();
+        return path;
     }
 
-    private class Cell
+    private void AddToUsed(Cell c)
     {
-        public Vector2 position;
-        public bool isWall;
+        if (!usedCells.Contains(c))
+            usedCells.Add(c);
+    }
 
-        public Cell(Vector2 pos)
-        {
-            position = pos;
-        }
+    private void ResetUsedCells()
+    {
+        foreach (Cell c in usedCells)
+            c.Reset();
+
+        usedCells.Clear();
     }
 }
 
+public class Cell
+{
+    public Vector2Int position;
+    public int gCost = int.MaxValue;
+    public bool isWalkable;
+    public Cell parent;
+    public bool inClosedSet;
+
+    public Cell(int x, int y, bool walkable)
+    {
+        position = new Vector2Int(x, y);
+        isWalkable = walkable;
+    }
+
+    public void Reset()
+    {
+        gCost = int.MaxValue;
+        parent = null;
+        inClosedSet = false;
+    }
+}

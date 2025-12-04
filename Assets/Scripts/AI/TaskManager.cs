@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public BlackBoard agentBlackboard;
-    public BlackBoard colonieBlackboard;
+    public BlackBoard agentBlackboard {  get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; }
 
     public List<TaskBase> tasks = new List<TaskBase>();
 
@@ -13,7 +13,9 @@ public class TaskManager : MonoBehaviour
 
     private void Awake()
     {
-        agentBlackboard = GetComponent<BlackBoard>();
+        agentBlackboard = new();
+
+        agentBlackboard.AddValue("transform", transform);
 
         AgentActions actions = GetComponent<AgentActions>();
 
