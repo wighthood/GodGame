@@ -1,3 +1,4 @@
+using Unity.Hierarchy;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -12,9 +13,14 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private Texture2D pressedMouseCursor;
     [SerializeField] private Texture2D normalMouseCursor;
-    
+    [SerializeField] private Vector2 cameraLimit;
+    [SerializeField] private float cameraOffSetX;
+    [SerializeField] private float cameraOffSetY;
     
     private Vector2 _direction;
+
+    float oldCameraZoom;
+
     public void Move(InputAction.CallbackContext context)
     {
         _direction = context.ReadValue<Vector2>();
@@ -58,6 +64,7 @@ public class PlayerControl : MonoBehaviour
     private void Start()
     {
         Cursor.SetCursor(normalMouseCursor, Vector2.zero, CursorMode.Auto);
+        oldCameraZoom = Camera.main.orthographicSize;
     }
 
     private void Update()
@@ -66,21 +73,21 @@ public class PlayerControl : MonoBehaviour
 
         Vector3 pos = transform.position;
 
-        if (pos.x > 27)
-            pos.x = 27;
+        float tailleCamera = Camera.main.orthographicSize;
 
-        if (pos.x < -27)
-            pos.x = -27;
+        if (pos.x > cameraLimit.x - (tailleCamera * cameraOffSetX))
+            pos.x = cameraLimit.x - (tailleCamera * cameraOffSetX);
 
-        if (pos.y > 40)
-            pos.y = 40;
+        if (pos.x < (cameraLimit.x * -1) + (tailleCamera * cameraOffSetX))
+            pos.x = (cameraLimit.x * -1) + (tailleCamera * cameraOffSetX);
 
-        if (pos.y < -40)
-            pos.y = -40;
+        if (pos.y > cameraLimit.y - (tailleCamera * cameraOffSetY))
+            pos.y = cameraLimit.y - (tailleCamera * cameraOffSetY);
+
+        if (pos.y < (cameraLimit.y * -1) + (tailleCamera * cameraOffSetY))
+            pos.y = (cameraLimit.y * -1) + (tailleCamera * cameraOffSetY);
 
         transform.position = pos;
-
-      
 
     }
 }
