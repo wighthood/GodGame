@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,6 +17,8 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private NavMeshSurface navMesh;
     [SerializeField] private List<GameObject> Prefabs;
     [SerializeField] private LayerMask layermask;
+    [SerializeField] private Vector3 treeOffset;
+    [SerializeField] private Vector3 berryBushOffset;
     
     private Camera _camera;
     private TileBase _selectedTile;
@@ -107,7 +110,14 @@ public class MapEditorScript : MonoBehaviour
                 Ressource ressource = _selectedObject.GetComponent<Ressource>();
                 if (ressource) 
                 {
-                    MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + new Vector3(.5f, .5f,0));
+                    if (ressource.GetRessourceType() == RessourceType.wood)
+                    {
+                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
+                    }
+                    else
+                    {
+                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                    }
                 }
                 else
                 {

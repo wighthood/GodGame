@@ -1281,6 +1281,8 @@ MonoBehaviour:
   layermask:
     serializedVersion: 2
     m_Bits: 448
+  treeOffset: {x: 0.5, y: 1.5, z: 0}
+  berryBushOffset: {x: 0.5, y: 0.5, z: 0}
 --- !u!1 &1502037526
 GameObject:
   m_ObjectHideFlags: 0
