@@ -9,7 +9,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float speed = 12f;
     [SerializeField] private float zoomSpeed = 12f;
     [SerializeField] private float maxZoom = 1f;
-    [SerializeField] private float minZoom = 10f;
+    [SerializeField] private float minZoom = 25f;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private Texture2D pressedMouseCursor;
     [SerializeField] private Texture2D normalMouseCursor;
