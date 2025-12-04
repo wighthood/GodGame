@@ -24,7 +24,7 @@ public class TaskWandering : TaskBase
 
     public override float GetPriority()
     {
-        return 0.2f;
+        return 0.5f;
     }
 
     public override void OnFinish()
