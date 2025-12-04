@@ -442,6 +442,7 @@ MonoBehaviour:
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
   agentCount: 10
+  _spawnedAgent: []
 --- !u!1 &188331453
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,6 +1043,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SaveData
   aiStats: {fileID: 543139912411055940, guid: fbb6771e487847a43896324bee886299, type: 3}
   worldGen: {fileID: 130282017}
+  agentParent: {fileID: 188331453}
 --- !u!1 &836012061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
