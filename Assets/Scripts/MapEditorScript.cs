@@ -19,11 +19,13 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
+    [SerializeField] private float tileOffset;
     
     private Camera _camera;
     private TileBase _selectedTile;
     private GameObject _selectedObject;
     private bool _isPainting = false;
+    private Vector2 _cellposForRaycast;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -80,6 +82,23 @@ public class MapEditorScript : MonoBehaviour
         }
     }
 
+    private bool IsWater(TileBase _tempTile)
+    {
+        return _selectedTile == tiles.Find(o => o.name == "WaterRule") && !_tempTile.name.Contains("WaterRule")
+                || _selectedTile != tiles.Find(o => o.name == "WaterRule") && _tempTile.name.Contains("WaterRule");
+    }
+
+    private bool IsObject(Vector2 _mousePosition)
+    {
+        return Physics2D.Raycast(_mousePosition, Camera.main.transform.forward, layermask);
+    }
+
+    private bool IsObject(Vector2 _start, out RaycastHit2D _result)
+    {
+        _result = Physics2D.Raycast(_start, Camera.main.transform.forward, layermask);
+        return _result.collider;
+    }
+
     private void Update()
     {
         if (_selectedTile == null && _selectedObject == null || _camera == null
@@ -91,9 +110,14 @@ public class MapEditorScript : MonoBehaviour
             Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
             TileBase TempTile = tilemap.GetTile(cellpos);
             tilemap.SetTile(cellpos, _selectedTile);
-            if (_selectedTile == tiles.Find(o => o.name == "WaterRule") && !TempTile.name.Contains("WaterRule")
-                || _selectedTile != tiles.Find(o => o.name == "WaterRule") && TempTile.name.Contains("WaterRule"))
+            if (IsWater(TempTile))
             {
+                RaycastHit2D result;
+                _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
+                if (IsObject(_cellposForRaycast, out result))
+                {
+                    Destroy(result.collider.gameObject);
+                }
                 navMesh.BuildNavMesh();
             }
         }
@@ -105,7 +129,7 @@ public class MapEditorScript : MonoBehaviour
             {
                 return;
             }
-            if (!Physics2D.Raycast(mousePosition, Camera.main.transform.forward, layermask))
+            if (!IsObject(mousePosition))
             {
                 Ressource ressource = _selectedObject.GetComponent<Ressource>();
                 if (ressource) 
