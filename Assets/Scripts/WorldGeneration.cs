@@ -27,16 +27,14 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private GameObject agentPrefab;
     [SerializeField] private Transform agentParent;
     [SerializeField] private Transform resourceParent;
-    [SerializeField] private int agentCount;
+    public int agentCount;
     
     private Tilemap _tilemap;
     private List<(int,int)> _spawnedLocation = new();
     private List<GameObject> _spawnedItem = new();
     
-    private List<GameObject> _spawnedAgent = new();
-    
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [HideInInspector] public List<GameObject> _spawnedAgent = new();
+
     void Start()
     {
         _tilemap = GetComponent<Tilemap>();
@@ -97,7 +95,7 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
-    private void SpawnAgent()
+    public void SpawnAgent()
     {
         Vector3Int pos = new Vector3Int(Random.Range(-mapWidth/2, mapWidth/2), Random.Range(-mapHeight/2, mapHeight/2));
         if (_tilemap.GetTile(pos) == tiles[2].tile)
@@ -111,6 +109,11 @@ public class WorldGeneration : MonoBehaviour
         {
             _spawnedAgent.Add(Instantiate(agentPrefab, _tilemap.CellToWorld(pos), Quaternion.identity, agentParent));
         }
+    }
+
+    public Tilemap GetTilemaps()
+    {
+        return _tilemap;
     }
 
     public int MapWidth()
