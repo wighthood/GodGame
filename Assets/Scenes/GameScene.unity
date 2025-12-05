@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 130282016}
   - component: {fileID: 130282015}
   - component: {fileID: 130282017}
+  - component: {fileID: 130282018}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -442,6 +443,21 @@ MonoBehaviour:
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
   agentCount: 10
+  _spawnedAgent: []
+--- !u!114 &130282018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130282011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0ae89b828d0a249a0d4aa59e94ed12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Graph
+  notWalkableSprites:
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!1 &188331453
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,6 +726,9 @@ MonoBehaviour:
   pauseMenu: {fileID: 836012061}
   pressedMouseCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
   normalMouseCursor: {fileID: 2800000, guid: 5cb946e2bc8bb0a4d94b1e7560471854, type: 3}
+  cameraLimit: {x: 0, y: 0}
+  cameraOffSetX: 0
+  cameraOffSetY: 0
 --- !u!114 &519420034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -959,6 +978,55 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &668700267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 668700269}
+  - component: {fileID: 668700268}
+  m_Layer: 0
+  m_Name: System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &668700268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668700267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 823d26a6dfad86f4cb23211b3ee86eec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::System.Colonie.ColonieSystem
+  requiredPimusToCreate: 5
+  groupingRadius: 5
+  defaultInfluenceRadius: 15
+  defaultMaxPerPimu: 2
+  scanInterval: 1
+--- !u!4 &668700269
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668700267}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.17051, y: 7.86928, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1283,6 +1351,7 @@ MonoBehaviour:
     m_Bits: 448
   treeOffset: {x: 0.5, y: 1.5, z: 0}
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
+  tileOffset: 0
 --- !u!1 &1502037526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,10 +1542,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -9717.609
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
@@ -1631,3 +1696,4 @@ SceneRoots:
   - {fileID: 2106598273}
   - {fileID: 1187677961}
   - {fileID: 188331454}
+  - {fileID: 668700269}

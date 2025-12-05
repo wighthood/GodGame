@@ -14,7 +14,7 @@ public class AIStats : MonoBehaviour
 
     private void Start()
     {
-        blackBoard = GetComponent<BlackBoard>();
+        blackBoard = GetComponent<TaskManager>().agentBlackboard;
 
         blackBoard.AddValue("hunger", hunger);
 

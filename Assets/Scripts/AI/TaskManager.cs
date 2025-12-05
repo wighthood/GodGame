@@ -3,28 +3,43 @@ using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public BlackBoard agentBlackboard;
-    public BlackBoard colonieBlackboard;
+    public BlackBoard agentBlackboard {  get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; }
 
-    public List<TaskBase> tasks = new List<TaskBase>();
+    private List<TaskBase> tasks = new List<TaskBase>();
+    [SerializeField]
+    private List<TaskCreator> taskCreators = new List<TaskCreator>();
+    private bool isInitialized;
 
     private bool isTaskFinished = true;
     private TaskBase currentTask;
 
     private void Awake()
     {
-        agentBlackboard = GetComponent<BlackBoard>();
+        agentBlackboard = new();
 
-        AgentActions actions = GetComponent<AgentActions>();
+        agentBlackboard.AddValue("transform", transform);
 
-        AddNewTask(new TaskEat(this, actions));
-        AddNewTask(new TaskATest(this, actions));
-        AddNewTask(new TaskBTest(this, actions));
+        
     }
 
-    private void AddNewTask(TaskBase task)
+    private void Start()
     {
-        tasks.Add(task);
+        if(!isInitialized)
+        {
+            InitTasks();
+            isInitialized = true;
+        }
+    }
+
+    private void InitTasks()
+    {
+        AgentActions actions = GetComponent<AgentActions>();
+
+        foreach(TaskCreator tc in taskCreators)
+        {
+            tasks.Add(tc.CreateTask(this, actions));
+        }
     }
 
     private TaskBase GetHigherPriorityTask()
@@ -46,6 +61,7 @@ public class TaskManager : MonoBehaviour
     private void ExecuteTask()
     {
         isTaskFinished = currentTask.Do();
+        print("exe");
 
         if (isTaskFinished)
         {
@@ -70,4 +86,41 @@ public class TaskManager : MonoBehaviour
             ExecuteTask();
         }
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!currentTask) return;
+
+        if (currentTask is TaskWandering wander)
+        {
+            if (wander.pathDebug == null || wander.pathDebug.Count == 0)
+                return;
+
+            Gizmos.color = Color.green;
+
+            foreach (Cell cell in wander.pathDebug)
+            {
+                if (cell == null) continue;
+                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
+                                new Vector3(0.5f, 0.5f, 0.1f));
+            }
+        }
+
+        if (currentTask is TaskEat eat)
+        {
+            if (eat.pathDebug == null || eat.pathDebug.Count == 0)
+                return;
+
+            Gizmos.color = Color.yellow;
+
+            foreach (Cell cell in eat.pathDebug)
+            {
+                if (cell == null) continue;
+                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
+                                new Vector3(0.5f, 0.5f, 0.1f));
+            }
+        }
+    }
+
+
 }
