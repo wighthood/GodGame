@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 130282016}
   - component: {fileID: 130282015}
   - component: {fileID: 130282017}
+  - component: {fileID: 130282018}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -442,6 +443,21 @@ MonoBehaviour:
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
   agentCount: 10
+  _spawnedAgent: []
+--- !u!114 &130282018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130282011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0ae89b828d0a249a0d4aa59e94ed12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Graph
+  notWalkableSprites:
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!1 &188331453
 GameObject:
   m_ObjectHideFlags: 0
