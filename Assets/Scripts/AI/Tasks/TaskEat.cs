@@ -1,13 +1,17 @@
-using Unity.VisualScripting.FullSerializer;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TaskEat : TaskBase
 {
     private Transform targetFoodSource;
+    private bool isArrive;
+    public List<Cell> pathDebug = new();
+    Transform transform;
 
     public TaskEat(TaskManager _manager, AgentActions _actions)
     {
         Init(_manager, _actions);
+        transform = manager.agentBlackboard.GetValue<Transform>("transform");
     }
 
     private void GetNearestFoodIfExiste()
@@ -41,14 +45,15 @@ public class TaskEat : TaskBase
             {
                 GetNearestFoodIfExiste();
             }
-            Vector3 selfPosition = manager.agentBlackboard.GetValue<Vector3>("position");
-            if (Vector2.Distance(selfPosition, targetFoodSource.position) < 1)
+            Vector3 selfPosition = transform.position;
+            if (isArrive)
             {
                 actions.HarvrestRessources(RessourceType.food);
             }
             else
             {
-                actions.MoveTo(targetFoodSource);
+                isArrive = actions.MoveTo(targetFoodSource);
+                pathDebug = actions.GetPath();
             }
             return false;
         }

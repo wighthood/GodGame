@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public BlackBoard agentBlackboard;
-    public BlackBoard colonieBlackboard;
+    public BlackBoard agentBlackboard {  get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; }
 
     public List<TaskBase> tasks = new List<TaskBase>();
 
@@ -13,13 +13,14 @@ public class TaskManager : MonoBehaviour
 
     private void Awake()
     {
-        agentBlackboard = GetComponent<BlackBoard>();
+        agentBlackboard = new();
+
+        agentBlackboard.AddValue("transform", transform);
 
         AgentActions actions = GetComponent<AgentActions>();
 
         AddNewTask(new TaskEat(this, actions));
-        AddNewTask(new TaskATest(this, actions));
-        AddNewTask(new TaskBTest(this, actions));
+        AddNewTask(new TaskWandering(this, actions));
     }
 
     private void AddNewTask(TaskBase task)
@@ -46,6 +47,7 @@ public class TaskManager : MonoBehaviour
     private void ExecuteTask()
     {
         isTaskFinished = currentTask.Do();
+        print("exe");
 
         if (isTaskFinished)
         {
@@ -68,6 +70,36 @@ public class TaskManager : MonoBehaviour
         else
         {
             ExecuteTask();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if(currentTask != null)
+        {
+            print("no task");
+            return;
+        }
+
+        if(currentTask is TaskWandering)
+        {
+            Gizmos.color = Color.green;
+            foreach(Cell cell in ((TaskWandering)currentTask).pathDebug)
+            {
+                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
+            }
+        }
+
+        if (currentTask is TaskEat)
+        {
+            Gizmos.color = Color.green;
+            if(((TaskEat)currentTask).pathDebug.Count > 1)
+            {
+                foreach (Cell cell in ((TaskEat)currentTask).pathDebug)
+                {
+                    Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.1f));
+                }
+            }
         }
     }
 }
