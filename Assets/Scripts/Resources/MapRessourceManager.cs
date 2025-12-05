@@ -1,10 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapRessourceManager : MonoBehaviour
 {
-    private static MapRessourceManager instance;
-
     private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
 
     [SerializeField]
@@ -12,12 +11,8 @@ public class MapRessourceManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
-        { 
-            Destroy(gameObject);
-        }
-
-        instance = this;
+        
+        Ressource.OnEmptyRessource += RemoveFromListForDestroy;
     }
 
     private void Start()
@@ -72,8 +67,6 @@ public class MapRessourceManager : MonoBehaviour
         ressources[type].Add(ressource);
     }
 
-    public static MapRessourceManager Get() => instance;
-
     public List<Ressource> GetRessources(RessourceType type)
     {
         if(!ressources.ContainsKey(type))
@@ -83,8 +76,9 @@ public class MapRessourceManager : MonoBehaviour
         return ressources[type];
     }
 
-    public void RemoveFromListForDestroy(Ressource ressource)
+    private void RemoveFromListForDestroy(Ressource ressource)
     {
         ressources[ressource.GetRessourceType()].Remove(ressource);
+        Destroy(ressource.gameObject);
     }
 }

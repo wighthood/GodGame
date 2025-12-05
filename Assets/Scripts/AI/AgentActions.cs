@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class AgentActions : MonoBehaviour
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
-
+    
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
@@ -131,7 +132,9 @@ public class AgentActions : MonoBehaviour
     public Transform GetNearestFoodRessource(RessourceType ressourceType)
     {
         float nearestDistance = float.MaxValue;
-        List<Ressource> ressources = MapRessourceManager.Get().GetRessources(ressourceType);
+        
+        // List<Ressource> ressources = MapRessourceManager.GetRessources(ressourceType);
+            
         Transform nearestRessource = ressources[0].transform;
         foreach (Ressource ressource in ressources)
         {
