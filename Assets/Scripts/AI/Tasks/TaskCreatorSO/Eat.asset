@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d9fd27a1ca94b47b46ea27eacabb75, type: 3}
   m_Name: Eat
   m_EditorClassIdentifier: Assembly-CSharp::TaskCreator
-  task: {fileID: 0}
+  task: {fileID: 11400000, guid: 41ad841208e4f4d49bce2cd812761861, type: 2}

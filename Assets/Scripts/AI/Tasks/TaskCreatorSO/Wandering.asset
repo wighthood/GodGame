@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d9fd27a1ca94b47b46ea27eacabb75, type: 3}
   m_Name: Wandering
   m_EditorClassIdentifier: Assembly-CSharp::TaskCreator
-  task: {fileID: 0}
+  task: {fileID: 11400000, guid: 0361fe121c0a85e4d97976c56a9c5503, type: 2}
