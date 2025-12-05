@@ -442,7 +442,6 @@ MonoBehaviour:
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
   agentCount: 10
-  _spawnedAgent: []
 --- !u!1 &188331453
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,9 +1040,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveData
+  aiStats: {fileID: 543139912411055940, guid: fbb6771e487847a43896324bee886299, type: 3}
   worldGen: {fileID: 130282017}
-  agentPrefab: {fileID: 0}
-  agentParent: {fileID: 188331453}
 --- !u!1 &836012061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
@@ -1531,10 +1529,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 682908378}
-    - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SaveToJson
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
