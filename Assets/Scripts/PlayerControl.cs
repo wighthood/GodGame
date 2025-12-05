@@ -76,19 +76,20 @@ public class PlayerControl : MonoBehaviour
 
         Vector3 pos = transform.position;
 
-        float tailleCamera = Camera.main.orthographicSize;
+        float halfHeight = Camera.main.orthographicSize;
+        float halfWidth = halfHeight * Camera.main.aspect;
 
-        if (pos.x > cameraLimit.x - tailleCamera)
-            pos.x = cameraLimit.x - tailleCamera;
+        if (pos.x > cameraLimit.x - halfWidth)
+            pos.x = cameraLimit.x - halfWidth;
 
-        if (pos.x < (cameraLimit.x * -1) + tailleCamera)
-            pos.x = (cameraLimit.x * -1) + tailleCamera;
+        if (pos.x < -cameraLimit.x + halfWidth)
+            pos.x = -cameraLimit.x + halfWidth;
 
-        if (pos.y > cameraLimit.y - tailleCamera)
-            pos.y = cameraLimit.y - tailleCamera;
+        if (pos.y > cameraLimit.y - halfHeight)
+            pos.y = cameraLimit.y - halfHeight;
 
-        if (pos.y < (cameraLimit.y * -1) + tailleCamera)
-            pos.y = (cameraLimit.y * -1) + tailleCamera;
+        if (pos.y < -cameraLimit.y + halfHeight)
+            pos.y = -cameraLimit.y + halfHeight;
 
         transform.position = pos;       
     }
