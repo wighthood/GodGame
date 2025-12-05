@@ -574,8 +574,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1207601073}
-        m_TargetAssemblyTypeName: LoadData, Assembly-CSharp
-        m_MethodName: LoadFromJson
+        m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
+        m_MethodName: LoadGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -848,7 +848,7 @@ GameObject:
   - component: {fileID: 1207601072}
   - component: {fileID: 1207601073}
   m_Layer: 0
-  m_Name: LoadSystem
+  m_Name: SaveManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -878,9 +878,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1207601070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48c8b8a4991a6ce4eb8c3981e8c4166f, type: 3}
+  m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LoadData
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!1 &1350840079
 GameObject:
   m_ObjectHideFlags: 0
