@@ -14,8 +14,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Texture2D pressedMouseCursor;
     [SerializeField] private Texture2D normalMouseCursor;
     [SerializeField] private Vector2 cameraLimit;
-    [SerializeField] private float cameraOffSetX;
-    [SerializeField] private float cameraOffSetY;
+
+    public WorldGeneration worldGeneration;
     
     private Vector2 _direction;
 
@@ -65,6 +65,9 @@ public class PlayerControl : MonoBehaviour
     {
         Cursor.SetCursor(normalMouseCursor, Vector2.zero, CursorMode.Auto);
         oldCameraZoom = Camera.main.orthographicSize;
+
+        cameraLimit.x = (float)worldGeneration.MapWidth() / 2;
+        cameraLimit.y = (float)worldGeneration.MapHeight() / 2;
     }
 
     private void Update()
@@ -75,19 +78,18 @@ public class PlayerControl : MonoBehaviour
 
         float tailleCamera = Camera.main.orthographicSize;
 
-        if (pos.x > cameraLimit.x - (tailleCamera * cameraOffSetX))
-            pos.x = cameraLimit.x - (tailleCamera * cameraOffSetX);
+        if (pos.x > cameraLimit.x - tailleCamera)
+            pos.x = cameraLimit.x - tailleCamera;
 
-        if (pos.x < (cameraLimit.x * -1) + (tailleCamera * cameraOffSetX))
-            pos.x = (cameraLimit.x * -1) + (tailleCamera * cameraOffSetX);
+        if (pos.x < (cameraLimit.x * -1) + tailleCamera)
+            pos.x = (cameraLimit.x * -1) + tailleCamera;
 
-        if (pos.y > cameraLimit.y - (tailleCamera * cameraOffSetY))
-            pos.y = cameraLimit.y - (tailleCamera * cameraOffSetY);
+        if (pos.y > cameraLimit.y - tailleCamera)
+            pos.y = cameraLimit.y - tailleCamera;
 
-        if (pos.y < (cameraLimit.y * -1) + (tailleCamera * cameraOffSetY))
-            pos.y = (cameraLimit.y * -1) + (tailleCamera * cameraOffSetY);
+        if (pos.y < (cameraLimit.y * -1) + tailleCamera)
+            pos.y = (cameraLimit.y * -1) + tailleCamera;
 
-        transform.position = pos;
-
+        transform.position = pos;       
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NavMeshPlus.Components;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -79,7 +80,7 @@ public class WorldGeneration : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                Debug.Log(noiseMap[x, y]);
+                //Debug.Log(noiseMap[x, y]);
                 position = (x, y);
                 Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + new Vector3(.5f, .5f, 0);
                 if (_tilemap.GetTile(new Vector3Int(x-mapWidth/2, y-mapHeight/2, 0)) == tiles[2].tile) continue;
