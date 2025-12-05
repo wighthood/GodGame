@@ -573,8 +573,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1207601071}
-        m_TargetAssemblyTypeName: SaveData, Assembly-CSharp
+      - m_Target: {fileID: 1207601073}
+        m_TargetAssemblyTypeName: LoadData, Assembly-CSharp
         m_MethodName: LoadFromJson
         m_Mode: 1
         m_Arguments:
@@ -846,28 +846,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1207601072}
-  - component: {fileID: 1207601071}
+  - component: {fileID: 1207601073}
   m_Layer: 0
-  m_Name: SaveSystem
+  m_Name: LoadSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1207601071
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1207601070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveData
-  worldGen: {fileID: 0}
-  agentParent: {fileID: 0}
 --- !u!4 &1207601072
 Transform:
   m_ObjectHideFlags: 0
@@ -883,6 +869,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1207601073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207601070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48c8b8a4991a6ce4eb8c3981e8c4166f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoadData
 --- !u!1 &1350840079
 GameObject:
   m_ObjectHideFlags: 0

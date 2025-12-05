@@ -23,7 +23,8 @@ public class AgentData
 
 public class SaveData : MonoBehaviour
 {
-    public WorldGeneration worldGen;   
+    public WorldGeneration worldGen;
+    public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
     GameData stats = new GameData();
 
@@ -61,11 +62,33 @@ public class SaveData : MonoBehaviour
 
     public void LoadFromJson()
     {
-        string filePath = Application.persistentDataPath + "/AllData.json";
+        string filePath = GetPath();
+        if (!System.IO.File.Exists(filePath))
+        {
+            Debug.LogWarning("Aucun fichier de sauvegarde trouvé");
+            return;
+        }
+
         string allData = System.IO.File.ReadAllText(filePath);
-        
         stats = JsonUtility.FromJson<GameData>(allData);
-        SceneManager.LoadScene("GameScene");
-        // gameObject.GetComponent<WorldGeneration>().enabled = false;
+
+        Camera.main.transform.position = stats.cam;
+
+        for (int i = agentParent.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(agentParent.transform.GetChild(i).gameObject);
+        }
+
+        foreach (AgentData agentData in stats.agentData)
+        {
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent.transform);
+            AIStats aiStats = agent.GetComponent<AIStats>();
+
+            aiStats.hunger    = agentData.hunger;
+            aiStats.health    = agentData.health;
+            aiStats.maxHealth = agentData.maxHealth;
+        }
+
+        Debug.Log("Données chargées");
     }
 }
