@@ -33,11 +33,11 @@ public class PathFinding
         }
         return tempNeighbors;
     }
-
-    private int Heuristic(Cell a, Cell b)
+    
+    private int Heuristic(Cell Target, Cell start)
     {
-        return Mathf.Abs(a.position.x - b.position.x) +
-               Mathf.Abs(a.position.y - b.position.y);
+        return Mathf.Abs(Target.position.x - start.position.x) +
+               Mathf.Abs(Target.position.y - start.position.y);
     }
 
     public void GoToNextPoint()
