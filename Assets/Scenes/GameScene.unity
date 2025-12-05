@@ -680,7 +680,7 @@ MonoBehaviour:
   speed: 12
   zoomSpeed: 0.5
   maxZoom: 1
-  minZoom: 10
+  minZoom: 25
   pauseMenu: {fileID: 836012061}
   pressedMouseCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
   normalMouseCursor: {fileID: 2800000, guid: 5cb946e2bc8bb0a4d94b1e7560471854, type: 3}
