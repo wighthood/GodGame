@@ -116,4 +116,13 @@ public class WorldGeneration : MonoBehaviour
         return _tilemap;
     }
 
+    public int MapWidth()
+    {
+        return mapWidth;
+    }
+
+    public int MapHeight()
+    {
+        return mapHeight;
+    }
 }

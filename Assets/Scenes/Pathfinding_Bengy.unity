@@ -1719,8 +1719,6 @@ MonoBehaviour:
   endCell: {fileID: 1329780519}
   linePoints: []
   groundTilemap: {fileID: 130282014}
-  gridGenerated: 0
-  navMeshCorners: []
 --- !u!4 &1580714703
 Transform:
   m_ObjectHideFlags: 0
