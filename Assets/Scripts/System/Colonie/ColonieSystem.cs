@@ -11,30 +11,25 @@ public class ColonieSystem : MonoBehaviour
 
     [Header("Colony defaults")]
     public float defaultInfluenceRadius = 15f;
-    public int defaultMaxPerPimu = 2; // multiplicateur utilisé au moment de la création
+    public int defaultMaxPerPimu = 2;
 
     [Header("Scan settings")]
     public float scanInterval = 1f;
 
-    // Singleton
     public static ColonieSystem Instance { get; private set; }
 
-    // Events
     public Action<IColony> OnColonyCreated;
     public Action<IColony> OnColonyDissolved;
     public Action<IColony, IColonyAgent> OnMemberJoined;
     public Action<IColony, IColonyAgent> OnMemberLeft;
 
-    // Internal storage
     private List<Colony> _colonies = new List<Colony>();
     private Dictionary<IColonyAgent, Colony> _assignment = new Dictionary<IColonyAgent, Colony>();
 
-    // Spatial hash (bucket stores IColonyAgent)
     private HashSet<IColonyAgent> _registeredAgents = new HashSet<IColonyAgent>();
     private Dictionary<long, List<IColonyAgent>> _spatialBuckets = new Dictionary<long, List<IColonyAgent>>();
     private float _cellSize = 5f;
 
-    // next colony id
     private int _nextColonyId = 1;
 
     private float _scanTimer;
@@ -70,7 +65,6 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    // Public API pour les agents — utiliser IColonyAgent
     public void RegisterAgent(IColonyAgent agent)
     {
         if (agent == null) return;
@@ -78,10 +72,8 @@ public class ColonieSystem : MonoBehaviour
         _registeredAgents.Add(agent);
         AddToBucket(agent);
 
-        // Tenter immédiatement de rejoindre une colonie existante
         if (TryJoinNearestColony(agent)) return;
 
-        // Sinon, tenter de créer une nouvelle colony à partir des voisins
         CheckNearbyForColony(agent);
     }
 
@@ -108,7 +100,6 @@ public class ColonieSystem : MonoBehaviour
         AddToBucket(agent);
     }
 
-    // Spatial helpers
     private long GetCellKey(Vector3 pos)
     {
         int x = Mathf.FloorToInt(pos.x / _cellSize);
@@ -118,7 +109,7 @@ public class ColonieSystem : MonoBehaviour
 
     private void AddToBucket(IColonyAgent a)
     {
-        long key = GetCellKey(a.transform.position);
+        long key = GetCellKey(a.GetTransform().position);
         if (!_spatialBuckets.TryGetValue(key, out var list))
         {
             list = new List<IColonyAgent>();
@@ -129,7 +120,7 @@ public class ColonieSystem : MonoBehaviour
 
     private void RemoveFromBucket(IColonyAgent a)
     {
-        RemoveFromBucket(a, a.transform.position);
+        RemoveFromBucket(a, a.GetTransform().position);
     }
 
     private void RemoveFromBucket(IColonyAgent a, Vector3 fromPosition)
@@ -142,7 +133,6 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    // Scanning
     private void ScanForColonies()
     {
         foreach (var agent in _registeredAgents.ToList())
@@ -150,15 +140,12 @@ public class ColonieSystem : MonoBehaviour
             if (agent == null) continue;
             if (_assignment.ContainsKey(agent)) continue;
 
-            // essayer de rejoindre une colonie existante
             if (TryJoinNearestColony(agent)) continue;
 
-            // sinon, tenter de créer
             CheckNearbyForColony(agent);
         }
     }
 
-    // Renvoie true si l'agent a rejoint une colony existante
     private bool TryJoinNearestColony(IColonyAgent agent)
     {
         if (agent == null) return false;
@@ -166,13 +153,13 @@ public class ColonieSystem : MonoBehaviour
 
         Colony best = null;
         float bestDist = float.MaxValue;
-        Vector3 pos = agent.transform.position;
+        Vector3 pos = agent.GetTransform().position;
 
         foreach (var col in _colonies)
         {
             if (col == null) continue;
             if (!string.Equals(col.Species, agent.GetSpecies(), StringComparison.OrdinalIgnoreCase)) continue;
-            if (col.Inhabitants >= col.MaxInhabitants) continue; // plein
+            if (col.Inhabitants >= col.MaxInhabitants) continue;
 
             float d = Vector3.Distance(col.Center, pos);
             if (d <= col.InfluenceRadius && d < bestDist)
@@ -185,27 +172,25 @@ public class ColonieSystem : MonoBehaviour
         if (best != null)
         {
             _assignment[agent] = best;
-            // Members is exposed as a read-only list; use Add on the internal list
             best.Members.Add(agent);
             best.Inhabitants = best.Members.Count;
 
             agent.SetCurrentColony(best);
             OnMemberJoined?.Invoke(best, agent);
-            Debug.Log($"Agent {agent.gameObject.GetInstanceID()} joined Colony Id={best.Id} (now {best.Inhabitants}/{best.MaxInhabitants})");
+            Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} joined Colony Id={best.Id} (now {best.Inhabitants}/{best.MaxInhabitants})");
             return true;
         }
 
         return false;
     }
 
-    // Vérifie un groupe autour d'un agent et crée une colony si nécessaire
     private void CheckNearbyForColony(IColonyAgent candidate)
     {
         if (candidate == null) return;
-        if (!candidate.CanFormColony) return;
+        if (!candidate.CanFormColony()) return;
 
-        var neighbors = GetNeighborsFromBuckets(candidate.transform.position)
-            .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
+        var neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
+            .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
             .ToList();
 
         if (!neighbors.Contains(candidate)) neighbors.Add(candidate);
@@ -213,11 +198,11 @@ public class ColonieSystem : MonoBehaviour
         if (neighbors.Count >= requiredPimusToCreate)
         {
             Vector3 centroid = Vector3.zero;
-            foreach (var n in neighbors) centroid += n.transform.position;
+            foreach (var n in neighbors) centroid += n.GetTransform().position;
             centroid /= neighbors.Count;
 
             var group = GetNeighborsFromBuckets(centroid)
-                .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase) && Vector3.Distance(g.transform.position, centroid) <= groupingRadius)
+                .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase) && Vector3.Distance(g.GetTransform().position, centroid) <= groupingRadius)
                 .ToList();
 
             if (group.Count >= requiredPimusToCreate)
@@ -246,11 +231,10 @@ public class ColonieSystem : MonoBehaviour
                 }
             }
 
-        results = results.Where(g => g != null && Vector3.Distance(g.transform.position, position) <= groupingRadius).ToList();
+        results = results.Where(g => g != null && Vector3.Distance(g.GetTransform().position, position) <= groupingRadius).ToList();
         return results;
     }
 
-    // Création : fixe MaxInhabitants à la création et ne le modifie plus
     private void CreateColony(Vector3 center, List<IColonyAgent> members)
     {
         members = members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
@@ -268,7 +252,6 @@ public class ColonieSystem : MonoBehaviour
         }
 
         colony.Inhabitants = colony.Members.Count;
-        // MaxInhabitants fixé AU MOMENT DE LA CREATION et non recalculé ensuite
         int computedMax = colony.Inhabitants * defaultMaxPerPimu;
         colony.MaxInhabitants = computedMax > colony.Inhabitants ? computedMax : colony.Inhabitants;
 
@@ -279,7 +262,6 @@ public class ColonieSystem : MonoBehaviour
 
         _colonies.Add(colony);
 
-        // Fire member joined events for initial members
         foreach (var m in colony.Members)
             OnMemberJoined?.Invoke(colony, m);
 
@@ -303,7 +285,7 @@ public class ColonieSystem : MonoBehaviour
         {
             if (m == null) continue;
             _assignment.Remove(m);
-            try { m.SetCurrentColony(null); } catch { }
+            try { m.SetCurrentColony(null); } catch (Exception ex) { Debug.LogError($"Error while unassigning member from colony: {ex}"); }
             OnMemberLeft?.Invoke(colony, m);
         }
 
@@ -320,8 +302,6 @@ public class ColonieSystem : MonoBehaviour
 
         colony.Inhabitants = colony.Members != null ? colony.Members.Count : Math.Max(0, colony.Inhabitants - 1);
 
-        // Ne pas modifier MaxInhabitants : fixé à la création
-
         OnMemberLeft?.Invoke(colony, agent);
 
         if (colony.Inhabitants < requiredPimusToCreate)
@@ -330,18 +310,19 @@ public class ColonieSystem : MonoBehaviour
 
     public List<IColony> GetAllColonies() => _colonies.Cast<IColony>().ToList();
 
-    // Debug drawing
     public void DebugDrawColonies()
     {
         foreach (Colony colony in _colonies)
         {
             if (colony == null) continue;
-            // wire sphere influence
-            Gizmos.color = new Color(0f, 0.6f, 1f, 1f);
+            Gizmos.color = new Color(0f, 0.6f, 1f, 0.5f);
             Gizmos.DrawWireSphere(colony.Center, colony.InfluenceRadius);
-            // center marker
-            Gizmos.color = new Color(1f, 0.85f, 0f, 0.12f);
+            Gizmos.color = new Color(1f, 0.85f, 0f, 0.06f);
             Gizmos.DrawSphere(colony.Center, 0.12f);
+
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(colony.Center + Vector3.up * 1.5f, $"Id={colony.Id} {colony.Species} {colony.Inhabitants}/{colony.MaxInhabitants}");
+#endif
         }
     }
 
