@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 public class GameData
 {
     public Vector3 cam;
-    public Tilemap tilemap;
     public List<AgentData> agentData;
 }
 
@@ -19,6 +18,7 @@ public class AgentData
     public int maxHealth;
     public Vector3 agentsPos;
 }
+
 
 public class SaveData : MonoBehaviour
 {
@@ -36,7 +36,6 @@ public class SaveData : MonoBehaviour
     {
 
         stats.cam = Camera.main.transform.position;
-        stats.tilemap = worldGen.GetTilemaps();
         stats.agentData = new List<AgentData>();
         
         for (int i = 0; i < agentParent.transform.childCount; i++)

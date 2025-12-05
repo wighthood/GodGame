@@ -1023,7 +1023,6 @@ GameObject:
   m_Component:
   - component: {fileID: 682908377}
   - component: {fileID: 682908378}
-  - component: {fileID: 682908379}
   m_Layer: 0
   m_Name: SystemSave
   m_TagString: Untagged
@@ -1061,20 +1060,6 @@ MonoBehaviour:
   worldGen: {fileID: 130282017}
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331453}
---- !u!114 &682908379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 682908376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c264c28869abc2845a45be5e9bd7722d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TilemapSaver
-  tilemap: {fileID: 130282014}
-  tilePalette: []
 --- !u!1 &836012061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}

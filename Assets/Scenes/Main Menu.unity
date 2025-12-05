@@ -881,6 +881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+  tilePalette: []
 --- !u!1 &1350840079
 GameObject:
   m_ObjectHideFlags: 0
