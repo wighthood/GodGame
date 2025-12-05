@@ -3,52 +3,77 @@ using UnityEngine;
 
 public class AgentActions : MonoBehaviour
 {
-    private readonly float moveFactor = 0.01f;
+    private readonly float moveFactor = 1f;
 
     private AIInventory inventory;
     private AIStats stats;
-
-    [SerializeField]
-    private GameObject pimusPrefab;
+    private PathFinding pathFinding;
+    private List<Cell> currentPath;
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
 
-    [HideInInspector]
-    public BlackBoard agentBlackboard;
-
     private void Awake()
     {
-        agentBlackboard = GetComponent<BlackBoard>();
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
+        pathFinding = new();
     }
 
-    private void Start()
+    public List<Cell> GetPath()
     {
-        agentBlackboard.AddValue("position", transform.position);
+        return currentPath;
     }
 
-    private void MoveAgent(Vector2 _movementAddition)
+    private void MoveAgent(Vector2 _dir)
     {
-        transform.position = (Vector2)transform.position + _movementAddition;
-        agentBlackboard.ModifyValue("position", transform.position);
+        transform.position = transform.position + (Vector3)(_dir * moveFactor * Time.deltaTime);
     }
 
-    public void MoveTo(Vector2 _point)
+    public bool MoveTo(Vector2 targetWorld)
     {
-        Vector2 dir = (_point - (Vector2)transform.position).normalized;
-        MoveAgent(dir * moveFactor);
+        currentPath = pathFinding.FindPath(transform.position, targetWorld);
+
+        if (currentPath == null || currentPath.Count == 0)
+        {
+            return true;
+        }
+
+        if(currentPath.Count == 1)
+        {
+            Vector3 finalPos = Graph.instance.CellToWorld(currentPath[0].position);
+            if (Vector2.Distance(transform.position, finalPos) < 0.1f)
+            {
+                currentPath = null;
+                return true;
+            }
+        }
+
+        print(currentPath.Count);
+
+        Cell nextCell = currentPath[0];
+        Vector3 nextWorld = Graph.instance.CellToWorld(nextCell.position);
+
+        Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
+
+        MoveAgent(dir);
+
+        if (Vector2.Distance(transform.position, nextWorld) < 0.1f)
+        {
+            pathFinding.GoToNextPoint();
+        }
+
+        return false;
     }
 
-    public void MoveTo(Transform _target)
+    public bool MoveTo(Transform _target)
     {
-        MoveTo(_target.position);
+        return MoveTo(_target.position);
     }
 
     public void ReproductSelf()
     {
-        GameObject newPimus = Instantiate(pimusPrefab, transform.position, Quaternion.identity, transform.parent);
+        GameObject newPimus = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newPimus.name = "Pimus";
     }
 
@@ -80,7 +105,7 @@ public class AgentActions : MonoBehaviour
 
         Ressource ressource = hit.collider.GetComponent<Ressource>();
 
-        if(inventory.AddRessources(1, ressource.GetRessourceType()))
+        if (inventory.AddRessources(1, ressource.GetRessourceType()))
         { ressource.OnHarvrestingRessource(); }
     }
 
@@ -100,7 +125,7 @@ public class AgentActions : MonoBehaviour
         float nearestDistance = float.MaxValue;
         List<Ressource> ressources = MapRessourceManager.Get().GetRessources(ressourceType);
         Transform nearestRessource = ressources[0].transform;
-        foreach(Ressource ressource in ressources)
+        foreach (Ressource ressource in ressources)
         {
             if (ressource.GetRessourceType() == ressourceType && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
             {

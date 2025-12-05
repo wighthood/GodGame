@@ -1,15 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlackBoard : MonoBehaviour
+public class BlackBoard
 {
-    private Dictionary<string, object> blackBoardValues;
-
-    private void Awake()
-    {
-        blackBoardValues = new Dictionary<string, object>();
-    }
-
+    private Dictionary<string, object> blackBoardValues = new Dictionary<string, object>();
 
     public T GetValue<T>(string _varName)
     {
