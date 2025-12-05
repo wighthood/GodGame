@@ -77,36 +77,44 @@ public class AgentActions : MonoBehaviour
         newPimus.name = "Pimus";
     }
 
-    public void HarvrestRessources(RessourceType ressource)
+    public void HarvrestRessources(RessourceType _ressource)
     {
-        switch (ressource)
+        switch (_ressource)
         {
             default:
                 break;
 
             case RessourceType.food:
-                HarvrestRessource(0);
+                HarvrestRessource(0, _ressource);
                 break;
 
             case RessourceType.wood:
-                HarvrestRessource(1);
+                HarvrestRessource(1, _ressource);
                 break;
         }
     }
 
-    private void HarvrestRessource(int ressourceIndex)
+    private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
     {
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, 5, Vector2.zero, ressourcesMask[ressourceIndex]);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 5, Vector2.zero, ressourcesMask[_ressourceIndex]);
 
-        if (!hit || hit.collider == null || !hit.collider.GetComponent<Ressource>())
+        if (hits.Length == 0)
         {
             return;
         }
 
-        Ressource ressource = hit.collider.GetComponent<Ressource>();
+        foreach(RaycastHit2D hit in hits)
+        {
+            Ressource ressource = hit.collider.GetComponent<Ressource>();
 
-        if (inventory.AddRessources(1, ressource.GetRessourceType()))
-        { ressource.OnHarvrestingRessource(); }
+            if(ressource.GetRessourceType() == _ressource)
+            {
+                if (inventory.AddRessources(1, ressource.GetRessourceType()))
+                {
+                    ressource.OnHarvrestingRessource();
+                }
+            }
+        }
     }
 
     public void Eat()

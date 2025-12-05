@@ -7,7 +7,7 @@ public class Graph : MonoBehaviour
 {
     public static Graph instance;
 
-    [SerializeField] private List<Sprite> notWalkableSprites = new();
+    [SerializeField] private List<TileBase> notWalkableSprites = new();
 
     public List<Cell> graph { get; private set; }
     public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
@@ -36,10 +36,8 @@ public class Graph : MonoBehaviour
             if (!tilemap.HasTile(pos)) continue;
 
             TileBase tile = tilemap.GetTile(pos);
-            TileData tileData = new TileData();
-            tile.GetTileData(pos, tilemap, ref tileData);
 
-            bool walkable = !notWalkableSprites.Contains(tileData.sprite);
+            bool walkable = !notWalkableSprites.Contains(tile);
 
             Cell cell = new Cell(pos.x, pos.y, walkable);
             graph.Add(cell);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Wandering", menuName = "Tasks/Wandering")]
 public class TaskWandering : TaskBase
 {
     Vector3 targetPos;
@@ -8,10 +9,10 @@ public class TaskWandering : TaskBase
     public List<Cell> pathDebug = new();
     Transform transform;
 
-    public TaskWandering(TaskManager _manager, AgentActions _actions)
+    public override void Init(TaskManager _manager, AgentActions _actions)
     {
-        Init(_manager, _actions);
-        transform = manager.agentBlackboard.GetValue<Transform>("transform");
+        base.Init(_manager, _actions);
+        transform = _manager.agentBlackboard.GetValue<Transform>("transform");
     }
 
     public override bool Do()

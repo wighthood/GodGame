@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
 public class TaskEat : TaskBase
 {
     private Transform targetFoodSource;
@@ -8,10 +9,10 @@ public class TaskEat : TaskBase
     public List<Cell> pathDebug = new();
     Transform transform;
 
-    public TaskEat(TaskManager _manager, AgentActions _actions)
+    public override void Init(TaskManager _manager, AgentActions _actions)
     {
-        Init(_manager, _actions);
-        transform = manager.agentBlackboard.GetValue<Transform>("transform");
+        base.Init(_manager, _actions);
+        transform = _manager.agentBlackboard.GetValue<Transform>("transform");
     }
 
     private void GetNearestFoodIfExiste()
