@@ -12,6 +12,7 @@ public class GameData
     public List<AgentData> agentData;
 }
 
+
 [System.Serializable]
 public class AgentData
 {
