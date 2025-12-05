@@ -66,7 +66,8 @@ public class Graph : MonoBehaviour
             Debug.LogWarning($"[Graph] No cell found for world {worldPos} -> cell {cellPos}");
             return null;
         }
-
         return cell;
     }
+
+
 }

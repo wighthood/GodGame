@@ -108,15 +108,21 @@ public class MapEditorScript : MonoBehaviour
             Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
             TileBase TempTile = tilemap.GetTile(cellpos);
             tilemap.SetTile(cellpos, _selectedTile);
+            Cell cellToChange = Graph.instance.GetCellFromWorldPos(cellpos);
             if (IsWater(TempTile))
             {
+                cellToChange.isWalkable = false;
+
                 RaycastHit2D result;
                 _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
                 if (IsObject(_cellposForRaycast, out result))
                 {
                     Destroy(result.collider.gameObject);
                 }
-                navMesh.BuildNavMesh();
+            }
+            else
+            {
+                cellToChange.isWalkable = false;
             }
         }
         if(_selectedObject)
