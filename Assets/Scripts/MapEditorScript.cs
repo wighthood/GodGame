@@ -1,11 +1,9 @@
-using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using UnityEngine.WSA;
 using NavMeshSurface = NavMeshPlus.Components.NavMeshSurface;
 
 public class MapEditorScript : MonoBehaviour

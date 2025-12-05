@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
-[System.Serializable]
+[Serializable]
 public class GameData
 {
     public Vector3 cam;
@@ -13,7 +13,7 @@ public class GameData
 }
 
 
-[System.Serializable]
+[Serializable]
 public class AgentData
 {
     public float hunger;
@@ -57,20 +57,20 @@ public class SaveData : MonoBehaviour
         }
 
         string json = JsonUtility.ToJson(stats);
-        System.IO.File.WriteAllText(GetPath(), json);
+        File.WriteAllText(GetPath(), json);
         Debug.Log("Données sauvegardées");
     }
 
     public void LoadFromJson()
     {
         string filePath = GetPath();
-        if (!System.IO.File.Exists(filePath))
+        if (!File.Exists(filePath))
         {
             Debug.LogWarning("Aucun fichier de sauvegarde trouvé");
             return;
         }
 
-        string allData = System.IO.File.ReadAllText(filePath);
+        string allData = File.ReadAllText(filePath);
         stats = JsonUtility.FromJson<GameData>(allData);
 
         Camera.main.transform.position = stats.cam;
