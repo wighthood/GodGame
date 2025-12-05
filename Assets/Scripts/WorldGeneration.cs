@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using NavMeshPlus.Components;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -28,16 +27,14 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private GameObject agentPrefab;
     [SerializeField] private Transform agentParent;
     [SerializeField] private Transform resourceParent;
-    [SerializeField] private int agentCount;
+    public int agentCount;
     
     private Tilemap _tilemap;
     private List<(int,int)> _spawnedLocation = new();
     private List<GameObject> _spawnedItem = new();
     
-    private List<GameObject> _spawnedAgent = new();
-    
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [HideInInspector] public List<GameObject> _spawnedAgent = new();
+
     void Start()
     {
         _tilemap = GetComponent<Tilemap>();
@@ -80,7 +77,7 @@ public class WorldGeneration : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                //Debug.Log(noiseMap[x, y]);
+                Debug.Log(noiseMap[x, y]);
                 position = (x, y);
                 Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + new Vector3(.5f, .5f, 0);
                 if (_tilemap.GetTile(new Vector3Int(x-mapWidth/2, y-mapHeight/2, 0)) == tiles[2].tile) continue;
@@ -98,7 +95,7 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
-    private void SpawnAgent()
+    public void SpawnAgent()
     {
         Vector3Int pos = new Vector3Int(Random.Range(-mapWidth/2, mapWidth/2), Random.Range(-mapHeight/2, mapHeight/2));
         if (_tilemap.GetTile(pos) == tiles[2].tile)
@@ -114,13 +111,18 @@ public class WorldGeneration : MonoBehaviour
         }
     }
 
-    public int MapHeight()
+    public Tilemap GetTilemaps()
     {
-        return mapHeight;
+        return _tilemap;
     }
 
     public int MapWidth()
     {
         return mapWidth;
+    }
+
+    public int MapHeight()
+    {
+        return mapHeight;
     }
 }
