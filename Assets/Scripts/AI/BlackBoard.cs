@@ -31,4 +31,9 @@ public class BlackBoard
 
         blackBoardValues[_varName] = value;
     }
+
+    public bool HasKey(string _varName)
+    {
+        return blackBoardValues.ContainsKey(_varName);
+    }
 }
