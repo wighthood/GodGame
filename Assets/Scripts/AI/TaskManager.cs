@@ -89,6 +89,7 @@ public class TaskManager : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        print(currentTask);
         if (!currentTask) return;
 
         if (currentTask is TaskWandering wander)
@@ -98,11 +99,13 @@ public class TaskManager : MonoBehaviour
 
             Gizmos.color = Color.green;
 
-            foreach (Cell cell in wander.pathDebug)
+            for (int i = 0; i < wander.pathDebug.Count - 1; i++)
             {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
+                Vector2 firstPos = new();
+                firstPos.Set(wander.pathDebug[i].position.x + 0.5f, wander.pathDebug[i].position.y + 0.5f);
+                Vector2 secPos = new();
+                secPos.Set(wander.pathDebug[i + 1].position.x + 0.5f, wander.pathDebug[i + 1].position.y + 0.5f);
+                Gizmos.DrawLine(firstPos, secPos);
             }
         }
 

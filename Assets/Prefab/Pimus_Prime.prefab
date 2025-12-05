@@ -130,7 +130,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TaskManager
   taskCreators:
-  - {fileID: 11400000, guid: ca2a8b4262d11da458416cbdb74921ca, type: 2}
   - {fileID: 11400000, guid: d7acf939a823ad24ebcc52e6ca48d790, type: 2}
 --- !u!114 &2133673559166816527
 MonoBehaviour:
