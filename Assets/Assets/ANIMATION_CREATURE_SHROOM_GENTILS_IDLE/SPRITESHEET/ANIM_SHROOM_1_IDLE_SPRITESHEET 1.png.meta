@@ -1,28 +1,28 @@
 fileFormatVersion: 2
-guid: 12908e8645363ff488d4a4996faf38e5
+guid: 8c52dacf1d42b604f807b7c4ce62db59
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4062798106753727255
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_0
+      213: -3342541602723637034
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_0
   - first:
-      213: 1883997400189181497
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_1
+      213: -3579248910276205446
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_1
   - first:
-      213: 455334676610027185
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_2
+      213: -2755382250211675382
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_2
   - first:
-      213: -9111991560614648180
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_3
+      213: -5149072817243169295
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_3
   - first:
-      213: -5277278708725153582
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_4
+      213: 6736580125859489165
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_4
   - first:
-      213: -3852337552917936170
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_5
+      213: 7839918028139227223
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_5
   - first:
-      213: 389599480991021947
-    second: ANIM_SHROOM_1_IDLE_SPRITESHEET_6
+      213: -3294536014878522252
+    second: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -69,7 +69,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 540
+  spritePixelsToUnits: 1080
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -131,155 +131,155 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_0
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_0
       rect:
         serializedVersion: 2
-        x: 438
-        y: 1443
-        width: 214
-        height: 247
+        x: 0
+        y: 1080
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9e480d4c5aa0e97c0800000000000000
-      internalID: -4062798106753727255
+      spriteID: 6d851b23f18ec91d0800000000000000
+      internalID: -3342541602723637034
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_1
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_1
       rect:
         serializedVersion: 2
-        x: 1518
-        y: 1443
-        width: 214
-        height: 241
+        x: 1080
+        y: 1080
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 93e190457ad452a10800000000000000
-      internalID: 1883997400189181497
+      spriteID: a74684c6414f35ec0800000000000000
+      internalID: -3579248910276205446
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_2
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_2
       rect:
         serializedVersion: 2
-        x: 2598
-        y: 1443
-        width: 214
-        height: 229
+        x: 2160
+        y: 1080
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1be0245d97ca15600800000000000000
-      internalID: 455334676610027185
+      spriteID: a0377bb217ae2c9d0800000000000000
+      internalID: -2755382250211675382
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_3
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_3
       rect:
         serializedVersion: 2
-        x: 3678
-        y: 1443
-        width: 214
-        height: 224
+        x: 3240
+        y: 1080
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c86e439f3f3bb8180800000000000000
-      internalID: -9111991560614648180
+      spriteID: 1fdd99dbd81da88b0800000000000000
+      internalID: -5149072817243169295
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_4
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_4
       rect:
         serializedVersion: 2
-        x: 4758
-        y: 1443
-        width: 214
-        height: 229
+        x: 4320
+        y: 1080
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2d084b189f653c6b0800000000000000
-      internalID: -5277278708725153582
+      spriteID: d85afcabee32d7d50800000000000000
+      internalID: 6736580125859489165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_5
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_5
       rect:
         serializedVersion: 2
-        x: 438
-        y: 363
-        width: 214
-        height: 241
+        x: 0
+        y: 0
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6d7cd6bf76fb98ac0800000000000000
-      internalID: -3852337552917936170
+      spriteID: 7586b6fa8ebfccc60800000000000000
+      internalID: 7839918028139227223
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ANIM_SHROOM_1_IDLE_SPRITESHEET_6
+      name: ANIM_SHROOM_1_IDLE_SPRITESHEET 1_6
       rect:
         serializedVersion: 2
-        x: 1518
-        y: 363
-        width: 214
-        height: 247
+        x: 1080
+        y: 0
+        width: 1080
+        height: 1080
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b7b752de9a2286500800000000000000
-      internalID: 389599480991021947
+      spriteID: 4744f6d13f47742d0800000000000000
+      internalID: -3294536014878522252
       vertices: []
       indices: 
       edges: []
@@ -288,7 +288,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 27de9b8360010b7409d7d133161cff09
     internalID: 0
     vertices: []
     indices: 
@@ -296,15 +296,17 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1080.0,"y":1080.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_0: -4062798106753727255
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_1: 1883997400189181497
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_2: 455334676610027185
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_3: -9111991560614648180
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_4: -5277278708725153582
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_5: -3852337552917936170
-      ANIM_SHROOM_1_IDLE_SPRITESHEET_6: 389599480991021947
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_0: -3342541602723637034
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_1: -3579248910276205446
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_2: -2755382250211675382
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_3: -5149072817243169295
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_4: 6736580125859489165
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_5: 7839918028139227223
+      ANIM_SHROOM_1_IDLE_SPRITESHEET 1_6: -3294536014878522252
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

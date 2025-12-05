@@ -1308,7 +1308,7 @@ MonoBehaviour:
     m_Bits: 448
   treeOffset: {x: 0.5, y: 1.5, z: 0}
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
-  tileOffset: 0
+  tileOffset: 0.5
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0
