@@ -24,7 +24,8 @@ public class MapRessourceManager : MonoBehaviour
     {
         ressources[RessourceType.wood] = new List<Ressource>();
         ressources[RessourceType.food] = new List<Ressource>();
-
+        ressources[RessourceType.stone] = new List<Ressource>();
+        
         //TODO remove this v
         AddNewRessource(1, new Vector2(0, 10));
         AddNewRessource(1, new Vector2(-10, 10));
@@ -43,6 +44,9 @@ public class MapRessourceManager : MonoBehaviour
             case 1:
                 AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
                 break;
+            case 2:
+                AddRessourceInDictionary(RessourceType.stone, newRessource.GetComponent<Ressource>());
+                break;
         }
     }
     public void AddNewRessource(RessourceType ressourceType, Vector2 _position)
@@ -58,6 +62,10 @@ public class MapRessourceManager : MonoBehaviour
             case RessourceType.food:
                 newRessource = Instantiate(ressourcePrefab[1], _position, Quaternion.identity, transform);
                 AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
+                break;
+            case RessourceType.stone:
+                newRessource = Instantiate(ressourcePrefab[2], _position, Quaternion.identity, transform);
+                AddRessourceInDictionary(RessourceType.stone, newRessource.GetComponent<Ressource>());
                 break;
         }
     }

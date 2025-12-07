@@ -142,9 +142,13 @@ public class MapEditorScript : MonoBehaviour
                     {
                         MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
                     }
-                    else
+                    else if (ressource.GetRessourceType() == RessourceType.food)
                     {
                         MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                    }
+                    else 
+                    {
+                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos);
                     }
                 }
                 else
