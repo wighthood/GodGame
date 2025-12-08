@@ -38,8 +38,8 @@ public class PathFinding
     
     private int Heuristic(Cell Target, Cell start)
     {
-        int dx = Mathf.Abs(a.position.x - b.position.x);
-        int dy = Mathf.Abs(a.position.y - b.position.y);
+        int dx = Mathf.Abs(Target.position.x - start.position.x);
+        int dy = Mathf.Abs(Target.position.y - start.position.y);
         return 10 * (dx + dy) + (4 * Mathf.Min(dx, dy));
     }
 
