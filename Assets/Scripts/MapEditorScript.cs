@@ -19,11 +19,16 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
     
+    
+    
     private Camera _camera;
     private TileBase _selectedTile;
     private GameObject _selectedObject;
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
+    
+    // Reference to MapRessourceManager REFACTOR LATER
+    public MapRessourceManager MapRessourceManager;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -140,11 +145,11 @@ public class MapEditorScript : MonoBehaviour
                 {
                     if (ressource.GetRessourceType() == RessourceType.wood)
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
+                        MapRessourceManager.AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
                     }
                     else
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                        MapRessourceManager.AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
                     }
                 }
                 else
