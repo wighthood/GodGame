@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,17 +19,14 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
-    
-    
-    
+
+    public static event Action<RessourceType, Vector2> AddNewRessource;
+
     private Camera _camera;
     private TileBase _selectedTile;
     private GameObject _selectedObject;
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
-    
-    // Reference to MapRessourceManager REFACTOR LATER
-    public MapRessourceManager MapRessourceManager;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -145,11 +143,11 @@ public class MapEditorScript : MonoBehaviour
                 {
                     if (ressource.GetRessourceType() == RessourceType.wood)
                     {
-                        MapRessourceManager.AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
                     }
                     else
                     {
-                        MapRessourceManager.AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
                     }
                 }
                 else
