@@ -11,8 +11,8 @@ public class MapRessourceManager : MonoBehaviour
 
     private void Awake()
     {
-        
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
+        AgentActions.GetRessources += GetRessources;
     }
 
     private void Start()
@@ -67,13 +67,13 @@ public class MapRessourceManager : MonoBehaviour
         ressources[type].Add(ressource);
     }
 
-    public List<Ressource> GetRessources(RessourceType type)
+    public List<Ressource> GetRessources(RessourceType _type)
     {
-        if(!ressources.ContainsKey(type))
+        if(!ressources.ContainsKey(_type))
         {
             return null;
         }
-        return ressources[type];
+        return ressources[_type];
     }
 
     private void RemoveFromListForDestroy(Ressource ressource)

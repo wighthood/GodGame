@@ -15,6 +15,8 @@ public class AgentActions : MonoBehaviour
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
     private Animator myAnimator;
 
+    public static event Func<RessourceType, List<Ressource>> GetRessources;
+
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
@@ -131,16 +133,16 @@ public class AgentActions : MonoBehaviour
         return inventory.GetRessourceType() == ressource;
     }
 
-    public Transform GetNearestFoodRessource(RessourceType ressourceType)
+    public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
         float nearestDistance = float.MaxValue;
         
-        // List<Ressource> ressources = MapRessourceManager.GetRessources(ressourceType);
+        List<Ressource> ressources = GetRessources.Invoke(_ressourceType);
             
         Transform nearestRessource = ressources[0].transform;
         foreach (Ressource ressource in ressources)
         {
-            if (ressource.GetRessourceType() == ressourceType && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
+            if (ressource.GetRessourceType() == _ressourceType && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
             {
                 nearestDistance = Vector3.Distance(transform.position, nearestRessource.transform.position);
                 nearestRessource = ressource.transform;
