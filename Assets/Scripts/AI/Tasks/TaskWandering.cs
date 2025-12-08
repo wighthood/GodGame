@@ -17,7 +17,6 @@ public class TaskWandering : TaskBase
 
     public override bool Do()
     {
-        Debug.Log("Doing B");
         isFinished = actions.MoveTo(targetPos);
         pathDebug = actions.GetPath();
         return FinishCondition();
@@ -36,7 +35,7 @@ public class TaskWandering : TaskBase
     public override void OnStart()
     {
         Vector3 pos = transform.position;
-        targetPos.Set(pos.x + Random.Range(-5, 5), pos.y + Random.Range(-5, 5), 0);
+        targetPos.Set(pos.x + Random.Range(-8, 8), pos.y + Random.Range(-8, 8), 0);
     }
 
     protected override bool FinishCondition()

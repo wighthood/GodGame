@@ -27,40 +27,37 @@ public class AgentActions : MonoBehaviour
 
     private void MoveAgent(Vector2 _dir)
     {
-        transform.position = transform.position + (Vector3)(_dir * moveFactor * Time.deltaTime);
+        transform.position = transform.position + (Vector3)(moveFactor * Time.deltaTime * _dir);
     }
 
     public bool MoveTo(Vector2 targetWorld)
     {
-        currentPath = pathFinding.FindPath(transform.position, targetWorld);
-
-        if (currentPath == null || currentPath.Count == 0)
+        if (currentPath == null)
         {
-            return true;
-        }
+            currentPath = pathFinding.FindPath(transform.position, targetWorld);
 
-        if(currentPath.Count == 1)
-        {
-            Vector3 finalPos = Graph.instance.CellToWorld(currentPath[0].position);
-            if (Vector2.Distance(transform.position, finalPos) < 0.1f)
-            {
-                currentPath = null;
+            if (currentPath == null || currentPath.Count == 0)
+            { 
                 return true;
             }
         }
 
-        print(currentPath.Count);
+        Cell nextCell = pathFinding.PeekNextPoint();
+        if(nextCell == null) 
+        {
+            currentPath = null;
+            return true;
+        }
 
-        Cell nextCell = currentPath[0];
         Vector3 nextWorld = Graph.instance.CellToWorld(nextCell.position);
-
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
 
-        if (Vector2.Distance(transform.position, nextWorld) < 0.1f)
+        if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {
-            pathFinding.GoToNextPoint();
+            pathFinding.AdvancePoint();
+            return false;
         }
 
         return false;
@@ -103,11 +100,11 @@ public class AgentActions : MonoBehaviour
             return;
         }
 
-        foreach(RaycastHit2D hit in hits)
+        foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
 
-            if(ressource.GetRessourceType() == _ressource)
+            if (ressource.GetRessourceType() == _ressource)
             {
                 if (inventory.AddRessources(1, ressource.GetRessourceType()))
                 {
