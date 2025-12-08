@@ -1,92 +1,148 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
-[System.Serializable]
-public class GameData
+public class GameSceneController : MonoBehaviour
 {
-    public Vector3 cam;
-    public List<AgentData> agentData;
-}
-
-
-[System.Serializable]
-public class AgentData
-{
-    public float hunger;
-    public int health;
-    public int maxHealth;
-    public Vector3 agentsPos;
-}
-
-
-public class SaveData : MonoBehaviour
-{
+    [Header("Réfs scène de jeu")]
     public WorldGeneration worldGen;
+    public Tilemap tilemap;
     public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
-    GameData stats = new GameData();
 
-    string GetPath()
+    void Start()
     {
-        return Application.persistentDataPath + "/AllData.json";
+        if (GameModeManager.Instance == null ||
+            GameModeManager.Instance.currentMode == GameModeManager.GameMode.Play)
+        {
+            worldGen.enabled = true;
+        }
+        else
+        {
+            worldGen.enabled = false;
+            LoadStatsAndAgents();
+            LoadTilemap();
+        }
     }
 
-    public void SaveToJson()
+    public void OnClickSave()
     {
+        GameData stats = BuildStatsData();
+        TilemapSave tData = BuildTilemapData();
 
-        stats.cam = Camera.main.transform.position;
-        stats.agentData = new List<AgentData>();
-        
+        SaveManager.SaveAll(stats, tData);
+    }
+
+    GameData BuildStatsData()
+    {
+        GameData data = new GameData();
+        data.cam = Camera.main.transform.position;
+        data.agentData = new List<AgentData>();
+
         for (int i = 0; i < agentParent.transform.childCount; i++)
         {
             Transform child = agentParent.transform.GetChild(i);
             AIStats aiStats = child.GetComponent<AIStats>();
 
-            AgentData agentData = new AgentData();
-            agentData.hunger    = aiStats.hunger;
-            agentData.health    = aiStats.health;
-            agentData.maxHealth = aiStats.maxHealth;
+            AgentData a = new AgentData();
+            a.hunger    = aiStats.hunger;
+            a.health    = aiStats.health;
+            a.maxHealth = aiStats.maxHealth;
+            a.agentsPos = child.position;
 
-            agentData.agentsPos = child.position;
-
-            stats.agentData.Add(agentData);
+            data.agentData.Add(a);
         }
 
-        string json = JsonUtility.ToJson(stats);
-        System.IO.File.WriteAllText(GetPath(), json);
-        Debug.Log("Données sauvegardées");
+        return data;
     }
 
-    public void LoadFromJson()
+    TilemapSave BuildTilemapData()
     {
-        string filePath = GetPath();
-        if (!System.IO.File.Exists(filePath))
+        TilemapSave save = new TilemapSave();
+
+        int minX = -worldGen.MapWidth() / 2;
+        int maxX =  worldGen.MapWidth() / 2;
+        int minY = -worldGen.MapHeight() / 2;
+        int maxY =  worldGen.MapHeight() / 2;
+
+        SaveManager menu = FindObjectOfType<SaveManager>();
+        TileBase[] palette = menu.tilePalette;
+
+        for (int x = minX; x < maxX; x++)
         {
-            Debug.LogWarning("Aucun fichier de sauvegarde trouvé");
+            for (int y = minY; y < maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                TileBase tile = tilemap.GetTile(pos);
+                if (tile == null) continue;
+
+                int id = System.Array.IndexOf(palette, tile);
+                if (id < 0) continue;
+
+                TileSaveData data = new TileSaveData
+                {
+                    x = x,
+                    y = y,
+                    tileId = id
+                };
+
+                save.tiles.Add(data);
+            }
+        }
+        return save;
+    }
+
+    void LoadStatsAndAgents()
+    {
+        GameData data = SaveManager.loadedStats;
+        if (data == null)
+        {
+            Debug.LogWarning("Pas de GameData, nouvelle partie");
             return;
         }
 
-        string allData = System.IO.File.ReadAllText(filePath);
-        stats = JsonUtility.FromJson<GameData>(allData);
-
-        Camera.main.transform.position = stats.cam;
+        Camera.main.transform.position = data.cam;
 
         for (int i = agentParent.transform.childCount - 1; i >= 0; i--)
         {
             Destroy(agentParent.transform.GetChild(i).gameObject);
         }
 
-        foreach (AgentData agentData in stats.agentData)
+        foreach (AgentData agentData in data.agentData)
         {
-            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent.transform);
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos,
+                                           Quaternion.identity, agentParent.transform);
             AIStats aiStats = agent.GetComponent<AIStats>();
-
             aiStats.hunger    = agentData.hunger;
             aiStats.health    = agentData.health;
             aiStats.maxHealth = agentData.maxHealth;
         }
+    }
 
-        Debug.Log("Données chargées");
+    void LoadTilemap()
+    {
+        TilemapSave tData = SaveManager.loadedTilemap;
+        if (tData == null)
+        {
+            Debug.LogWarning("Pas de TilemapSave, on garde la tilemap par défaut");
+            return;
+        }
+
+        tilemap.ClearAllTiles();
+
+        SaveManager menu = FindObjectOfType<SaveManager>();
+        TileBase[] palette = menu.tilePalette;
+
+        foreach (TileSaveData data in tData.tiles)
+        {
+            if (data.tileId < 0 || data.tileId >= palette.Length) continue;
+
+            Vector3Int pos = new Vector3Int(data.x, data.y, 0);
+            TileBase tile = palette[data.tileId];
+            tilemap.SetTile(pos, tile);
+        }
+
+        tilemap.RefreshAllTiles();
+        Debug.Log("Tilemap chargée");
     }
 }

@@ -1,9 +1,24 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine.Tilemaps;
+
+[System.Serializable]
+public class AgentData
+{
+    public float hunger;
+    public int health;
+    public int maxHealth;
+    public Vector3 agentsPos;
+}
+
+[System.Serializable]
+public class GameData
+{
+    public Vector3 cam;
+    public List<AgentData> agentData = new List<AgentData>();
+}
 
 [System.Serializable]
 public class TileSaveData
@@ -21,83 +36,56 @@ public class TilemapSave
 
 public class SaveManager : MonoBehaviour
 {
-    public static GameData LoadedData;
+    public static GameData loadedStats;
     public static TilemapSave loadedTilemap;
-    public static SaveData saveData;
-    
+
+    [Header("Palette commune pour la tilemap")]
     public TileBase[] tilePalette;
-    public static SaveManager instance;
 
-    private void Awake()
+    string StatsPath => Application.persistentDataPath + "/AllData.json";
+    string TilemapPath => Application.persistentDataPath + "/tilemap.json";
+
+    public void OnClickPlay()
     {
-        instance = this;
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
+        SceneManager.LoadScene("GameScene");
     }
 
+    public void OnClickLoad()
+    {
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
 
-    string GetStatsPath()
-    {
-        return Application.persistentDataPath + "/AllData.json";
-    }
-    
-    string GetTilemapPath()
-    {
-        return Application.persistentDataPath + "/tilemap.json";
-    }
-    
-    public void SaveAll(UnityEngine.Tilemaps.Tilemap tilemap)
-    {
-        SaveStats();
-        SaveTilemap(tilemap);
-    }
-    
-    void SaveStats()
-    {
-        saveData.SaveToJson();
-    }
-    
-    void SaveTilemap(UnityEngine.Tilemaps.Tilemap tilemap)
-    {
-        TilemapSave save = new TilemapSave();
-
-        BoundsInt bounds = tilemap.cellBounds;
-        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        if (File.Exists(StatsPath))
         {
-            TileBase tile = tilemap.GetTile(pos);
-            if (tile == null) continue;
-
-            int id = System.Array.IndexOf(tilePalette, tile);
-            if (id < 0) continue;
-
-            TileSaveData data = new TileSaveData
-            {
-                x = pos.x,
-                y = pos.y,
-                tileId = id
-            };
-            save.tiles.Add(data);
+            string json = File.ReadAllText(StatsPath);
+            loadedStats = JsonUtility.FromJson<GameData>(json);
+        }
+        else
+        {
+            loadedStats = null;
         }
 
-        string json = JsonUtility.ToJson(save);
-        File.WriteAllText(GetTilemapPath(), json);
-        Debug.Log("Tilemap sauvegardée");
-    }
-
-    public void LoadGame()
-    {
-        string statsPath = GetStatsPath();
-        if (File.Exists(statsPath))
+        if (File.Exists(TilemapPath))
         {
-            string allData = File.ReadAllText(statsPath);
-            LoadedData = JsonUtility.FromJson<GameData>(allData);
-        }
-
-        string tilePath = GetTilemapPath();
-        if (File.Exists(tilePath))
-        {
-            string json = File.ReadAllText(tilePath);
+            string json = File.ReadAllText(TilemapPath);
             loadedTilemap = JsonUtility.FromJson<TilemapSave>(json);
         }
+        else
+        {
+            loadedTilemap = null;
+        }
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("SaveSystem");
+        SceneManager.LoadScene("GameScene");
+    }
+
+    public static void SaveAll(GameData stats, TilemapSave tilemap)
+    {
+        string statsPath = Application.persistentDataPath + "/AllData.json";
+        string tilePath  = Application.persistentDataPath + "/tilemap.json";
+
+        File.WriteAllText(statsPath,  JsonUtility.ToJson(stats));
+        File.WriteAllText(tilePath,   JsonUtility.ToJson(tilemap));
+
+        Debug.Log("Sauvegarde complète effectuée");
     }
 }
