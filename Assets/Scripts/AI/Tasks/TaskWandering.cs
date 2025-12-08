@@ -43,4 +43,21 @@ public class TaskWandering : TaskBase
         bool cond = isFinished;
         return cond;
     }
+
+    public override void DrawActionsGizmo()
+    {
+        if (pathDebug == null || pathDebug.Count == 0)
+            return;
+
+        Gizmos.color = Color.green;
+
+        for (int i = 0; i < pathDebug.Count - 1; i++)
+        {
+            Vector2 firstPos = new();
+            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            Vector2 secPos = new();
+            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            Gizmos.DrawLine(firstPos, secPos);
+        }
+    }
 }

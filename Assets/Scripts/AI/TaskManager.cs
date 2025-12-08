@@ -19,8 +19,6 @@ public class TaskManager : MonoBehaviour
         agentBlackboard = new();
 
         agentBlackboard.AddValue("transform", transform);
-
-        
     }
 
     private void Start()
@@ -61,7 +59,6 @@ public class TaskManager : MonoBehaviour
     private void ExecuteTask()
     {
         isTaskFinished = currentTask.Do();
-        print("exe");
 
         if (isTaskFinished)
         {
@@ -70,8 +67,16 @@ public class TaskManager : MonoBehaviour
         }
     }
 
+    private bool IsTooHungry()
+    {
+        float hunger = agentBlackboard.GetValue<float>("hunger");
+        float hungerPriority = Mathf.Sqrt(hunger);
+        return (hungerPriority > 0.75f && GetHigherPriorityTask() is TaskEat);
+    }
+
     public void ResetTask()
     {
+        isTaskFinished = true;
         currentTask = null;
     }
 
@@ -79,6 +84,11 @@ public class TaskManager : MonoBehaviour
     {
         if (isTaskFinished)
         {
+            if(IsTooHungry())
+            {
+                currentTask.Cancel();
+            }
+
             currentTask = GetHigherPriorityTask();
         }
         else
@@ -89,41 +99,8 @@ public class TaskManager : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        print(currentTask);
         if (!currentTask) return;
 
-        if (currentTask is TaskWandering wander)
-        {
-            if (wander.pathDebug == null || wander.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.green;
-
-            for (int i = 0; i < wander.pathDebug.Count - 1; i++)
-            {
-                Vector2 firstPos = new();
-                firstPos.Set(wander.pathDebug[i].position.x + 0.5f, wander.pathDebug[i].position.y + 0.5f);
-                Vector2 secPos = new();
-                secPos.Set(wander.pathDebug[i + 1].position.x + 0.5f, wander.pathDebug[i + 1].position.y + 0.5f);
-                Gizmos.DrawLine(firstPos, secPos);
-            }
-        }
-
-        if (currentTask is TaskEat eat)
-        {
-            if (eat.pathDebug == null || eat.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.yellow;
-
-            foreach (Cell cell in eat.pathDebug)
-            {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
+        currentTask.DrawActionsGizmo();
     }
-
-
 }

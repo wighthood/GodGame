@@ -15,7 +15,7 @@ public class AgentActions : MonoBehaviour
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
     private Animator myAnimator;
 
-    public static event Func<RessourceType, Transform> GetRessources;
+    public static event Func<RessourceType, Transform, Transform> GetRessources;
 
     private void Awake()
     {
@@ -135,6 +135,6 @@ public class AgentActions : MonoBehaviour
 
     public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
-        return GetRessources.Invoke(_ressourceType);
+        return GetRessources.Invoke(_ressourceType, transform);
     }
 }

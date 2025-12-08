@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NavMeshPlus.Components;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -20,7 +19,6 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private List<TileWithWeight> tiles = new();
     
     [Header("Resources Generation Settings")]
-    [SerializeField] private List<GameObject> resources = new();
     [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
     
     [SerializeField] private GameObject agentPrefab;
@@ -33,6 +31,8 @@ public class WorldGeneration : MonoBehaviour
     private List<GameObject> _spawnedItem = new();
     
     [HideInInspector] public List<GameObject> _spawnedAgent = new();
+
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
 
     void Start()
     {
@@ -83,12 +83,12 @@ public class WorldGeneration : MonoBehaviour
                 if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity, resourceParent));
+                    _spawnedItem.Add(AddNewRessource.Invoke(RessourceType.food, pos));
                 }
                 else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity, resourceParent));
+                    _spawnedItem.Add(AddNewRessource.Invoke(RessourceType.wood, pos));
                 }
             }
         }
