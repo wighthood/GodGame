@@ -13,11 +13,14 @@ public class AgentActions : MonoBehaviour
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
 
+    private Animator myAnimator;
+
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
         pathFinding = new();
+        myAnimator = GetComponent<Animator>();
     }
 
     public List<Cell> GetPath()
@@ -34,6 +37,7 @@ public class AgentActions : MonoBehaviour
     {
         if (currentPath == null)
         {
+            myAnimator.SetBool("isWalking", false);
             currentPath = pathFinding.FindPath(transform.position, targetWorld);
 
             if (currentPath == null || currentPath.Count == 0)
@@ -45,6 +49,7 @@ public class AgentActions : MonoBehaviour
         Cell nextCell = pathFinding.PeekNextPoint();
         if(nextCell == null) 
         {
+            myAnimator.SetBool("isWalking", false);
             currentPath = null;
             return true;
         }
@@ -53,6 +58,7 @@ public class AgentActions : MonoBehaviour
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
+        myAnimator.SetBool("isWalking", true);
 
         if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {
