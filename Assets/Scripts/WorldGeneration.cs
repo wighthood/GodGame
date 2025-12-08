@@ -53,7 +53,7 @@ public class WorldGeneration : MonoBehaviour
             for (int y = 0; y < mapHeight; y++)
             {
                 weight = 0;
-                foreach (var tile in tiles)
+                foreach (TileWithWeight tile in tiles)
                 {
                     weight += tile.weight;
                     if (!(noiseMap[x, y] <= weight)) continue;

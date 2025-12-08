@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +13,9 @@ public class AgentActions : MonoBehaviour
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
-
     private Animator myAnimator;
+
+    public static event Func<RessourceType, Transform> GetRessources;
 
     private void Awake()
     {
@@ -131,20 +133,8 @@ public class AgentActions : MonoBehaviour
         return inventory.GetRessourceType() == ressource;
     }
 
-    public Transform GetNearestFoodRessource(RessourceType ressourceType)
+    public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
-        float nearestDistance = float.MaxValue;
-        List<Ressource> ressources = MapRessourceManager.Get().GetRessources(ressourceType);
-        Transform nearestRessource = ressources[0].transform;
-        foreach (Ressource ressource in ressources)
-        {
-            if (ressource.GetRessourceType() == ressourceType && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
-            {
-                nearestDistance = Vector3.Distance(transform.position, nearestRessource.transform.position);
-                nearestRessource = ressource.transform;
-            }
-        }
-
-        return nearestRessource;
+        return GetRessources.Invoke(_ressourceType);
     }
 }

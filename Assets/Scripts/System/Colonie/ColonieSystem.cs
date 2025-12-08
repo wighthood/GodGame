@@ -110,7 +110,7 @@ public class ColonieSystem : MonoBehaviour
     private void AddToBucket(IColonyAgent a)
     {
         long key = GetCellKey(a.GetTransform().position);
-        if (!_spatialBuckets.TryGetValue(key, out var list))
+        if (!_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
         {
             list = new List<IColonyAgent>();
             _spatialBuckets[key] = list;
@@ -126,7 +126,7 @@ public class ColonieSystem : MonoBehaviour
     private void RemoveFromBucket(IColonyAgent a, Vector3 fromPosition)
     {
         long key = GetCellKey(fromPosition);
-        if (_spatialBuckets.TryGetValue(key, out var list))
+        if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
         {
             list.Remove(a);
             if (list.Count == 0) _spatialBuckets.Remove(key);
@@ -135,7 +135,7 @@ public class ColonieSystem : MonoBehaviour
 
     private void ScanForColonies()
     {
-        foreach (var agent in _registeredAgents.ToList())
+        foreach (IColonyAgent agent in _registeredAgents.ToList())
         {
             if (agent == null) continue;
             if (_assignment.ContainsKey(agent)) continue;
@@ -155,7 +155,7 @@ public class ColonieSystem : MonoBehaviour
         float bestDist = float.MaxValue;
         Vector3 pos = agent.GetTransform().position;
 
-        foreach (var col in _colonies)
+        foreach (Colony col in _colonies)
         {
             if (col == null) continue;
             if (!string.Equals(col.Species, agent.GetSpecies(), StringComparison.OrdinalIgnoreCase)) continue;
@@ -189,7 +189,7 @@ public class ColonieSystem : MonoBehaviour
         if (candidate == null) return;
         if (!candidate.CanFormColony()) return;
 
-        var neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
+        List<IColonyAgent> neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
             .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
             .ToList();
 
@@ -198,10 +198,10 @@ public class ColonieSystem : MonoBehaviour
         if (neighbors.Count >= requiredPimusToCreate)
         {
             Vector3 centroid = Vector3.zero;
-            foreach (var n in neighbors) centroid += n.GetTransform().position;
+            foreach (IColonyAgent n in neighbors) centroid += n.GetTransform().position;
             centroid /= neighbors.Count;
 
-            var group = GetNeighborsFromBuckets(centroid)
+            List<IColonyAgent> group = GetNeighborsFromBuckets(centroid)
                 .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase) && Vector3.Distance(g.GetTransform().position, centroid) <= groupingRadius)
                 .ToList();
 
@@ -214,7 +214,7 @@ public class ColonieSystem : MonoBehaviour
 
     private List<IColonyAgent> GetNeighborsFromBuckets(Vector3 position)
     {
-        var results = new List<IColonyAgent>();
+        List<IColonyAgent> results = new List<IColonyAgent>();
         int cx = Mathf.FloorToInt(position.x / _cellSize);
         int cz = Mathf.FloorToInt(position.z / _cellSize);
 
@@ -224,9 +224,9 @@ public class ColonieSystem : MonoBehaviour
                 int nx = cx + dx;
                 int nz = cz + dz;
                 long key = ((long)nx << 32) ^ (uint)nz;
-                if (_spatialBuckets.TryGetValue(key, out var list))
+                if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
                 {
-                    foreach (var go in list)
+                    foreach (IColonyAgent go in list)
                         if (go != null && !results.Contains(go)) results.Add(go);
                 }
             }
@@ -239,12 +239,12 @@ public class ColonieSystem : MonoBehaviour
     {
         members = members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
 
-        var colony = new Colony();
+        Colony colony = new Colony();
         colony.Id = _nextColonyId++;
         colony.Center = center;
         colony.Members.Clear();
 
-        foreach (var m in members)
+        foreach (IColonyAgent m in members)
         {
             _assignment[m] = colony;
             colony.Members.Add(m);
@@ -262,7 +262,7 @@ public class ColonieSystem : MonoBehaviour
 
         _colonies.Add(colony);
 
-        foreach (var m in colony.Members)
+        foreach (IColonyAgent m in colony.Members)
             OnMemberJoined?.Invoke(colony, m);
 
         Debug.Log($"Colony created (Id={colony.Id}) at {center} with {colony.Inhabitants} habitants (max {colony.MaxInhabitants}) species={colony.Species}");
