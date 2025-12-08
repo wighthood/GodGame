@@ -35,8 +35,8 @@ public class PathFinding
         }
         return tempNeighbors;
     }
-
-    private int Heuristic(Cell a, Cell b)
+    
+    private int Heuristic(Cell Target, Cell start)
     {
         int dx = Mathf.Abs(a.position.x - b.position.x);
         int dy = Mathf.Abs(a.position.y - b.position.y);

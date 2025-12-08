@@ -1,8 +1,5 @@
-using Unity.Hierarchy;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
-using static UnityEditor.PlayerSettings;
 
 public class PlayerControl : MonoBehaviour
 {
