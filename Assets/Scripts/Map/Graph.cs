@@ -1,12 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(Tilemap))]
 public class Graph : MonoBehaviour
 {
-    public static Graph instance;
-
     [SerializeField] private List<TileBase> notWalkableSprites = new();
 
     public List<Cell> graph { get; private set; }
@@ -16,14 +16,19 @@ public class Graph : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        MapEditorScript.GetCell += GetCellFromWorldPos;
+        WorldGeneration.InitGraph += InitGraph;
+        PathFinding.GetCell += GetCell;
+        PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
+        PathFinding.GetCells += GetCellsFromDict;
+        AgentActions.CellToWorld += CellToWorld;
 
-        instance = this;
         tilemap = GetComponent<Tilemap>();
+    }
+
+    public List<Cell> GetCellsFromDict()
+    {
+        return graphDict.Values.ToList();
     }
 
     public void InitGraph()
@@ -57,17 +62,46 @@ public class Graph : MonoBehaviour
         return world + new Vector3(0.5f, 0.5f, 0f);
     }
 
-    public Cell GetCellFromWorldPos(Vector3 worldPos)
+    public Cell GetCellFromWorldPos(Vector3 _worldPos)
     {
-        Vector2Int cellPos = WorldToCellPos(worldPos);
+        Vector2Int cellPos = WorldToCellPos(_worldPos);
 
         if (!graphDict.TryGetValue(cellPos, out Cell cell))
         {
-            Debug.LogWarning($"[Graph] No cell found for world {worldPos} -> cell {cellPos}");
+            Debug.LogWarning($"[Graph] No cell found for world {_worldPos} -> cell {cellPos}");
             return null;
         }
         return cell;
     }
 
+    public Cell GetCell(Vector2Int _cellPos)
+    {
+        graphDict.TryGetValue(_cellPos, out Cell cell);
+        return cell;
+    }
 
+    private void OnDrawGizmosSelected()
+    {
+        if(graphDict != null)
+        {
+            print($"drawing {graphDict.Values.ToList().Count} objects");
+            Vector3 size = new(0.5f, 0.5f, 0.1f);
+            Gizmos.color = Color.blue;
+            foreach(Cell cell in graphDict.Values)
+            {
+                Gizmos.DrawCube(CellToWorld(cell.position), size);
+            }
+        }
+    }
+
+
+    private void OnDestroy()
+    {
+        MapEditorScript.GetCell -= GetCellFromWorldPos;
+        WorldGeneration.InitGraph -= InitGraph;
+        PathFinding.GetCell -= GetCell;
+        PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
+        PathFinding.GetCells -= GetCellsFromDict;
+        AgentActions.CellToWorld -= CellToWorld;
+    }
 }

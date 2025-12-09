@@ -11,49 +11,50 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private int mapHeight;
     [SerializeField] private int scale;
     [SerializeField] private int octaves;
-    [SerializeField,Range(0f,1f)] private float persistence;
+    [SerializeField, Range(0f, 1f)] private float persistence;
     [SerializeField] private float lacunarity;
     [SerializeField] private Vector2 offset;
-    
+
     [Header("Map Generation Settings")]
     [SerializeField] private List<TileWithWeight> tiles = new();
 
     [Header("Resources Generation Settings")]
     [SerializeField] private SO_RessourcesNoiseRules rules;
-    [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
-    
+    [SerializeField, Range(0, .5f)] private float resourceSpawnRate;
+
     [SerializeField] private GameObject agentPrefab;
     [SerializeField] private Transform agentParent;
     [SerializeField] private Transform resourceParent;
     public int agentCount;
-    
+
     private Tilemap _tilemap;
-    private List<(int,int)> _spawnedLocation = new();
+    private List<(int, int)> _spawnedLocation = new();
     private List<GameObject> _spawnedItem = new();
-    
+
     [HideInInspector] public List<GameObject> _spawnedAgent = new();
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+    public static event Action InitGraph;
 
     void Start()
     {
         _tilemap = GetComponent<Tilemap>();
-        Graph.instance.InitGraph();
 
-        if (GameModeManager.Instance == null || 
+        if (GameModeManager.Instance == null ||
             GameModeManager.Instance.currentMode == GameModeManager.GameMode.Play)
         {
             MapGeneration();
             RessourcesGeneration();
+            InitGraph.Invoke();
             SpawnAgent();
         }
     }
-    
+
     private void MapGeneration()
     {
         float weight;
         int seed = Random.Range(0, 1000000);
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed,scale, octaves, persistence, lacunarity, offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, scale, octaves, persistence, lacunarity, offset);
         for (int x = 0; x < mapWidth; x++)
         {
             for (int y = 0; y < mapHeight; y++)
@@ -72,13 +73,13 @@ public class WorldGeneration : MonoBehaviour
             }
         }
     }
-    
+
     private void RessourcesGeneration()
     {
         (int, int) position;
         int seed = Random.Range(0, 1000000);
-        float [,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed,scale, octaves, persistence, lacunarity, offset);
-        for (int x =0; x < mapWidth; x++)
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, scale, octaves, persistence, lacunarity, offset);
+        for (int x = 0; x < mapWidth; x++)
         {
             for (int y = 0; y < mapHeight; y++)
             {
@@ -113,14 +114,14 @@ public class WorldGeneration : MonoBehaviour
 
     public void SpawnAgent()
     {
-        Vector3Int pos = new Vector3Int(Random.Range(-mapWidth/2, mapWidth/2), Random.Range(-mapHeight/2, mapHeight/2));
+        Vector3Int pos = new Vector3Int(Random.Range(-mapWidth / 2, mapWidth / 2), Random.Range(-mapHeight / 2, mapHeight / 2));
         if (_tilemap.GetTile(pos) == tiles[2].tile)
         {
             SpawnAgent();
             return;
-        }  
+        }
         Camera.main.transform.position = _tilemap.CellToWorld(pos) + new Vector3(0, 0, -10);
-        
+
         for (int i = 0; i < agentCount; i++)
         {
             _spawnedAgent.Add(Instantiate(agentPrefab, _tilemap.CellToWorld(pos), Quaternion.identity, agentParent));
