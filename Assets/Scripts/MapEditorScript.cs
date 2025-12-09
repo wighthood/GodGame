@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,7 +19,9 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
-    
+
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+
     private Camera _camera;
     private TileBase _selectedTile;
     private GameObject _selectedObject;
@@ -140,11 +143,11 @@ public class MapEditorScript : MonoBehaviour
                 {
                     if (ressource.GetRessourceType() == RessourceType.wood)
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
                     }
                     else
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
                     }
                 }
                 else

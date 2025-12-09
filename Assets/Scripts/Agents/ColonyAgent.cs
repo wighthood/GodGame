@@ -100,7 +100,7 @@ public class ColonyAgent : MonoBehaviour, IColonyAgent
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, 0.12f);
 
-        var col = GetCurrentColony();
+        IColony col = GetCurrentColony();
         string label = "No colony";
         if (col != null)
         {

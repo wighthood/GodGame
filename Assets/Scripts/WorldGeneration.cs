@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NavMeshPlus.Components;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -20,7 +19,6 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private List<TileWithWeight> tiles = new();
     
     [Header("Resources Generation Settings")]
-    [SerializeField] private List<GameObject> resources = new();
     [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
     
     [SerializeField] private GameObject agentPrefab;
@@ -34,13 +32,20 @@ public class WorldGeneration : MonoBehaviour
     
     [HideInInspector] public List<GameObject> _spawnedAgent = new();
 
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+
     void Start()
     {
         _tilemap = GetComponent<Tilemap>();
-        MapGeneration();
         Graph.instance.InitGraph();
-        RessourcesGeneration();
-        SpawnAgent();
+
+        if (GameModeManager.Instance == null || 
+            GameModeManager.Instance.currentMode == GameModeManager.GameMode.Play)
+        {
+            MapGeneration();
+            RessourcesGeneration();
+            SpawnAgent();
+        }
     }
     
     private void MapGeneration()
@@ -53,7 +58,7 @@ public class WorldGeneration : MonoBehaviour
             for (int y = 0; y < mapHeight; y++)
             {
                 weight = 0;
-                foreach (var tile in tiles)
+                foreach (TileWithWeight tile in tiles)
                 {
                     weight += tile.weight;
                     if (!(noiseMap[x, y] <= weight)) continue;
@@ -83,12 +88,12 @@ public class WorldGeneration : MonoBehaviour
                 if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[0], pos, Quaternion.identity, resourceParent));
+                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.food, pos));
                 }
                 else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(Instantiate(resources[1], pos, Quaternion.identity, resourceParent));
+                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.wood, pos));
                 }
             }
         }
