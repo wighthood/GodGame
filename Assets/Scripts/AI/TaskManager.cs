@@ -19,8 +19,6 @@ public class TaskManager : MonoBehaviour
         agentBlackboard = new();
 
         agentBlackboard.AddValue("transform", transform);
-
-        
     }
 
     private void Start()
@@ -61,7 +59,6 @@ public class TaskManager : MonoBehaviour
     private void ExecuteTask()
     {
         isTaskFinished = currentTask.Do();
-        print("exe");
 
         if (isTaskFinished)
         {
@@ -70,8 +67,16 @@ public class TaskManager : MonoBehaviour
         }
     }
 
+    private bool IsTooHungry()
+    {
+        float hunger = agentBlackboard.GetValue<float>("hunger");
+        float hungerPriority = Mathf.Sqrt(hunger);
+        return (hungerPriority > 0.75f && GetHigherPriorityTask() is TaskEat);
+    }
+
     public void ResetTask()
     {
+        isTaskFinished = true;
         currentTask = null;
     }
 
@@ -79,6 +84,11 @@ public class TaskManager : MonoBehaviour
     {
         if (isTaskFinished)
         {
+            if(IsTooHungry())
+            {
+                currentTask.Cancel();
+            }
+
             currentTask = GetHigherPriorityTask();
         }
         else
@@ -91,36 +101,6 @@ public class TaskManager : MonoBehaviour
     {
         if (!currentTask) return;
 
-        if (currentTask is TaskWandering wander)
-        {
-            if (wander.pathDebug == null || wander.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.green;
-
-            foreach (Cell cell in wander.pathDebug)
-            {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
-
-        if (currentTask is TaskEat eat)
-        {
-            if (eat.pathDebug == null || eat.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.yellow;
-
-            foreach (Cell cell in eat.pathDebug)
-            {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
+        currentTask.DrawActionsGizmo();
     }
-
-
 }

@@ -1,11 +1,10 @@
-using Mono.Cecil;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using UnityEngine.WSA;
 using NavMeshSurface = NavMeshPlus.Components.NavMeshSurface;
 
 public class MapEditorScript : MonoBehaviour
@@ -20,7 +19,9 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
-    
+
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+
     private Camera _camera;
     private TileBase _selectedTile;
     private GameObject _selectedObject;
@@ -110,15 +111,21 @@ public class MapEditorScript : MonoBehaviour
             Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
             TileBase TempTile = tilemap.GetTile(cellpos);
             tilemap.SetTile(cellpos, _selectedTile);
+            Cell cellToChange = Graph.instance.GetCellFromWorldPos(cellpos);
             if (IsWater(TempTile))
             {
+                cellToChange.isWalkable = false;
+
                 RaycastHit2D result;
                 _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
                 if (IsObject(_cellposForRaycast, out result))
                 {
                     Destroy(result.collider.gameObject);
                 }
-                navMesh.BuildNavMesh();
+            }
+            else
+            {
+                cellToChange.isWalkable = false;
             }
         }
         if(_selectedObject)
@@ -136,11 +143,11 @@ public class MapEditorScript : MonoBehaviour
                 {
                     if (ressource.GetRessourceType() == RessourceType.wood)
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + treeOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
                     }
                     else
                     {
-                        MapRessourceManager.Get().AddNewRessource(ressource.GetRessourceType(), cellpos + berryBushOffset);
+                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
                     }
                 }
                 else
