@@ -20,11 +20,17 @@ public class AgentActions : MonoBehaviour
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
+    [Header("Building Prefabs")]
+    public GameObject storagePrefab;
+
+    private Building _nearestBuilding;
+    public Action<Building> OnNearestBuildingChanged;
+
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
-        pathFinding = new();
+        pathFinding = new PathFinding();
         myAnimator = GetComponent<Animator>();
 
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
@@ -36,6 +42,34 @@ public class AgentActions : MonoBehaviour
         { return; }
 
         CalculPath();
+    }
+
+    private void Start()
+    {
+        BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
+        BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
+
+        UpdateNearestBuilding();
+    }
+
+    private void OnDestroy()
+    {
+        BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
+        BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
+    }
+    
+    public Building FindNearestBuilding(string typeFilter = null)
+    {
+        if (BuildingEvents.GetNearestBuilding != null)
+        {
+            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
+        }
+        return null;
+    }
+
+    public Building GetNearestBuilding()
+    {
+        return _nearestBuilding;
     }
 
     public List<Cell> GetPath()
@@ -62,13 +96,13 @@ public class AgentActions : MonoBehaviour
             CalculPath();
 
             if (currentPath == null || currentPath.Count == 0)
-            { 
+            {
                 return true;
             }
         }
 
         Cell nextCell = pathFinding.PeekNextPoint();
-        if(nextCell == null) 
+        if (nextCell == null)
         {
             myAnimator.SetBool("isWalking", false);
             currentPath = null;
@@ -105,9 +139,6 @@ public class AgentActions : MonoBehaviour
     {
         switch (_ressource)
         {
-            default:
-                break;
-
             case RessourceType.food:
                 HarvrestRessource(0, _ressource);
                 break;
@@ -116,6 +147,8 @@ public class AgentActions : MonoBehaviour
                 HarvrestRessource(1, _ressource);
                 break;
         }
+
+        TryAutoCreateStorage();
     }
 
     private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
@@ -142,6 +175,26 @@ public class AgentActions : MonoBehaviour
         }
     }
 
+    private void TryAutoCreateStorage()
+    {
+        if (storagePrefab == null) return;
+        if (inventory == null) return;
+
+        RessourceStockedData data = inventory.GetRessources();
+        if (data.ressource == RessourceType.wood && data.amount >= 5)
+        {
+            inventory.ResetRessource();
+            Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
+            Colony owner = null;
+            ColonyAgent ca = GetComponent<ColonyAgent>();
+            if (ca != null)
+            {
+                owner = ca.GetCurrentColony() as Colony;
+            }
+            BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
+        }
+    }
+
     public void Eat()
     {
         inventory.RemoveOne();
@@ -161,5 +214,25 @@ public class AgentActions : MonoBehaviour
     private void OnDestroy()
     {
         MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
+    }
+    
+    private void OnBuildingSpawned(Building b)
+    {
+        UpdateNearestBuilding();
+    }
+
+    private void OnBuildingsChanged()
+    {
+        UpdateNearestBuilding();
+    }
+
+    private void UpdateNearestBuilding()
+    {
+        Building found = FindNearestBuilding(null);
+        if (found != _nearestBuilding)
+        {
+            _nearestBuilding = found;
+            OnNearestBuildingChanged?.Invoke(_nearestBuilding);
+        }
     }
 }

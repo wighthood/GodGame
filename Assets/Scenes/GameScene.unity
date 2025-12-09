@@ -996,6 +996,8 @@ GameObject:
   m_Component:
   - component: {fileID: 668700269}
   - component: {fileID: 668700268}
+  - component: {fileID: 668700270}
+  - component: {fileID: 668700271}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -1035,6 +1037,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &668700270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668700267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5417b7966e5549529369404e785fa3b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapBuildingManager
+--- !u!114 &668700271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668700267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
+  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
+  spawnPoint: {fileID: 668700269}
+  spawnKey: 98
+  attachToNearestColony: 1
+  searchRadius: 10
+  addWoodKey: 49
+  removeWoodKey: 50
+  addFoodKey: 51
+  removeFoodKey: 52
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,6 +1389,7 @@ MonoBehaviour:
   treeOffset: {x: 0.5, y: 1.5, z: 0}
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
   tileOffset: 0.5
+  MapRessourceManager: {fileID: 1187677962}
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0

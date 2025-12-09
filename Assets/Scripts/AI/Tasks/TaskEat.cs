@@ -30,6 +30,7 @@ public class TaskEat : TaskBase
     public override void Cancel()
     {
         base.Cancel();
+        Debug.Log("Ya pas � manger");
     }
 
     public override bool Do()
