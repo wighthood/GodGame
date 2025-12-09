@@ -1,4 +1,4 @@
-using Mono.Cecil;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,11 +15,15 @@ public class PathFinding
         Vector2Int.right,
         Vector2Int.left,
         Vector2Int.down,
-        new Vector2Int(1, 1),
-        new Vector2Int(1, -1),
-        new Vector2Int(-1, 1),
-        new Vector2Int(-1, -1),
+        new(1, 1),
+        new(1, -1),
+        new(-1, 1),
+        new(-1, -1),
     };
+
+    public static event Func<Vector2Int, Cell> GetCell;
+    public static event Func<Vector3, Cell> GetCellFromWorldPos;
+    public static event Func<List<Cell>> GetCells;
 
     private List<Cell> GetNeighbors(Cell cell)
     {
@@ -27,15 +31,15 @@ public class PathFinding
 
         foreach (var d in directions)
         {
-            if (Graph.instance.graphDict.TryGetValue(cell.position + d, out Cell n)
-                && n.isWalkable)
+            Cell c = GetCell?.Invoke(cell.position + d);
+            if (c != null && c.isWalkable)
             {
-                tempNeighbors.Add(n);
+                tempNeighbors.Add(c);
             }
         }
         return tempNeighbors;
     }
-    
+
     private int Heuristic(Cell Target, Cell start)
     {
         int dx = Mathf.Abs(Target.position.x - start.position.x);
@@ -58,8 +62,8 @@ public class PathFinding
 
     public List<Cell> FindPath(Vector2 _startWorld, Vector2 _endWorld)
     {
-        Cell start = Graph.instance.GetCellFromWorldPos(_startWorld);
-        Cell end = Graph.instance.GetCellFromWorldPos(_endWorld);
+        Cell start = GetCellFromWorldPos?.Invoke(_startWorld);
+        Cell end = GetCellFromWorldPos?.Invoke(_endWorld);
 
         if (start == null || end == null)
             return null;
@@ -126,7 +130,7 @@ public class PathFinding
 
     private void ResetCells()
     {
-        foreach (var cell in Graph.instance.graphDict.Values)
+        foreach (Cell cell in GetCells?.Invoke())
             cell.Reset();
     }
 }

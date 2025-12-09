@@ -16,12 +16,6 @@ public class MapRessourceManager : MonoBehaviour
         WorldGeneration.AddNewRessource += AddNewRessource;
     }
 
-    private void Start()
-    {
-        ressources[RessourceType.wood] = new List<Ressource>();
-        ressources[RessourceType.food] = new List<Ressource>();
-    }
-
     public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
     {
         GameObject newRessource = null;
@@ -62,12 +56,12 @@ public class MapRessourceManager : MonoBehaviour
 
     public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
     {
-        List<Ressource> ressources = GetRessources(_type);
+        List<Ressource> ressourcesList = GetRessources(_type);
 
         float nearestDistance = float.MaxValue;
 
-        Transform nearestRessource = ressources[0].transform;
-        foreach (Ressource ressource in ressources)
+        Transform nearestRessource = ressourcesList[0].transform;
+        foreach (Ressource ressource in ressourcesList)
         {
             if (ressource.GetRessourceType() == _type && Vector3.Distance(_fromEntity.position, ressource.transform.position) < nearestDistance)
             {

@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using NavMeshSurface = NavMeshPlus.Components.NavMeshSurface;
 
 public class MapEditorScript : MonoBehaviour
 {
@@ -13,7 +12,6 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private List<TileBase> tiles;
     [SerializeField] private Transform selectionBar;
     [SerializeField] private GameObject buttonPrefab;
-    [SerializeField] private NavMeshSurface navMesh;
     [SerializeField] private List<GameObject> Prefabs;
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
@@ -21,6 +19,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private float tileOffset;
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+    public static event Func<Vector3, Cell> GetCell;
 
     private Camera _camera;
     private TileBase _selectedTile;
@@ -28,7 +27,6 @@ public class MapEditorScript : MonoBehaviour
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _camera = Camera.main;
@@ -111,7 +109,7 @@ public class MapEditorScript : MonoBehaviour
             Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
             TileBase TempTile = tilemap.GetTile(cellpos);
             tilemap.SetTile(cellpos, _selectedTile);
-            Cell cellToChange = Graph.instance.GetCellFromWorldPos(cellpos);
+            Cell cellToChange = GetCell?.Invoke(cellpos);
             if (IsWater(TempTile))
             {
                 cellToChange.isWalkable = false;

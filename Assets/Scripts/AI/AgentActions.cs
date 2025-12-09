@@ -16,6 +16,7 @@ public class AgentActions : MonoBehaviour
     private Animator myAnimator;
 
     public static event Func<RessourceType, Transform, Transform> GetRessources;
+    public static event Func<Vector2Int, Vector3> CellToWorld;
 
     private void Awake()
     {
@@ -56,7 +57,7 @@ public class AgentActions : MonoBehaviour
             return true;
         }
 
-        Vector3 nextWorld = Graph.instance.CellToWorld(nextCell.position);
+        Vector3 nextWorld = CellToWorld.Invoke(nextCell.position);
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
