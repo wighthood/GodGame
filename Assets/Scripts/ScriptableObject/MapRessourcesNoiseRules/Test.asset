@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba8b91a967909ca4a8790a1ceaeb91a6, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::SO_RessourcesNoiseRule
+  ressourceRules:
+  - type: 1
+    minNoise: 0
+    maxNoise: 0.15
+  - type: 2
+    minNoise: 0.85
+    maxNoise: 1

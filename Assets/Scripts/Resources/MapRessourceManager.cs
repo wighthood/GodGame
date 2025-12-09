@@ -13,13 +13,7 @@ public class MapRessourceManager : MonoBehaviour
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
-        WorldGeneration.AddNewRessource += AddNewRessource; // a cause des event static ?
-    }
-
-    private void Start()
-    {
-        ressources[RessourceType.wood] = new List<Ressource>();
-        ressources[RessourceType.food] = new List<Ressource>();
+        WorldGeneration.AddNewRessource += AddNewRessource;
     }
 
     public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
