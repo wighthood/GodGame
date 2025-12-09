@@ -9,8 +9,6 @@ public class MeteoManager : MonoBehaviour
     private float timerWeather;
 
     public static event Action <WeatherState> OnWeatherChanged;
-
-
   
     void Start()
     {
