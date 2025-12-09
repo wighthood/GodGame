@@ -37,10 +37,15 @@ public class WorldGeneration : MonoBehaviour
     void Start()
     {
         _tilemap = GetComponent<Tilemap>();
-        MapGeneration();
         Graph.instance.InitGraph();
-        RessourcesGeneration();
-        SpawnAgent();
+
+        if (GameModeManager.Instance == null || 
+            GameModeManager.Instance.currentMode == GameModeManager.GameMode.Play)
+        {
+            MapGeneration();
+            RessourcesGeneration();
+            SpawnAgent();
+        }
     }
     
     private void MapGeneration()

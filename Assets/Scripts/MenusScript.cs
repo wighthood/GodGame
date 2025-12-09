@@ -30,4 +30,10 @@ public class MenusScript : MonoBehaviour
     {
         Time.timeScale = pause ? 1 : 0;
     }
+    
+    public void OnClickPlay()
+    {
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
+    }
+
 }
