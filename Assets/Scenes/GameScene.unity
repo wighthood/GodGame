@@ -393,9 +393,7 @@ MonoBehaviour:
     weight: 0.15
   - tile: {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
     weight: 0.3
-  resources:
-  - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
-  - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
+  rules: {fileID: 11400000, guid: 1526ab200cabd2146bc7faa7c80fb18f, type: 2}
   resourceSpawnRate: 0.15
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
@@ -1298,7 +1296,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
   selectionBar: {fileID: 1337844821}
   buttonPrefab: {fileID: 1394653423478889474, guid: ecb8ff15570edc5459b1094c7bae3e6d, type: 3}
-  navMesh: {fileID: 0}
   Prefabs:
   - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
   - {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
