@@ -88,12 +88,12 @@ public class WorldGeneration : MonoBehaviour
                 if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(AddNewRessource.Invoke(RessourceType.food, pos));
+                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.food, pos));
                 }
                 else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
                     _spawnedLocation.Add(position);
-                    _spawnedItem.Add(AddNewRessource.Invoke(RessourceType.wood, pos));
+                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.wood, pos));
                 }
             }
         }

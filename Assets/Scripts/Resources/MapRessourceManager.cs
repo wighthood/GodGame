@@ -84,4 +84,12 @@ public class MapRessourceManager : MonoBehaviour
         ressources[ressource.GetRessourceType()].Remove(ressource);
         Destroy(ressource.gameObject);
     }
+
+    private void OnDestroy()
+    {
+        Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
+        AgentActions.GetRessources -= GetNearestRessource;
+        MapEditorScript.AddNewRessource -= AddNewRessource;
+        WorldGeneration.AddNewRessource -= AddNewRessource;
+    }
 }
