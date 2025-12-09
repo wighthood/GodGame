@@ -9,13 +9,13 @@ public class MapBuildingManager : MonoBehaviour
     void Awake()
     {
         BuildingEvents.OnSpawnRequested += SpawnRequested;
-        BuildingEvents.GetNearestBuilding = GetNearestBuilding;
+        BuildingEvents.GetNearestBuilding = HandleGetNearestBuilding;
     }
 
     void OnDestroy()
     {
         BuildingEvents.OnSpawnRequested -= SpawnRequested;
-        if (BuildingEvents.GetNearestBuilding == GetNearestBuilding)
+        if (BuildingEvents.GetNearestBuilding == HandleGetNearestBuilding)
             BuildingEvents.GetNearestBuilding = null;
     }
 
@@ -48,7 +48,7 @@ public class MapBuildingManager : MonoBehaviour
         if (b.gameObject != null) Destroy(b.gameObject);
     }
 
-    private Building GetNearestBuilding(Vector3 pos, string typeFilter)
+    private Building HandleGetNearestBuilding(Vector3 pos, string typeFilter)
     {
         Building best = null;
         float bestDist = float.MaxValue;

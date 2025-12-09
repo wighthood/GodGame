@@ -55,33 +55,12 @@ public class DebugSpawnStorage : MonoBehaviour
         Debug.Log($"DebugSpawnStorage: ModifyNearestStorage called type={type} amount={amount} getter={(getter!=null)}");
         if (getter == null)
         {
-            Debug.LogWarning("DebugSpawnStorage: No BuildingEvents.GetNearestBuilding handler available.");
+            Debug.LogError("DebugSpawnStorage: No BuildingEvents.GetNearestBuilding handler available. Ensure MapBuildingManager is present and active in the scene.");
             return;
         }
 
         Building nearest = getter.Invoke(transform.position, "Storage");
         Debug.Log($"DebugSpawnStorage: nearest building found={(nearest!=null ? nearest.name : "null")}");
-        if (nearest == null)
-        {
-            Debug.Log("DebugSpawnStorage: attempting fallback search for nearest Stockage via FindObjectsOfType...");
-            Stockage[] storages = FindObjectsOfType<Stockage>();
-            float best = float.MaxValue;
-            Stockage bestS = null;
-            foreach (var s in storages)
-            {
-                float d = Vector3.Distance(transform.position, s.transform.position);
-                if (d < best)
-                {
-                    best = d;
-                    bestS = s;
-                }
-            }
-            if (bestS != null)
-            {
-                nearest = bestS.gameObject.GetComponent<Building>();
-                Debug.Log($"DebugSpawnStorage: fallback found stockage '{bestS.gameObject.name}' at distance {best}");
-            }
-        }
         if (nearest == null)
         {
             Debug.LogWarning("DebugSpawnStorage: No Storage building found nearby.");

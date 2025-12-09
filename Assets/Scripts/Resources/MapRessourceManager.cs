@@ -18,7 +18,7 @@ public class MapRessourceManager : MonoBehaviour
     private void Awake()
     {
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
-        AgentActions.GetRessources += GetNearestRessource;
+        AgentActions.GetRessources += GetRessources;
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.AddNewRessource += AddNewRessource;
     }
@@ -64,20 +64,23 @@ public class MapRessourceManager : MonoBehaviour
     public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
     {
         List<Ressource> ressourcesList = GetRessources(_type);
+        if (ressourcesList == null || ressourcesList.Count == 0 || _fromEntity == null) return null;
 
-        float nearestDistance = float.MaxValue;
+        float bestDist = float.MaxValue;
+        Transform bestTransform = null;
 
-        Transform nearestRessource = ressourcesList[0].transform;
         foreach (Ressource ressource in ressourcesList)
         {
-            if (ressource.GetRessourceType() == _type && Vector3.Distance(_fromEntity.position, ressource.transform.position) < nearestDistance)
+            if (ressource == null) continue;
+            float d = Vector3.Distance(_fromEntity.position, ressource.transform.position);
+            if (d < bestDist)
             {
-                nearestDistance = Vector3.Distance(_fromEntity.position, nearestRessource.transform.position);
-                nearestRessource = ressource.transform;
+                bestDist = d;
+                bestTransform = ressource.transform;
             }
         }
 
-        return nearestRessource;
+        return bestTransform;
     }
 
     private void RemoveFromListForDestroy(Ressource ressource)
@@ -90,7 +93,7 @@ public class MapRessourceManager : MonoBehaviour
     private void OnDestroy()
     {
         Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
-        AgentActions.GetRessources -= GetNearestRessource;
+        AgentActions.GetRessources -= GetRessources;
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.AddNewRessource -= AddNewRessource;
     }

@@ -7,7 +7,6 @@ public class Stockage : MonoBehaviour
 
     public int pvMax = 10;
     public int pvActuels = 10;
-
     public int coutCreation = 10;
 
     private Dictionary<RessourceType, int> ressources = new Dictionary<RessourceType, int>();

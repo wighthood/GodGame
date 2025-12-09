@@ -17,7 +17,7 @@ public class AgentActions : MonoBehaviour
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
     private Animator myAnimator;
 
-    public static event Func<RessourceType, Transform, Transform> GetRessources;
+    public static event Func<RessourceType, List<Ressource>> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
     [Header("Building Prefabs")]
@@ -109,7 +109,24 @@ public class AgentActions : MonoBehaviour
             return true;
         }
 
-        Vector3 nextWorld = CellToWorld.Invoke(nextCell.position);
+        Vector3 nextWorld;
+        if (CellToWorld != null)
+        {
+            nextWorld = CellToWorld.Invoke(nextCell.position);
+        }
+        else
+        {
+            Graph graph = UnityEngine.Object.FindObjectOfType<Graph>();
+            if (graph != null)
+            {
+                nextWorld = graph.CellToWorld(nextCell.position);
+            }
+            else
+            {
+                Debug.LogError("AgentActions: No CellToWorld delegate and no Graph found in scene. Using agent position as fallback.");
+                nextWorld = transform.position;
+            }
+        }
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
@@ -126,6 +143,11 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Transform _target)
     {
+        if (_target == null)
+        {
+            Debug.LogWarning("AgentActions.MoveTo called with null target; aborting move.");
+            return true;
+        }
         return MoveTo(_target.position);
     }
 
