@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)]
 public class MapBuildingManager : MonoBehaviour
 {
     private List<Building> buildings = new List<Building>();
@@ -21,14 +22,19 @@ public class MapBuildingManager : MonoBehaviour
 
     private void SpawnRequested(GameObject prefab, Vector3 position, Quaternion rotation, Colony owner, string type)
     {
-        if (prefab == null) return;
+        SpawnBuilding(prefab, position, rotation, owner, type);
+    }
+
+    public Building SpawnBuilding(GameObject prefab, Vector3 position, Quaternion rotation, Colony owner, string type)
+    {
+        if (prefab == null) return null;
         GameObject go = Instantiate(prefab, position, rotation);
         Building b = go.GetComponent<Building>();
         if (b == null)
         {
             b = go.AddComponent<Building>();
         }
-        
+
         b.Initialize(type, owner, go);
 
         if (!buildings.Contains(b))
@@ -37,6 +43,13 @@ public class MapBuildingManager : MonoBehaviour
             BuildingEvents.OnBuildingSpawned?.Invoke(b);
             BuildingEvents.OnBuildingsChanged?.Invoke();
         }
+
+        return b;
+    }
+
+    public Building FindNearestBuilding(Vector3 pos, string typeFilter)
+    {
+        return HandleGetNearestBuilding(pos, typeFilter);
     }
 
     public void DestroyBuilding(Building b)

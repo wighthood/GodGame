@@ -39,13 +39,19 @@ public class TaskEat : TaskBase
         {
             return true;
         }
-        //TODO check in colonie inventory if there is food, if yes go take it
         else
         {
             if (targetFoodSource == null)
             {
                 GetNearestFoodIfExiste();
+                if (targetFoodSource == null)
+                {
+                    // No food source found, cancel the task to avoid null moves
+                    Cancel();
+                    return true;
+                }
             }
+
             Vector3 selfPosition = transform.position;
             if (isArrive)
             {

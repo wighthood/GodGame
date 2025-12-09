@@ -89,6 +89,21 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Vector2 _targetWorld)
     {
+        if (pathFinding == null)
+        {
+            Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
+            return true;
+        }
+
+        if (myAnimator == null)
+        {
+            myAnimator = GetComponent<Animator>();
+            if (myAnimator == null)
+            {
+                Debug.LogWarning("AgentActions.MoveTo: Animator not found on agent.");
+            }
+        }
+
         if (currentPath == null)
         {
             myAnimator.SetBool("isWalking", false);
@@ -104,7 +119,7 @@ public class AgentActions : MonoBehaviour
         Cell nextCell = pathFinding.PeekNextPoint();
         if (nextCell == null)
         {
-            myAnimator.SetBool("isWalking", false);
+            if (myAnimator != null) myAnimator.SetBool("isWalking", false);
             currentPath = null;
             return true;
         }
@@ -127,10 +142,11 @@ public class AgentActions : MonoBehaviour
                 nextWorld = transform.position;
             }
         }
+
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
-        myAnimator.SetBool("isWalking", true);
+        if (myAnimator != null) myAnimator.SetBool("isWalking", true);
 
         if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {

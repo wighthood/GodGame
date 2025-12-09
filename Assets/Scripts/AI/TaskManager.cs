@@ -61,7 +61,7 @@ public class TaskManager : MonoBehaviour
         if (currentTask == null) return;
 
         isTaskFinished = currentTask.Do();
-
+        
         if (isTaskFinished)
         {
             currentTask.OnFinish();

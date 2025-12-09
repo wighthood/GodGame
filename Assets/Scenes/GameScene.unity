@@ -1022,6 +1022,7 @@ MonoBehaviour:
   removeWoodKey: 50
   addFoodKey: 51
   removeFoodKey: 52
+  mbm: {fileID: 668700270}
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
