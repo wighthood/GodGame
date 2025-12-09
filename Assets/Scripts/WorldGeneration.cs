@@ -17,8 +17,9 @@ public class WorldGeneration : MonoBehaviour
     
     [Header("Map Generation Settings")]
     [SerializeField] private List<TileWithWeight> tiles = new();
-    
+
     [Header("Resources Generation Settings")]
+    [SerializeField] private SO_RessourcesNoiseRules rules;
     [SerializeField,Range(0,.5f)] private float resourceSpawnRate;
     
     [SerializeField] private GameObject agentPrefab;
@@ -81,23 +82,34 @@ public class WorldGeneration : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                Debug.Log(noiseMap[x, y]);
+                Vector3Int cell = new(x - mapWidth / 2, y - mapHeight / 2, 0);
+
+                if (_tilemap.GetTile(cell) == tiles[2].tile)
+                    continue;
+
+                Vector3 pos = _tilemap.CellToWorld(cell) + new Vector3(.5f, .5f, 0);
                 position = (x, y);
-                Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + new Vector3(.5f, .5f, 0);
-                if (_tilemap.GetTile(new Vector3Int(x-mapWidth/2, y-mapHeight/2, 0)) == tiles[2].tile) continue;
-                if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
+                float noiseValue = noiseMap[x, y];
+
+                foreach (RessourceRule rule in rules.ressourceRules)
                 {
-                    _spawnedLocation.Add(position);
-                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.food, pos));
-                }
-                else if (noiseMap[x, y] >= 1 - resourceSpawnRate && !_spawnedLocation.Contains(position))
-                {
-                    _spawnedLocation.Add(position);
-                    _spawnedItem.Add(AddNewRessource?.Invoke(RessourceType.wood, pos));
+                    if (noiseValue >= rule.minNoise && noiseValue <= rule.maxNoise
+                        && !_spawnedLocation.Contains(position))
+                    {
+                        SpawnResource(rule.type, pos, position);
+                        break;
+                    }
                 }
             }
         }
     }
+
+    private void SpawnResource(RessourceType type, Vector3 pos, (int, int) key)
+    {
+        _spawnedLocation.Add(key);
+        _spawnedItem.Add(AddNewRessource?.Invoke(type, pos));
+    }
+
 
     public void SpawnAgent()
     {
