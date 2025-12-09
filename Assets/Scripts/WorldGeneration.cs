@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NavMeshPlus.Components;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -33,6 +32,8 @@ public class WorldGeneration : MonoBehaviour
     private List<GameObject> _spawnedItem = new();
     
     [HideInInspector] public List<GameObject> _spawnedAgent = new();
+
+    private Vector3 cellOffset = new Vector3(.5f, .5f, 0);
 
     void Start()
     {
@@ -76,9 +77,8 @@ public class WorldGeneration : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                Debug.Log(noiseMap[x, y]);
                 position = (x, y);
-                Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + new Vector3(.5f, .5f, 0);
+                Vector3 pos = _tilemap.CellToWorld(new Vector3Int(x - mapHeight/2, y - mapWidth/2, 0)) + cellOffset;
                 if (_tilemap.GetTile(new Vector3Int(x-mapWidth/2, y-mapHeight/2, 0)) == tiles[2].tile) continue;
                 if (noiseMap[x, y] <= resourceSpawnRate && !_spawnedLocation.Contains(position))
                 {
