@@ -26,4 +26,9 @@ public abstract class TaskBase : ScriptableObject
     }
 
     public abstract float GetPriority();
+
+    public virtual void DrawActionsGizmo()
+    {
+
+    }
 }

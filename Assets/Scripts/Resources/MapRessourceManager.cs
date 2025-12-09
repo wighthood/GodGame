@@ -13,6 +13,7 @@ public class MapRessourceManager : MonoBehaviour
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
+        WorldGeneration.AddNewRessource += AddNewRessource;
     }
 
     private void Start()
@@ -21,31 +22,33 @@ public class MapRessourceManager : MonoBehaviour
         ressources[RessourceType.food] = new List<Ressource>();
     }
 
-    public void AddNewRessource(RessourceType ressourceType, Vector2 _position)
+    public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
     {
-        GameObject newRessource;
+        GameObject newRessource = null;
         switch (ressourceType)
         {
             case RessourceType.wood:
                 newRessource = Instantiate(ressourcePrefab[0], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(RessourceType.wood,
-                newRessource.GetComponent<Ressource>());
+                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
                 break;
             case RessourceType.food:
                 newRessource = Instantiate(ressourcePrefab[1], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
+                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
                 break;
         }
+
+        return newRessource;
     }
 
-    private void AddRessourceInDictionary(RessourceType type, Ressource ressource)
+    private void AddRessourceInDictionary(Ressource ressource)
     {
-        if (!ressources.ContainsKey(type))
+        if (!ressources.ContainsKey(ressource.GetRessourceType()))
         {
-            ressources[type] = new List<Ressource>();
+            ressources[ressource.GetRessourceType()] = new List<Ressource>() { ressource };
+            return;
         }
 
-        ressources[type].Add(ressource);
+        ressources[ressource.GetRessourceType()].Add(ressource);
     }
 
     public List<Ressource> GetRessources(RessourceType _type)
@@ -57,7 +60,7 @@ public class MapRessourceManager : MonoBehaviour
         return ressources[_type];
     }
 
-    public Transform GetNearestRessource(RessourceType _type)
+    public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
     {
         List<Ressource> ressources = GetRessources(_type);
 
@@ -66,9 +69,9 @@ public class MapRessourceManager : MonoBehaviour
         Transform nearestRessource = ressources[0].transform;
         foreach (Ressource ressource in ressources)
         {
-            if (ressource.GetRessourceType() == _type && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
+            if (ressource.GetRessourceType() == _type && Vector3.Distance(_fromEntity.position, ressource.transform.position) < nearestDistance)
             {
-                nearestDistance = Vector3.Distance(transform.position, nearestRessource.transform.position);
+                nearestDistance = Vector3.Distance(_fromEntity.position, nearestRessource.transform.position);
                 nearestRessource = ressource.transform;
             }
         }

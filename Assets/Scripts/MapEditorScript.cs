@@ -20,7 +20,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
 
-    public static event Action<RessourceType, Vector2> AddNewRessource;
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
 
     private Camera _camera;
     private TileBase _selectedTile;
