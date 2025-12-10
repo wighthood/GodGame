@@ -33,7 +33,7 @@ public class AgentActions : MonoBehaviour
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
         pathFinding = new PathFinding();
-        myAnimator = GetComponent<Animator>();
+
 
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
     }
@@ -82,16 +82,7 @@ public class AgentActions : MonoBehaviour
             Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
             return true;
         }
-
-        if (myAnimator == null)
-        {
-            myAnimator = GetComponent<Animator>();
-            if (myAnimator == null)
-            {
-                Debug.LogWarning("AgentActions.MoveTo: Animator not found on agent.");
-            }
-        }
-
+        
         if (currentPath == null)
         {
             currentTargetWorld = _targetWorld;
