@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -84,12 +83,20 @@ public class Graph : MonoBehaviour
     {
         if(graphDict != null)
         {
-            print($"drawing {graphDict.Values.ToList().Count} objects");
             Vector3 size = new(0.5f, 0.5f, 0.1f);
             Gizmos.color = Color.blue;
             foreach(Cell cell in graphDict.Values)
             {
-                Gizmos.DrawCube(CellToWorld(cell.position), size);
+                if(cell.isWalkable)
+                {
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
             }
         }
     }

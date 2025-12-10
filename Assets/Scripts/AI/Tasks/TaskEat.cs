@@ -72,7 +72,7 @@ public class TaskEat : TaskBase
 
     public override void OnStart()
     {
-        Debug.Log("Hungry !");
+        //Debug.Log("Hungry !");
     }
 
     protected override bool FinishCondition()
