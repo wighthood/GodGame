@@ -26,21 +26,23 @@ public class MapEditorScript : MonoBehaviour
     private GameObject _selectedObject;
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
-    
+
+    public static event Action<Cell> OnGraphChange;
+
     void Start()
     {
         _camera = Camera.main;
         foreach (TileBase tile in tiles)
         {
-            GameObject newButton = Instantiate(buttonPrefab,selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             if (tile is RuleTile T)
             {
                 buttonImage.sprite = T.m_DefaultSprite;
             }
-            button.onClick.AddListener((() => 
-               SetSelector(null,tile)));
+            button.onClick.AddListener((() =>
+               SetSelector(null, tile)));
         }
 
         foreach (GameObject prefab in Prefabs)
@@ -49,7 +51,7 @@ public class MapEditorScript : MonoBehaviour
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-            button.onClick.AddListener ((() => 
+            button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
     }
@@ -73,7 +75,7 @@ public class MapEditorScript : MonoBehaviour
     {
         if (context.started)
         {
-            _isPainting =  true;
+            _isPainting = true;
         }
         else if (context.canceled)
         {
@@ -101,59 +103,68 @@ public class MapEditorScript : MonoBehaviour
     private void Update()
     {
         if (_selectedTile == null && _selectedObject == null || _camera == null
-                                  || EventSystem.current.IsPointerOverGameObject() || !_isPainting) return;
+            || EventSystem.current.IsPointerOverGameObject() || !_isPainting) return;
+
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
         if (_selectedTile)
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
-            TileBase TempTile = tilemap.GetTile(cellpos);
-            tilemap.SetTile(cellpos, _selectedTile);
-            Cell cellToChange = GetCell?.Invoke(cellpos);
-            if (IsWater(TempTile))
-            {
-                cellToChange.isWalkable = false;
+            PaintTile(mousePosition);
+        }
+        if (_selectedObject)
+        {
+            PaintObject(mousePosition);
+        }
+    }
 
-                RaycastHit2D result;
-                _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
-                if (IsObject(_cellposForRaycast, out result))
-                {
-                    Destroy(result.collider.gameObject);
-                }
+    private void PaintTile(Vector2 mousePosition)
+    {
+        
+        Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
+        TileBase TempTile = tilemap.GetTile(cellpos);
+        tilemap.SetTile(cellpos, _selectedTile);
+
+        Cell cellToChange = GetCell?.Invoke(cellpos);
+        cellToChange.isWalkable = IsWater(TempTile);
+        OnGraphChange?.Invoke(cellToChange);
+
+        if (IsWater(TempTile))
+        {
+            RaycastHit2D result;
+            _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
+
+            if (IsObject(_cellposForRaycast, out result))
+            {
+                Destroy(result.collider.gameObject);
+            }
+        }
+    }
+
+    private void PaintObject(Vector2 mousePosition)
+    {
+        Vector3 cellpos = tilemap.CellToWorld(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0)));
+        if (tilemap.GetTile(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0))) == tiles[2] || IsObject(mousePosition))
+        {
+            return;
+        }
+
+        Ressource ressource = _selectedObject.GetComponent<Ressource>();
+
+        if (ressource)
+        {
+            if (ressource.GetRessourceType() == RessourceType.wood)
+            {
+                AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
             }
             else
             {
-                cellToChange.isWalkable = false;
+                AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
             }
         }
-        if(_selectedObject)
+        else
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            Vector3 cellpos = tilemap.CellToWorld(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0)));
-            if (tilemap.GetTile(tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0))) == tiles[2])
-            {
-                return;
-            }
-            if (!IsObject(mousePosition))
-            {
-                Ressource ressource = _selectedObject.GetComponent<Ressource>();
-                if (ressource) 
-                {
-                    if (ressource.GetRessourceType() == RessourceType.wood)
-                    {
-                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
-                    }
-                    else
-                    {
-                        AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
-                    }
-                }
-                else
-                {
-                    GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
-                    _isPainting = false;
-                }
-            }
+            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
+            _isPainting = false;
         }
     }
 }

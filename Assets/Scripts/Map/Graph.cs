@@ -89,7 +89,16 @@ public class Graph : MonoBehaviour
             Gizmos.color = Color.blue;
             foreach(Cell cell in graphDict.Values)
             {
-                Gizmos.DrawCube(CellToWorld(cell.position), size);
+                if(cell.isWalkable)
+                {
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
             }
         }
     }

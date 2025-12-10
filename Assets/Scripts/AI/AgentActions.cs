@@ -11,6 +11,8 @@ public class AgentActions : MonoBehaviour
     private PathFinding pathFinding;
     private List<Cell> currentPath;
 
+    private Vector2 currentTargetWorld;
+
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
     private Animator myAnimator;
@@ -24,6 +26,17 @@ public class AgentActions : MonoBehaviour
         stats = GetComponent<AIStats>();
         pathFinding = new();
         myAnimator = GetComponent<Animator>();
+
+        MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
+    }
+
+    private void RebuildPathIfNeeded(Cell _modifiedCell)
+    {
+        if(currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
+        { return; }
+
+        print("recalcul");
+        CalculPath();
     }
 
     public List<Cell> GetPath()
@@ -36,12 +49,18 @@ public class AgentActions : MonoBehaviour
         transform.position = transform.position + (Vector3)(moveFactor * Time.deltaTime * _dir);
     }
 
-    public bool MoveTo(Vector2 targetWorld)
+    private void CalculPath()
+    {
+        currentPath = pathFinding.FindPath(transform.position, currentTargetWorld);
+    }
+
+    public bool MoveTo(Vector2 _targetWorld)
     {
         if (currentPath == null)
         {
             myAnimator.SetBool("isWalking", false);
-            currentPath = pathFinding.FindPath(transform.position, targetWorld);
+            currentTargetWorld = _targetWorld;
+            CalculPath();
 
             if (currentPath == null || currentPath.Count == 0)
             { 
@@ -138,5 +157,10 @@ public class AgentActions : MonoBehaviour
     public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
         return GetRessources.Invoke(_ressourceType, transform);
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }
