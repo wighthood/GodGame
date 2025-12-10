@@ -23,19 +23,17 @@ public class DebugSpawnStorage : MonoBehaviour
     public KeyCode addFoodKey = KeyCode.Alpha3;
     public KeyCode removeFoodKey = KeyCode.Alpha4;
 
-    [SerializeField] private MapBuildingManager mbm;
-    private MapBuildingManager _mbm;
+    [SerializeField] private MapBuildingManager _mbm;
 
     void Start()
     {
+        
         if (_mbm == null)
         {
             Debug.LogError("DebugSpawnStorage: MapBuildingManager not found in scene — disabling debug script.");
             enabled = false;
             return;
         }
-
-        if (BuildingEvents.OnSpawnRequested == null) Debug.Log("DebugSpawnStorage: BuildingEvents.OnSpawnRequested is null at Start.");
     }
 
     void Update()
