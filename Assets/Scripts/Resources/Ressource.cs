@@ -14,12 +14,10 @@ public class Ressource : MonoBehaviour
 
     public void OnHarvrestingRessource()
     {
-        print("harvresting");
         ressourceRemaining--;
 
         if (ressourceRemaining == 0)
         {
-            print("No ressources remaining");
             OnEmptyRessource?.Invoke(this);
         }
     }

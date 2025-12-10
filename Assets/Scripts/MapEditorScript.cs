@@ -18,8 +18,11 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private float tileOffset;
 
+    [SerializeField] private List<TileBase> notWalkableSprites = new();
+
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Func<Vector3, Cell> GetCell;
+    public static event Action<Cell> OnGraphChange;
 
     private Camera _camera;
     private TileBase _selectedTile;
@@ -27,7 +30,6 @@ public class MapEditorScript : MonoBehaviour
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
 
-    public static event Action<Cell> OnGraphChange;
 
     void Start()
     {
@@ -83,10 +85,9 @@ public class MapEditorScript : MonoBehaviour
         }
     }
 
-    private bool IsWater(TileBase _tempTile)
+    private bool IsWater(TileBase _tile)
     {
-        return _selectedTile == tiles.Find(o => o.name == "WaterRule") && !_tempTile.name.Contains("WaterRule")
-                || _selectedTile != tiles.Find(o => o.name == "WaterRule") && _tempTile.name.Contains("WaterRule");
+        return notWalkableSprites.Contains(_tile);
     }
 
     private bool IsObject(Vector2 _mousePosition)
@@ -111,24 +112,23 @@ public class MapEditorScript : MonoBehaviour
         {
             PaintTile(mousePosition);
         }
-        if (_selectedObject)
+        else if (_selectedObject)
         {
             PaintObject(mousePosition);
         }
     }
 
-    private void PaintTile(Vector2 mousePosition)
+    private void PaintTile(Vector2 _mousePosition)
     {
-        
-        Vector3Int cellpos = tilemap.WorldToCell(new Vector3(mousePosition.x, mousePosition.y, 0));
-        TileBase TempTile = tilemap.GetTile(cellpos);
+        Vector3Int cellpos = tilemap.WorldToCell(_mousePosition);
+        TileBase tile = tilemap.GetTile(cellpos);
         tilemap.SetTile(cellpos, _selectedTile);
 
         Cell cellToChange = GetCell?.Invoke(cellpos);
-        cellToChange.isWalkable = IsWater(TempTile);
+        cellToChange.SetIsWalakble(!IsWater(_selectedTile));
         OnGraphChange?.Invoke(cellToChange);
 
-        if (IsWater(TempTile))
+        if (IsWater(tile))
         {
             RaycastHit2D result;
             _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);

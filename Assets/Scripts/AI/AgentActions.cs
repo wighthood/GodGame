@@ -35,7 +35,6 @@ public class AgentActions : MonoBehaviour
         if(currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
         { return; }
 
-        print("recalcul");
         CalculPath();
     }
 
@@ -161,6 +160,6 @@ public class AgentActions : MonoBehaviour
 
     private void OnDestroy()
     {
-        
+        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
     }
 }
