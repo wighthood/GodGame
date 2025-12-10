@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public float storedVolume { get; private set; } = 0.5f;
     public enum SoundType
     {
         Music_Menu,
@@ -71,7 +72,7 @@ public class AudioManager : MonoBehaviour
 
         //propriété du son
         audioSrc.clip = s.Clip;
-        audioSrc.volume = s.volume;
+        audioSrc.volume = s.volume * storedVolume;// times storedVolume
 
         //play the sound
         audioSrc.Play();
@@ -93,5 +94,11 @@ public class AudioManager : MonoBehaviour
         _musicSource.loop = true;
         _musicSource.clip = track.Clip;
         _musicSource.Play();
+    }
+
+    public void ChangeVolume(float volume)
+    {
+        storedVolume = volume;
+        _musicSource.volume = volume;
     }
 }
