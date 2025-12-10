@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimationManager : MonoBehaviour
@@ -13,9 +12,12 @@ public class AnimationManager : MonoBehaviour
     
     private void Start()
     {
+        animBase = new List<SO_AnimBase>();
+        
         foreach (SO_AnimCreator animCrea in animCreator)
         {
-            animCrea.AddComponent(CreateAnim(animCrea));
+            SO_AnimBase based = animCrea.CreateAnim(this);
+            animBase.Add(based);
         }
     }
 
