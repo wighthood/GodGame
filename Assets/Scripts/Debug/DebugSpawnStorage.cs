@@ -49,6 +49,7 @@ public class DebugSpawnStorage : MonoBehaviour
     private void ModifyNearestStorage(RessourceType type, int amount)
     {
         Building nearest = _mbm.FindNearestBuilding(transform.position, "Storage");
+        
         if (nearest == null)
         {
             Debug.LogWarning("DebugSpawnStorage: No Storage building found nearby via MapBuildingManager.");
@@ -56,6 +57,7 @@ public class DebugSpawnStorage : MonoBehaviour
         }
 
         Stockage stockage = nearest.GetComponent<Stockage>();
+        
         if (stockage == null)
         {
             Debug.LogWarning("DebugSpawnStorage: Nearest building has no Stockage component.");

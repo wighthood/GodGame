@@ -64,4 +64,43 @@ public class Colony : IColony
         }
         return null;
     }
+
+    public Vector3? GetValidBuildingPosition(Vector3 agentPos, Graph graph)
+    {
+        if (graph == null) return null;
+
+        // Try 10 times
+        for (int i = 0; i < 10; i++)
+        {
+            // Pick a random point
+            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * InfluenceRadius;
+            Vector3 candidatePos = Center + new Vector3(randomPoint.x, 0, randomPoint.y);
+
+            // Align to grid
+            Vector2Int cellPos = graph.WorldToCellPos(candidatePos);
+            Vector3 alignedPos = graph.CellToWorld(cellPos);
+
+            // Check if walkable
+            Cell cell = graph.GetCell(cellPos);
+            if (cell == null || !cell.isWalkable) continue;
+
+            // Check if occupied by another building
+            if (BuildingEvents.GetNearestBuilding != null)
+            {
+                Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos, null);
+                if (nearest != null)
+                {
+                    // If a building is too close consider it occupied
+                    if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            return alignedPos;
+        }
+
+        return null;
+    }
 }

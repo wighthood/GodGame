@@ -17,7 +17,7 @@ public class AgentActions : MonoBehaviour
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
     private Animator myAnimator;
 
-    public static event Func<RessourceType, List<Ressource>> GetRessources;
+    public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
     [Header("Building Prefabs")]
@@ -48,28 +48,13 @@ public class AgentActions : MonoBehaviour
     {
         BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
         BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
-
-        UpdateNearestBuilding();
     }
 
     private void OnDestroy()
     {
         BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
+        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
         BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
-    }
-    
-    public Building FindNearestBuilding(string typeFilter = null)
-    {
-        if (BuildingEvents.GetNearestBuilding != null)
-        {
-            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
-        }
-        return null;
-    }
-
-    public Building GetNearestBuilding()
-    {
-        return _nearestBuilding;
     }
 
     public List<Cell> GetPath()
@@ -248,11 +233,6 @@ public class AgentActions : MonoBehaviour
     {
         return GetRessources.Invoke(_ressourceType, transform);
     }
-
-    private void OnDestroy()
-    {
-        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
-    }
     
     private void OnBuildingSpawned(Building b)
     {
@@ -272,5 +252,14 @@ public class AgentActions : MonoBehaviour
             _nearestBuilding = found;
             OnNearestBuildingChanged?.Invoke(_nearestBuilding);
         }
+    }
+    
+    public Building FindNearestBuilding(string typeFilter = null)
+    {
+        if (BuildingEvents.GetNearestBuilding != null)
+        {
+            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
+        }
+        return null;
     }
 }

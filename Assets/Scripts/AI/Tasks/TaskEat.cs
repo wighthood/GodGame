@@ -46,8 +46,6 @@ public class TaskEat : TaskBase
                 GetNearestFoodIfExiste();
                 if (targetFoodSource == null)
                 {
-                    // No food source found, cancel the task to avoid null moves
-                    Cancel();
                     return true;
                 }
             }
@@ -74,7 +72,10 @@ public class TaskEat : TaskBase
 
     public override void OnFinish()
     {
-        actions.Eat();
+        if (targetFoodSource != null && isArrive)
+        {
+            actions.Eat();
+        }
     }
 
     public override void OnStart()
