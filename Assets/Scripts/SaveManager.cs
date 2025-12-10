@@ -36,6 +36,8 @@ public class TilemapSave
 
 public class SaveManager : MonoBehaviour
 {
+    [SerializeField] private GameModeManager gameModeManager;
+    
     public static GameData loadedStats;
     public static TilemapSave loadedTilemap;
 
@@ -47,13 +49,13 @@ public class SaveManager : MonoBehaviour
 
     public void OnClickPlay()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
+        gameModeManager.currentMode = GameModeManager.GameMode.Play;
         SceneManager.LoadScene("GameScene");
     }
 
     public void OnClickLoad()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
+        gameModeManager.currentMode = GameModeManager.GameMode.Load;
 
         if (File.Exists(StatsPath))
         {
