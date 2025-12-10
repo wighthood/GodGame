@@ -15,7 +15,7 @@ public class AgentActions : MonoBehaviour
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
-    private Animator myAnimator;
+    //private Animator myAnimator;
 
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
@@ -25,6 +25,9 @@ public class AgentActions : MonoBehaviour
 
     private Building _nearestBuilding;
     public Action<Building> OnNearestBuildingChanged;
+
+    private Vector3 lastPos;
+    public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
 
     private void Awake()
     {
@@ -64,6 +67,7 @@ public class AgentActions : MonoBehaviour
 
     private void MoveAgent(Vector2 _dir)
     {
+        lastPos = transform.position;
         transform.position = transform.position + (Vector3)(moveFactor * Time.deltaTime * _dir);
     }
 
@@ -91,7 +95,6 @@ public class AgentActions : MonoBehaviour
 
         if (currentPath == null)
         {
-            myAnimator.SetBool("isWalking", false);
             currentTargetWorld = _targetWorld;
             CalculPath();
 
@@ -104,7 +107,6 @@ public class AgentActions : MonoBehaviour
         Cell nextCell = pathFinding.PeekNextPoint();
         if (nextCell == null)
         {
-            if (myAnimator != null) myAnimator.SetBool("isWalking", false);
             currentPath = null;
             return true;
         }
@@ -131,7 +133,6 @@ public class AgentActions : MonoBehaviour
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
-        if (myAnimator != null) myAnimator.SetBool("isWalking", true);
 
         if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {

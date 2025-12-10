@@ -1,41 +1,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class AnimationManager : MonoBehaviour
 {
-    private bool isPlaying;
+    [SerializeField] private List<SO_AnimBase> animations = new List<SO_AnimBase>();
 
-    [SerializeField] private List<SO_AnimCreator> animCreator;
-    [SerializeField] private List<SO_AnimBase> animBase;
-    [SerializeField] private Animator animator;
-    
-    
+    private Animator animator;
+
+    private string newAnimationName;
+    private string currentAnimName;
+    private SO_AnimBase currentAnimation;
+
     private void Start()
     {
-        animBase = new List<SO_AnimBase>();
-        
-        foreach (SO_AnimCreator animCrea in animCreator)
-        {
-            SO_AnimBase based = animCrea.CreateAnim(this);
-            animBase.Add(based);
-        }
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
-        foreach (SO_AnimBase animName in animBase)
-        {
-            if (animName.CondAnim() == true)
-            {
-                isPlaying = true;
-                animator.Play("WalkingAnim");
-                break;
-            }
+        UpdateAnimationState();
+    }
 
-            if (!isPlaying)
+    private void UpdateAnimationState()
+    {
+        newAnimationName = GetCurrentAnimation();
+
+        if (newAnimationName != currentAnimName)
+        {
+            currentAnimation.OnPlayEnd(gameObject);
+
+            currentAnimName = newAnimationName;
+            PlayAnimation();
+
+            currentAnimation.OnStartPlaying(gameObject);
+        }
+
+        currentAnimation.OnPlaying(gameObject);
+    }
+
+    private string GetCurrentAnimation()
+    {
+        foreach (SO_AnimBase anim in animations)
+        {
+            if (anim.CanPlay(gameObject))
             {
-                animator.Play("Idle");
+                currentAnimation = anim;
+                return anim.animationName;
             }
         }
+
+        return "";
+    }
+
+    private void PlayAnimation()
+    {
+        if (currentAnimName == "") { return; }
+        animator.CrossFade(currentAnimName, 0.1f);
     }
 }
