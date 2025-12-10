@@ -27,12 +27,7 @@ public class Graph : MonoBehaviour
 
         tilemap = GetComponent<Tilemap>();
     }
-
-    private Graph GetGraphInstance()
-    {
-        return this;
-    }
-
+    
     public List<Cell> GetCellsFromDict()
     {
         return graphDict.Values.ToList();
