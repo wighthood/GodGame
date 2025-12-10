@@ -150,6 +150,7 @@ MonoBehaviour:
     m_Bits: 128
   - serializedVersion: 2
     m_Bits: 64
+  storagePrefab: {fileID: 0}
 --- !u!114 &711300630693085499
 MonoBehaviour:
   m_ObjectHideFlags: 0

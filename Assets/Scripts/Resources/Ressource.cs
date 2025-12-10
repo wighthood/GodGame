@@ -3,20 +3,21 @@ using UnityEngine;
 
 public class Ressource : MonoBehaviour
 {
-    [SerializeField] private SO_Ressource ressource;
-    [SerializeField] private int ressourceRemaining;
-    
+    [SerializeField] private RessourceType ressourceType = RessourceType.none;
+    [SerializeField] private int ressourceRemaining = 1;
+
     public static event Action<Ressource> OnEmptyRessource;
+
     public RessourceType GetRessourceType()
     {
-        return ressource.ressourceType;
+        return ressourceType;
     }
 
     public void OnHarvrestingRessource()
     {
         ressourceRemaining--;
 
-        if (ressourceRemaining == 0)
+        if (ressourceRemaining <= 0)
         {
             OnEmptyRessource?.Invoke(this);
         }

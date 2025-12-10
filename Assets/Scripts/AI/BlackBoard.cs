@@ -7,7 +7,8 @@ public class BlackBoard
 
     public T GetValue<T>(string _varName)
     {
-        return (T)blackBoardValues[_varName]; 
+        if (!blackBoardValues.ContainsKey(_varName)) return default;
+        return (T)blackBoardValues[_varName];
     }
 
     public void AddValue(string _varName, object value)
@@ -35,5 +36,11 @@ public class BlackBoard
     public bool HasKey(string _varName)
     {
         return blackBoardValues.ContainsKey(_varName);
+    }
+
+    public void AddValueOrModify(string _varName, object value)
+    {
+        if (blackBoardValues.ContainsKey(_varName)) blackBoardValues[_varName] = value;
+        else blackBoardValues[_varName] = value;
     }
 }

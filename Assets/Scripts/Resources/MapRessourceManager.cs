@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RessourceType
+{
+    none = 0,
+    wood = 1,
+    food = 2,
+}
+
 public class MapRessourceManager : MonoBehaviour
 {
     private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
@@ -75,6 +82,7 @@ public class MapRessourceManager : MonoBehaviour
 
     private void RemoveFromListForDestroy(Ressource ressource)
     {
+        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
         ressources[ressource.GetRessourceType()].Remove(ressource);
         Destroy(ressource.gameObject);
     }
