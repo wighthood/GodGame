@@ -84,15 +84,16 @@ public class TaskManager : MonoBehaviour
     {
         if (isTaskFinished)
         {
-            if(IsTooHungry())
-            {
-                currentTask.Cancel();
-            }
-
             currentTask = GetHigherPriorityTask();
         }
         else
         {
+            if (IsTooHungry())
+            {
+                currentTask.Cancel();
+                return;
+            }
+
             ExecuteTask();
         }
     }
