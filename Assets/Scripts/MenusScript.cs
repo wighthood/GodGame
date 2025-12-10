@@ -34,6 +34,12 @@ public class MenusScript : MonoBehaviour
     public void OnClickPlay()
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
+        GameModeManager.Instance.saveManager.OnClickPlay();
     }
 
+    public void OnClickLoad()
+    {
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
+        GameModeManager.Instance.saveManager.OnClickLoad();
+    }
 }
