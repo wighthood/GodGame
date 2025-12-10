@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Colony : IColony
@@ -24,6 +25,10 @@ public class Colony : IColony
     public string GetSpecies() => Species;
 
     public List<IColonyAgent> Members => _members;
+
+    public static event Func<Vector3, Vector2Int> WorldToCellPos;
+    public static event Func<Vector2Int, Vector3> CellToWorld;
+    public static event Func<Vector2Int, Cell> GetCell;
 
     public Colony()
     {
@@ -55,20 +60,18 @@ public class Colony : IColony
         BlackBoard.AddValueOrModify("building_count", Buildings.Count);
     }
 
-    public GameObject GetNearestBuilding(Vector3 position, string typeFilter = null)
+    public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
     {
         if (BuildingEvents.GetNearestBuilding != null)
         {
-            Building b = BuildingEvents.GetNearestBuilding.Invoke(position, typeFilter);
+            Building b = BuildingEvents.GetNearestBuilding.Invoke(position);
             return b != null ? b.gameObject : null;
         }
         return null;
     }
 
-    public Vector3? GetValidBuildingPosition(Vector3 agentPos, Graph graph)
+    public Vector3? GetValidBuildingPosition()
     {
-        if (graph == null) return null;
-
         // Try 10 times
         for (int i = 0; i < 10; i++)
         {
@@ -77,17 +80,17 @@ public class Colony : IColony
             Vector3 candidatePos = Center + new Vector3(randomPoint.x, 0, randomPoint.y);
 
             // Align to grid
-            Vector2Int cellPos = graph.WorldToCellPos(candidatePos);
-            Vector3 alignedPos = graph.CellToWorld(cellPos);
+            Vector2Int cellPos = WorldToCellPos.Invoke(candidatePos);
+            Vector3 alignedPos = CellToWorld.Invoke(cellPos);
 
             // Check if walkable
-            Cell cell = graph.GetCell(cellPos);
+            Cell cell = GetCell.Invoke(cellPos);
             if (cell == null || !cell.isWalkable) continue;
 
             // Check if occupied by another building
             if (BuildingEvents.GetNearestBuilding != null)
             {
-                Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos, null);
+                Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos);
                 if (nearest != null)
                 {
                     // If a building is too close consider it occupied

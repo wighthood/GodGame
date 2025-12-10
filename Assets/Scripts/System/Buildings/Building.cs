@@ -2,13 +2,13 @@
 
 public class Building : MonoBehaviour
 {
-    public string Type { get; private set; }
+    public BuildType Type { get; private set; }
     public Colony Owner { get; private set; }
     public GameObject Root { get; private set; }
 
     private bool _initialized = false;
 
-    public void Initialize(string type, Colony owner, GameObject root)
+    public void Initialize(BuildType type, Colony owner, GameObject root)
     {
         Type = type;
         Root = root ?? gameObject;
@@ -50,10 +50,15 @@ public class Building : MonoBehaviour
         {
             Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.6f);
             Gizmos.DrawWireSphere(transform.position, 0.3f);
-#if UNITY_EDITOR
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, "Owner=null");
-#endif
         }
     }
 #endif
+}
+
+public enum BuildType : int
+{
+    House,
+    Storage,
+    Farm
 }

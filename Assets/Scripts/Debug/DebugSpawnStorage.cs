@@ -48,7 +48,7 @@ public class DebugSpawnStorage : MonoBehaviour
 
     private void ModifyNearestStorage(RessourceType type, int amount)
     {
-        Building nearest = _mbm.FindNearestBuilding(transform.position, "Storage");
+        Building nearest = _mbm.FindNearestBuilding(transform.position);
         
         if (nearest == null)
         {
@@ -113,7 +113,7 @@ public class DebugSpawnStorage : MonoBehaviour
                 owner = nearestCol as Colony;
         }
 
-        _mbm.SpawnBuilding(storagePrefab, pos, Quaternion.identity, owner, "Storage");
+        _mbm.SpawnBuilding(storagePrefab, pos, owner, BuildType.Storage);
         Debug.Log($"DebugSpawnStorage: Spawn requested for storage at {pos} owner={(owner!=null?owner.Id.ToString():"null")}");
     }
 
