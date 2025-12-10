@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -12,6 +11,8 @@ public class Graph : MonoBehaviour
     public List<Cell> graph { get; private set; }
     public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
 
+    public static System.Func<Graph> OnGetGraph;
+
     private Tilemap tilemap;
 
     private void Awake()
@@ -22,8 +23,15 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
+        
+        OnGetGraph += GetGraphInstance;
 
         tilemap = GetComponent<Tilemap>();
+    }
+
+    private Graph GetGraphInstance()
+    {
+        return this;
     }
 
     public List<Cell> GetCellsFromDict()
@@ -84,12 +92,20 @@ public class Graph : MonoBehaviour
     {
         if(graphDict != null)
         {
-            print($"drawing {graphDict.Values.ToList().Count} objects");
             Vector3 size = new(0.5f, 0.5f, 0.1f);
             Gizmos.color = Color.blue;
             foreach(Cell cell in graphDict.Values)
             {
-                Gizmos.DrawCube(CellToWorld(cell.position), size);
+                if(cell.isWalkable)
+                {
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
             }
         }
     }
@@ -103,5 +119,7 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
+        
+        OnGetGraph -= GetGraphInstance;
     }
 }

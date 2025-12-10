@@ -1,0 +1,59 @@
+﻿using UnityEngine;
+
+public class Building : MonoBehaviour
+{
+    public string Type { get; private set; }
+    public Colony Owner { get; private set; }
+    public GameObject Root { get; private set; }
+
+    private bool _initialized = false;
+
+    public void Initialize(string type, Colony owner, GameObject root)
+    {
+        Type = type;
+        Root = root ?? gameObject;
+
+        if (_initialized)
+        {
+            // If owner changed, update links
+            if (Owner != owner)
+            {
+                if (Owner != null) Owner.RemoveBuilding(Root);
+                Owner = owner;
+                if (Owner != null) Owner.AddBuilding(Root);
+            }
+            return;
+        }
+
+        Owner = owner;
+        if (Owner != null) Owner.AddBuilding(Root);
+        _initialized = true;
+    }
+
+    void OnDestroy()
+    {
+        if (Owner != null) Owner.RemoveBuilding(Root);
+    }
+
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        if (Owner != null)
+        {
+            Gizmos.color = new Color(0f, 1f, 0f, 0.6f);
+            Gizmos.DrawWireSphere(transform.position, 0.3f);
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, Owner.GetCenter());
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} sp={Owner.GetSpecies()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
+        }
+        else
+        {
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.6f);
+            Gizmos.DrawWireSphere(transform.position, 0.3f);
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, "Owner=null");
+#endif
+        }
+    }
+#endif
+}

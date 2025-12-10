@@ -4,7 +4,7 @@ using UnityEngine;
 public class TaskManager : MonoBehaviour
 {
     public BlackBoard agentBlackboard {  get; private set; }
-    public BlackBoard colonieBlackboard { get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; } 
 
     private List<TaskBase> tasks = new List<TaskBase>();
     [SerializeField]
@@ -58,9 +58,11 @@ public class TaskManager : MonoBehaviour
 
     private void ExecuteTask()
     {
-        isTaskFinished = currentTask.Do();
+        if (currentTask == null) return;
 
-        if (isTaskFinished)
+        isTaskFinished = currentTask.Do();
+        
+        if (isTaskFinished && currentTask != null)
         {
             currentTask.OnFinish();
             currentTask = null;
@@ -82,17 +84,33 @@ public class TaskManager : MonoBehaviour
 
     private void Update()
     {
+        //the colony blackboard linked
+        if (colonieBlackboard == null)
+        {
+            ColonyAgent agent = GetComponent<ColonyAgent>();
+            if (agent != null)
+            {
+                IColony col = agent.GetCurrentColony();
+                if (col != null && col is Colony concreteColony)
+                {
+                    colonieBlackboard = concreteColony.BlackBoard;
+                }
+            }
+        }
+
         if (isTaskFinished)
         {
-            if(IsTooHungry())
-            {
-                currentTask.Cancel();
-            }
-
             currentTask = GetHigherPriorityTask();
         }
         else
         {
+            if (IsTooHungry() && currentTask is not TaskEat)
+            {
+                currentTask.Cancel();
+                isTaskFinished = true;
+                return;
+            }
+
             ExecuteTask();
         }
     }

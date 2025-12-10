@@ -4,18 +4,12 @@ public class GameModeManager : MonoBehaviour
 {
     public static GameModeManager Instance;
 
-    public enum GameMode { Play, Load }
+    public enum GameMode
+    {
+        Play,
+        Load
+    }
+
     public GameMode currentMode = GameMode.Play;
 
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
 }

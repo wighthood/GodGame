@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class PathFinding
@@ -154,5 +155,11 @@ public class Cell
         gCost = int.MaxValue;
         parent = null;
         inClosedSet = false;
+    }
+
+    public void SetIsWalakble(bool _newWalkable)
+    {
+        Debug.Log($"set walkable to {_newWalkable}");
+        isWalkable = _newWalkable;
     }
 }
