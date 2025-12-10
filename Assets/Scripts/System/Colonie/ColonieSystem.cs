@@ -56,11 +56,8 @@ public class ColonieSystem : MonoBehaviour
     private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
     {
         if (colony == null || !(colony is Colony concreteColony)) return null;
-        
-        Graph graph = Graph.OnGetGraph?.Invoke();
-        if (graph == null) return null;
 
-        return concreteColony.GetValidBuildingPosition(agentPos, graph);
+        return concreteColony.GetValidBuildingPosition();
     }
 
     void Start()
