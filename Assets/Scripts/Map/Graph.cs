@@ -23,15 +23,8 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
-        
-        OnGetGraph += GetGraphInstance;
 
         tilemap = GetComponent<Tilemap>();
-    }
-
-    private Graph GetGraphInstance()
-    {
-        return this;
     }
 
     public List<Cell> GetCellsFromDict()
@@ -119,7 +112,5 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
-        
-        OnGetGraph -= GetGraphInstance;
     }
 }
