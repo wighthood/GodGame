@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SO_AnimCreator", menuName = "Scriptable Objects/SO_AnimCreator")]

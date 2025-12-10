@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimationManager : MonoBehaviour
@@ -12,20 +13,20 @@ public class AnimationManager : MonoBehaviour
     
     private void Start()
     {
-        foreach ()
+        foreach (SO_AnimCreator animCrea in animCreator)
         {
-            
+            animCrea.AddComponent(CreateAnim(animCrea));
         }
     }
 
     private void Update()
     {
-        foreach (SO_AnimBase Animname in animBase)
+        foreach (SO_AnimBase animName in animBase)
         {
-            if (Animname.CondAnim() == true)
+            if (animName.CondAnim() == true)
             {
                 isPlaying = true;
-                animator.Play();
+                animator.Play("WalkingAnim");
                 break;
             }
 

@@ -5,13 +5,13 @@ public class SO_AnimBase : ScriptableObject
 {
     public string animName;
     private bool animCond;
+    private AnimationManager animManager;
 
     public bool CondAnim()
     {
         return animCond;
     }
     
-    private AnimationManager animManager;
     public void Init(AnimationManager animMan)
     {
         animManager = animMan;
