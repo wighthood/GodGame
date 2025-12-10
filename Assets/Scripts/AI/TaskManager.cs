@@ -88,7 +88,7 @@ public class TaskManager : MonoBehaviour
         }
         else
         {
-            if (IsTooHungry())
+            if (IsTooHungry() && currentTask is not TaskEat)
             {
                 currentTask.Cancel();
                 return;

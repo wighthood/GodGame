@@ -118,6 +118,7 @@ public class AgentActions : MonoBehaviour
                 if (inventory.AddRessources(1, ressource.GetRessourceType()))
                 {
                     ressource.OnHarvrestingRessource();
+                    return;
                 }
             }
         }
