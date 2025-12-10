@@ -4,7 +4,7 @@ using UnityEngine;
 public class TaskManager : MonoBehaviour
 {
     public BlackBoard agentBlackboard {  get; private set; }
-    public BlackBoard colonieBlackboard { get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; } 
 
     private List<TaskBase> tasks = new List<TaskBase>();
     [SerializeField]
