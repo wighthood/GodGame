@@ -1,14 +1,15 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MeteoManager : MonoBehaviour
 {
-    [SerializeField] private Vector2 WeatherRange = new(60, 120);
+    [SerializeField] private Vector2 weatherRange = new(60, 120);
 
     [SerializeField] private WeatherState currentWeatherState;
     private float timerWeather;
 
-    public static event Action <WeatherState> OnWeatherChanged;
+    public static event Action <WeatherState> OnWeatherChanged;  //Lorsque WeatherState est appelé, alors 
   
     void Start()
     {
@@ -30,13 +31,13 @@ public class MeteoManager : MonoBehaviour
 
     private void MeteoChange()
     {
-        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 5);
+        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 6);
         OnWeatherChanged.Invoke(currentWeatherState);
     }
 
     private void WeatherTime()
     {
-        timerWeather = UnityEngine.Random.Range(WeatherRange.x, WeatherRange.y);
+        timerWeather = UnityEngine.Random.Range(weatherRange.x, weatherRange.y);
     }      
 }
 public enum WeatherState
