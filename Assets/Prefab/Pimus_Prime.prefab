@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 711300630693085499}
   - component: {fileID: 543139912411055940}
   - component: {fileID: 989185873531770416}
+  - component: {fileID: -2642006060528836289}
   m_Layer: 0
   m_Name: Pimus_Prime
   m_TagString: Untagged
@@ -198,3 +199,18 @@ MonoBehaviour:
   species: Pimu
   positionUpdateInterval: 0.5
   movementThreshold: 0.25
+--- !u!114 &-2642006060528836289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71d562db466d24144b26d9284ced0d81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationManager
+  animations:
+  - {fileID: 11400000, guid: 345879fc9641f7648ae6c65e664f928a, type: 2}
+  - {fileID: 11400000, guid: a76862832b978944fa0f07567b5f0dad, type: 2}
