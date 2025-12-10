@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
 
 public class GameSceneController : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GameSceneController : MonoBehaviour
     public Tilemap tilemap;
     public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
+    
+    public static event Action InitGraph;
 
     void Start()
     {
@@ -141,6 +144,7 @@ public class GameSceneController : MonoBehaviour
             TileBase tile = palette[data.tileId];
             tilemap.SetTile(pos, tile);
         }
+        InitGraph?.Invoke();
 
         tilemap.RefreshAllTiles();
         Debug.Log("Tilemap chargée");

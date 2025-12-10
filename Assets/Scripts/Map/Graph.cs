@@ -23,8 +23,7 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
-        
-        OnGetGraph += GetGraphInstance;
+        GameSceneController.InitGraph += InitGraph;
 
         tilemap = GetComponent<Tilemap>();
     }
@@ -119,7 +118,6 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
-        
-        OnGetGraph -= GetGraphInstance;
+        GameSceneController.InitGraph -= InitGraph;
     }
 }

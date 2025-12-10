@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 [System.Serializable]
 public class AgentData
@@ -36,7 +37,7 @@ public class TilemapSave
 
 public class SaveManager : MonoBehaviour
 {
-    [SerializeField] private GameModeManager gameModeManager;
+    // [SerializeField] private GameModeManager gameModeManager;
     
     public static GameData loadedStats;
     public static TilemapSave loadedTilemap;
@@ -49,13 +50,13 @@ public class SaveManager : MonoBehaviour
 
     public void OnClickPlay()
     {
-        gameModeManager.currentMode = GameModeManager.GameMode.Play;
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
         SceneManager.LoadScene("GameScene");
     }
 
     public void OnClickLoad()
     {
-        gameModeManager.currentMode = GameModeManager.GameMode.Load;
+        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
 
         if (File.Exists(StatsPath))
         {
