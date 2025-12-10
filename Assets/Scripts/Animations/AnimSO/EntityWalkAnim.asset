@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce97d34008a6fd4d849e9b0ba23d316, type: 3}
   m_Name: EntityWalkAnim
   m_EditorClassIdentifier: Assembly-CSharp::WalkAnim
-  animationName: 
+  animationName: WalkingAnim

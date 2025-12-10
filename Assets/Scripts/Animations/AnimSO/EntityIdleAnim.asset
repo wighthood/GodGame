@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bc9a983602248449858aa61eb39301, type: 3}
   m_Name: EntityIdleAnim
   m_EditorClassIdentifier: Assembly-CSharp::IdleAnim
-  animationName: 
+  animationName: Idle

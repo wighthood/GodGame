@@ -15,7 +15,6 @@ public class AgentActions : MonoBehaviour
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
-    //private Animator myAnimator;
 
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
