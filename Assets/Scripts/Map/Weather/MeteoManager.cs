@@ -31,7 +31,7 @@ public class MeteoManager : MonoBehaviour
 
     private void MeteoChange()
     {
-        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 5);
+        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 6);
         OnWeatherChanged.Invoke(currentWeatherState);
     }
 

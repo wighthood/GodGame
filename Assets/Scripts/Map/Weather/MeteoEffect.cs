@@ -4,7 +4,7 @@ using UnityEngine.Rendering.Universal;
 
 public class MeteoEffect : MonoBehaviour
 {
-    private WeatherState oldState;
+    [HideInInspector] public WeatherState oldState;
 
     public Light2D mainLight;
 
@@ -12,7 +12,9 @@ public class MeteoEffect : MonoBehaviour
 
     private ParticleSystem particuleSystem;
 
-    Coroutine testCoroutine;
+    [SerializeField] private Animator animatorRain;
+
+
 
 
     private void Awake()
@@ -33,6 +35,7 @@ public class MeteoEffect : MonoBehaviour
                 break;
             case WeatherState.Rain:
                 Debug.Log("Rain");
+                animatorRain.SetBool("IsActive", true);
                 mainLight.intensity = 0.5f;
                 break;
             case WeatherState.Storm:
@@ -70,13 +73,14 @@ public class MeteoEffect : MonoBehaviour
                 break;
             case WeatherState.Rain:
                 Debug.Log("fin rain");
+                animatorRain.SetBool("IsActive", false);
                 break;
             case WeatherState.Storm:
                 Debug.Log("fin Storm");
                 break;
 
             case WeatherState.Fog:
-                testCoroutine = StartCoroutine(WeatherFade());
+                StartCoroutine(WeatherFade());
                 break;
 
             case WeatherState.Poison:
@@ -88,7 +92,7 @@ public class MeteoEffect : MonoBehaviour
                 break;
         }
     }
-
+  
     private void Start()
     {
         MeteoManager.OnWeatherChanged += OnMeteoChange;  
@@ -132,6 +136,5 @@ public class MeteoEffect : MonoBehaviour
         }
 
         fog.SetActive(false);
-
     }
 }
