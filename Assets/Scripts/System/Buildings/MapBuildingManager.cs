@@ -23,34 +23,28 @@ public class MapBuildingManager : MonoBehaviour
             BuildingEvents.GetNearestBuilding = null;
     }
 
-    private void SpawnRequested(BuildType _type, Vector3 _position, Colony _owner)
-    {
-        SpawnBuilding(building[(int)_type], _position, _owner, _type);
-    }
-
     public Building SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
     {
-        if (prefab == null) return null;
+        if (prefab == null)
+            return null;
         
-        GameObject go = Instantiate(prefab, position, Quaternion.identity);
+        GameObject buildingObject = Instantiate(prefab, position, Quaternion.identity);
         
-        Building b = go.GetComponent<Building>();
+        Building building = buildingObject.GetComponent<Building>();
+        if (building == null)
+            building = buildingObject.AddComponent<Building>();
         
-        if (b == null)
+        building.Initialize(type, owner, buildingObject);
+        
+        if (!buildings.Contains(building))
         {
-            b = go.AddComponent<Building>();
+            buildings.Add(building);
+            AddToBucket(building);
         }
 
-        b.Initialize(type, owner, go);
-
-        if (!buildings.Contains(b))
-        {
-            buildings.Add(b);
-            AddToBucket(b);
-        }
-
-        return b;
+        return building;
     }
+
 
     public void DestroyBuilding(Building b)
     {
@@ -62,70 +56,82 @@ public class MapBuildingManager : MonoBehaviour
         }
         if (b.gameObject != null) Destroy(b.gameObject);
     }
-
-    // Spatial Hashing Logic
-
-    private long GetCellKey(Vector3 pos)
+    
+    private long GetCellKey(Vector3 worldPosition)
     {
-        int x = Mathf.FloorToInt(pos.x / _cellSize);
-        int z = Mathf.FloorToInt(pos.z / _cellSize);
-        return ((long)x << 32) ^ (uint)z;
-    }
-
-    private void AddToBucket(Building b)
-    {
-        long key = GetCellKey(b.transform.position);
-        if (!_spatialBuckets.TryGetValue(key, out List<Building> list))
-        {
-            list = new List<Building>();
-            _spatialBuckets[key] = list;
-        }
-        if (!list.Contains(b)) list.Add(b);
-    }
-
-    private void RemoveFromBucket(Building b)
-    {
-        long key = GetCellKey(b.transform.position);
-        if (_spatialBuckets.TryGetValue(key, out List<Building> list))
-        {
-            list.Remove(b);
-            if (list.Count == 0) _spatialBuckets.Remove(key);
-        }
-    }
-
-    public Building GetNearestBuilding(Vector3 _pos)
-    {
-        Building best = null;
-        float bestDist = float.MaxValue;
+        int cellX = Mathf.FloorToInt(worldPosition.x / _cellSize);
+        int cellZ = Mathf.FloorToInt(worldPosition.z / _cellSize);
         
-        int cx = Mathf.FloorToInt(_pos.x / _cellSize);
-        int cz = Mathf.FloorToInt(_pos.z / _cellSize);
+        long cellKey = ((long)cellX << 32) ^ (uint)cellZ;
 
-        for (int dx = -1; dx <= 1; dx++)
+        return cellKey;
+    }
+
+
+    private void AddToBucket(Building building)
+    {
+        long cellKey = GetCellKey(building.transform.position);
+        
+        if (!_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
         {
-            for (int dz = -1; dz <= 1; dz++)
-            {
-                int nx = cx + dx;
-                int nz = cz + dz;
-                long key = ((long)nx << 32) ^ (uint)nz;
+            bucket = new List<Building>();
+            _spatialBuckets[cellKey] = bucket;
+        }
+        if (!bucket.Contains(building))
+            bucket.Add(building);
+    }
+    
+    private void RemoveFromBucket(Building building)
+    {
+        
+        long cellKey = GetCellKey(building.transform.position);
+        
+        if (_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
+        {
+            bucket.Remove(building);
+            
+            if (bucket.Count == 0)
+                _spatialBuckets.Remove(cellKey);
+        }
+    }
 
-                if (_spatialBuckets.TryGetValue(key, out List<Building> list))
+
+    public Building GetNearestBuilding(Vector3 position)
+    {
+        Building bestBuilding = null;
+        
+        float bestDistance = float.MaxValue;
+        
+        int cellX = Mathf.FloorToInt(position.x / _cellSize);
+        int cellZ = Mathf.FloorToInt(position.z / _cellSize);
+        
+        for (int offsetX = -1; offsetX <= 1; offsetX++)
+        {
+            for (int offsetZ = -1; offsetZ <= 1; offsetZ++)
+            {
+                int neighborCellX = cellX + offsetX;
+                int neighborCellZ = cellZ + offsetZ;
+                
+                long cellKey = ((long)neighborCellX << 32) ^ (uint)neighborCellZ;
+
+                if (_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
                 {
-                    foreach (Building b in list)
+                    foreach (Building b in bucket)
                     {
                         if (b == null) continue;
 
-                        float d = Vector3.Distance(b.transform.position, _pos);
-                        if (d < bestDist)
+                        float d = Vector3.Distance(b.transform.position, position);
+                        if (d < bestDistance)
                         {
-                            bestDist = d;
-                            best = b;
+                            bestDistance = d;
+                            bestBuilding = b;
                         }
                     }
                 }
             }
         }
 
-        return best;
+        return bestBuilding;
     }
+
 }

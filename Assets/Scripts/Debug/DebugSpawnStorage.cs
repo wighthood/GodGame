@@ -50,30 +50,23 @@ public class DebugSpawnStorage : MonoBehaviour
     {
         Building nearest = _mbm.GetNearestBuilding(transform.position);
         
-        if (nearest == null)
-        {
-            Debug.LogWarning("DebugSpawnStorage: No Storage building found nearby via MapBuildingManager.");
-            return;
-        }
+        if (nearest == null) return;
 
         Stockage stockage = nearest.GetComponent<Stockage>();
         
-        if (stockage == null)
-        {
-            Debug.LogWarning("DebugSpawnStorage: Nearest building has no Stockage component.");
-            return;
-        }
+        if (stockage == null) return;
 
-        bool ok;
+        bool check;
+        
         if (amount > 0)
         {
-            ok = stockage.AddRessources(type, amount);
-            Debug.Log($"DebugSpawnStorage: Added {amount} {type} to storage '{nearest.name}' success={ok}");
+            check = stockage.AddRessources(type, amount);
+            Debug.Log($"DebugSpawnStorage: Added {amount} {type} to storage '{nearest.name}' success={check}");
         }
         else
         {
-            ok = stockage.DelRessources(type, -amount);
-            Debug.Log($"DebugSpawnStorage: Removed {-amount} {type} from storage '{nearest.name}' success={ok}");
+            check = stockage.DelRessources(type, -amount);
+            Debug.Log($"DebugSpawnStorage: Removed {-amount} {type} from storage '{nearest.name}' success={check}");
         }
 
         Dictionary<RessourceType, int> contents = stockage.GetAllRessources();
@@ -91,17 +84,8 @@ public class DebugSpawnStorage : MonoBehaviour
     
     public void SpawnStorage()
     {
-        if (_mbm == null)
-        {
-            Debug.LogError("DebugSpawnStorage: MapBuildingManager not available.");
-            return;
-        }
-
-        if (storagePrefab == null)
-        {
-            Debug.LogWarning("DebugSpawnStorage: storagePrefab is not assigned.");
-            return;
-        }
+        if (_mbm == null) return;
+        if (storagePrefab == null) return;
 
         Vector3 pos = (spawnPoint != null) ? spawnPoint.position : transform.position;
         Colony owner = null;
@@ -114,6 +98,7 @@ public class DebugSpawnStorage : MonoBehaviour
         }
 
         _mbm.SpawnBuilding(storagePrefab, pos, owner, BuildType.Storage);
+        
         Debug.Log($"DebugSpawnStorage: Spawn requested for storage at {pos} owner={(owner!=null?owner.Id.ToString():"null")}");
     }
 

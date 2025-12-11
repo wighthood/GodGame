@@ -46,11 +46,15 @@ public class Colony : IColony
         BlackBoard.AddValue("base_max_inhabitants", BaseMaxInhabitants);
     }
 
-    public void AddBuilding(GameObject b)
+    public void AddBuilding(GameObject building)
     {
-        if (b == null) return;
-        if (!Buildings.Contains(b)) Buildings.Add(b);
-        BlackBoard.AddValue("building_count", Buildings.Count);
+        if (building == null) return;
+        
+        if (!Buildings.Contains(building)) BlackBoard.AddValue("building_count", Buildings.Count);
+        else
+        {           
+            BlackBoard.ModifyValue("building_count", Buildings.Count);
+        }
     }
 
     public void RemoveBuilding(GameObject b)
@@ -64,8 +68,8 @@ public class Colony : IColony
     {
         if (BuildingEvents.GetNearestBuilding != null)
         {
-            Building b = BuildingEvents.GetNearestBuilding.Invoke(position);
-            return b != null ? b.gameObject : null;
+            Building build = BuildingEvents.GetNearestBuilding.Invoke(position);
+            return build != null ? build.gameObject : null;
         }
         return null;
     }
