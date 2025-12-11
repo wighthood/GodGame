@@ -17,7 +17,6 @@ public class TaskWandering : TaskBase
 
     public override bool Do()
     {
-        Debug.Log("Doing B");
         isFinished = actions.MoveTo(targetPos);
         pathDebug = actions.GetPath();
         return FinishCondition();
@@ -36,12 +35,29 @@ public class TaskWandering : TaskBase
     public override void OnStart()
     {
         Vector3 pos = transform.position;
-        targetPos.Set(pos.x + Random.Range(-5, 5), pos.y + Random.Range(-5, 5), 0);
+        targetPos.Set(pos.x + Random.Range(-8, 8), pos.y + Random.Range(-8, 8), 0);
     }
 
     protected override bool FinishCondition()
     {
         bool cond = isFinished;
         return cond;
+    }
+
+    public override void DrawActionsGizmo()
+    {
+        if (pathDebug == null || pathDebug.Count == 0)
+            return;
+
+        Gizmos.color = Color.green;
+
+        for (int i = 0; i < pathDebug.Count - 1; i++)
+        {
+            Vector2 firstPos = new();
+            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            Vector2 secPos = new();
+            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            Gizmos.DrawLine(firstPos, secPos);
+        }
     }
 }

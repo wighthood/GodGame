@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,14 +11,52 @@ public class AgentActions : MonoBehaviour
     private PathFinding pathFinding;
     private List<Cell> currentPath;
 
+    private Vector2 currentTargetWorld;
+
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
+
+    public static event Func<RessourceType, Transform, Transform> GetRessources;
+    public static event Func<Vector2Int, Vector3> CellToWorld;
+
+    [Header("Building Prefabs")]
+    public GameObject storagePrefab;
+
+    private Building _nearestBuilding;
+    public Action<Building> OnNearestBuildingChanged;
+
+    private Vector3 lastPos;
+    public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
 
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
-        pathFinding = new();
+        pathFinding = new PathFinding();
+
+
+        MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
+    }
+
+    private void RebuildPathIfNeeded(Cell _modifiedCell)
+    {
+        if(currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
+        { return; }
+
+        CalculPath();
+    }
+
+    private void Start()
+    {
+        BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
+        BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
+    }
+
+    private void OnDestroy()
+    {
+        BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
+        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
+        BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
     }
 
     public List<Cell> GetPath()
@@ -27,40 +66,68 @@ public class AgentActions : MonoBehaviour
 
     private void MoveAgent(Vector2 _dir)
     {
-        transform.position = transform.position + (Vector3)(_dir * moveFactor * Time.deltaTime);
+        lastPos = transform.position;
+        transform.position = transform.position + (Vector3)(moveFactor * Time.deltaTime * _dir);
     }
 
-    public bool MoveTo(Vector2 targetWorld)
+    private void CalculPath()
     {
-        currentPath = pathFinding.FindPath(transform.position, targetWorld);
+        currentPath = pathFinding.FindPath(transform.position, currentTargetWorld);
+    }
 
-        if (currentPath == null || currentPath.Count == 0)
+    public bool MoveTo(Vector2 _targetWorld)
+    {
+        if (pathFinding == null)
         {
+            Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
             return true;
         }
-
-        if(currentPath.Count == 1)
+        
+        if (currentPath == null)
         {
-            Vector3 finalPos = Graph.instance.CellToWorld(currentPath[0].position);
-            if (Vector2.Distance(transform.position, finalPos) < 0.1f)
+            currentTargetWorld = _targetWorld;
+            CalculPath();
+
+            if (currentPath == null || currentPath.Count == 0)
             {
-                currentPath = null;
                 return true;
             }
         }
 
-        print(currentPath.Count);
+        Cell nextCell = pathFinding.PeekNextPoint();
+        if (nextCell == null)
+        {
+            currentPath = null;
+            return true;
+        }
 
-        Cell nextCell = currentPath[0];
-        Vector3 nextWorld = Graph.instance.CellToWorld(nextCell.position);
+        Vector3 nextWorld;
+        if (CellToWorld != null)
+        {
+            nextWorld = CellToWorld.Invoke(nextCell.position);
+        }
+        else
+        {
+            Graph graph = UnityEngine.Object.FindObjectOfType<Graph>();
+            if (graph != null)
+            {
+                nextWorld = graph.CellToWorld(nextCell.position);
+            }
+            else
+            {
+                Debug.LogError("AgentActions: No CellToWorld delegate and no Graph found in scene. Using agent position as fallback.");
+                nextWorld = transform.position;
+            }
+        }
 
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
 
-        if (Vector2.Distance(transform.position, nextWorld) < 0.1f)
+        if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {
-            pathFinding.GoToNextPoint();
+            pathFinding.AdvancePoint();
+            return false;
         }
 
         return false;
@@ -68,6 +135,11 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Transform _target)
     {
+        if (_target == null)
+        {
+            Debug.LogWarning("AgentActions.MoveTo called with null target; aborting move.");
+            return true;
+        }
         return MoveTo(_target.position);
     }
 
@@ -81,9 +153,6 @@ public class AgentActions : MonoBehaviour
     {
         switch (_ressource)
         {
-            default:
-                break;
-
             case RessourceType.food:
                 HarvrestRessource(0, _ressource);
                 break;
@@ -92,6 +161,8 @@ public class AgentActions : MonoBehaviour
                 HarvrestRessource(1, _ressource);
                 break;
         }
+
+        TryAutoCreateStorage();
     }
 
     private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
@@ -103,17 +174,38 @@ public class AgentActions : MonoBehaviour
             return;
         }
 
-        foreach(RaycastHit2D hit in hits)
+        foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
 
-            if(ressource.GetRessourceType() == _ressource)
+            if (ressource.GetRessourceType() == _ressource)
             {
                 if (inventory.AddRessources(1, ressource.GetRessourceType()))
                 {
                     ressource.OnHarvrestingRessource();
+                    return;
                 }
             }
+        }
+    }
+
+    private void TryAutoCreateStorage()
+    {
+        if (storagePrefab == null) return;
+        if (inventory == null) return;
+
+        RessourceStockedData data = inventory.GetRessources();
+        if (data.ressource == RessourceType.wood && data.amount >= 5)
+        {
+            inventory.ResetRessource();
+            Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
+            Colony owner = null;
+            ColonyAgent ca = GetComponent<ColonyAgent>();
+            if (ca != null)
+            {
+                owner = ca.GetCurrentColony() as Colony;
+            }
+            BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
         }
     }
 
@@ -128,20 +220,37 @@ public class AgentActions : MonoBehaviour
         return inventory.GetRessourceType() == ressource;
     }
 
-    public Transform GetNearestFoodRessource(RessourceType ressourceType)
+    public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
-        float nearestDistance = float.MaxValue;
-        List<Ressource> ressources = MapRessourceManager.Get().GetRessources(ressourceType);
-        Transform nearestRessource = ressources[0].transform;
-        foreach (Ressource ressource in ressources)
-        {
-            if (ressource.GetRessourceType() == ressourceType && Vector3.Distance(transform.position, ressource.transform.position) < nearestDistance)
-            {
-                nearestDistance = Vector3.Distance(transform.position, nearestRessource.transform.position);
-                nearestRessource = ressource.transform;
-            }
-        }
+        return GetRessources.Invoke(_ressourceType, transform);
+    }
+    
+    private void OnBuildingSpawned(Building b)
+    {
+        UpdateNearestBuilding();
+    }
 
-        return nearestRessource;
+    private void OnBuildingsChanged()
+    {
+        UpdateNearestBuilding();
+    }
+
+    private void UpdateNearestBuilding()
+    {
+        Building found = FindNearestBuilding(null);
+        if (found != _nearestBuilding)
+        {
+            _nearestBuilding = found;
+            OnNearestBuildingChanged?.Invoke(_nearestBuilding);
+        }
+    }
+    
+    public Building FindNearestBuilding(string typeFilter = null)
+    {
+        if (BuildingEvents.GetNearestBuilding != null)
+        {
+            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
+        }
+        return null;
     }
 }

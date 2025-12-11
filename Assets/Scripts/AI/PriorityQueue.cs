@@ -19,7 +19,8 @@ public class PriorityQueue<T>
         T top = heap[0].item;
         heap[0] = heap[heap.Count - 1];
         heap.RemoveAt(heap.Count - 1);
-        HeapifyDown(0);
+        if(heap.Count > 1)
+            HeapifyDown(0);
         return top;
     }
 

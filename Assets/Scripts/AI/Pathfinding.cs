@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class PathFinding
 {
     private List<Cell> tempNeighbors = new();
-    private List<Cell> usedCells = new();
     private List<Cell> path = new();
+
+    private int pathIndex = 0;
 
     private Vector2Int[] directions =
     {
@@ -13,11 +16,15 @@ public class PathFinding
         Vector2Int.right,
         Vector2Int.left,
         Vector2Int.down,
-        new Vector2Int(1, 1),
-        new Vector2Int(1, -1),
-        new Vector2Int(-1, 1),
-        new Vector2Int(-1, -1),
+        new(1, 1),
+        new(1, -1),
+        new(-1, 1),
+        new(-1, -1),
     };
+
+    public static event Func<Vector2Int, Cell> GetCell;
+    public static event Func<Vector3, Cell> GetCellFromWorldPos;
+    public static event Func<List<Cell>> GetCells;
 
     private List<Cell> GetNeighbors(Cell cell)
     {
@@ -25,59 +32,58 @@ public class PathFinding
 
         foreach (var d in directions)
         {
-            if (Graph.instance.graphDict.TryGetValue(cell.position + d, out Cell n)
-                && n.isWalkable)
+            Cell c = GetCell?.Invoke(cell.position + d);
+            if (c != null && c.isWalkable)
             {
-                tempNeighbors.Add(n);
+                tempNeighbors.Add(c);
             }
         }
         return tempNeighbors;
     }
-    
+
     private int Heuristic(Cell Target, Cell start)
     {
-        return Mathf.Abs(Target.position.x - start.position.x) +
-               Mathf.Abs(Target.position.y - start.position.y);
+        int dx = Mathf.Abs(Target.position.x - start.position.x);
+        int dy = Mathf.Abs(Target.position.y - start.position.y);
+        return 10 * (dx + dy) + (4 * Mathf.Min(dx, dy));
     }
 
-    public void GoToNextPoint()
+    public Cell PeekNextPoint()
     {
-        if (path.Count > 0)
-            path.RemoveAt(0);
+        if (path == null || pathIndex >= path.Count) return null;
+        return path[pathIndex];
     }
 
-    private bool IsPathValid(Cell _endPoint)
+    public void AdvancePoint()
     {
-        return path.Count > 0 && path.TrueForAll(c => c.isWalkable) && path[^1] == _endPoint; 
+        if (path == null) return;
+        pathIndex = Mathf.Min(pathIndex + 1, path.Count);
     }
 
-    public List<Cell> FindPath(Vector2 startWorld, Vector2 endWorld)
+
+    public List<Cell> FindPath(Vector2 _startWorld, Vector2 _endWorld)
     {
-        Cell start = Graph.instance.GetCellFromWorldPos(startWorld);
-        Cell end = Graph.instance.GetCellFromWorldPos(endWorld);
+        Cell start = GetCellFromWorldPos?.Invoke(_startWorld);
+        Cell end = GetCellFromWorldPos?.Invoke(_endWorld);
 
         if (start == null || end == null)
             return null;
 
-
-        if(IsPathValid(end))
-        {
-            return path;
-        }
-
+        ResetCells();
         PriorityQueue<Cell> open = new PriorityQueue<Cell>();
 
         start.gCost = 0;
-        start.parent = null;
         open.Enqueue(start, Heuristic(start, end));
 
         while (open.Count > 0)
         {
             Cell current = open.Dequeue();
 
+            if (current.inClosedSet)
+                continue;
+
             if (current == end)
             {
-                ResetUsedCells();
                 return BuildPath(end);
             }
 
@@ -87,16 +93,18 @@ public class PathFinding
             {
                 if (neighbor.inClosedSet) continue;
 
-                int tentativeG = current.gCost + 1;
+                int moveCost = (neighbor.position.x != current.position.x &&
+                                neighbor.position.y != current.position.y) ? 14 : 10;
 
-                if (tentativeG < neighbor.gCost || !open.Contains(neighbor))
+                int tentativeG = current.gCost + moveCost;
+
+                if (tentativeG < neighbor.gCost)
                 {
                     neighbor.gCost = tentativeG;
                     neighbor.parent = current;
                     int f = neighbor.gCost + Heuristic(neighbor, end);
 
                     open.Enqueue(neighbor, f);
-                    AddToUsed(neighbor);
                 }
             }
         }
@@ -116,21 +124,15 @@ public class PathFinding
         }
 
         path.Reverse();
+        pathIndex = 0;
+        ResetCells();
         return path;
     }
 
-    private void AddToUsed(Cell c)
+    private void ResetCells()
     {
-        if (!usedCells.Contains(c))
-            usedCells.Add(c);
-    }
-
-    private void ResetUsedCells()
-    {
-        foreach (Cell c in usedCells)
-            c.Reset();
-
-        usedCells.Clear();
+        foreach (Cell cell in GetCells?.Invoke())
+            cell.Reset();
     }
 }
 
@@ -153,5 +155,11 @@ public class Cell
         gCost = int.MaxValue;
         parent = null;
         inClosedSet = false;
+    }
+
+    public void SetIsWalakble(bool _newWalkable)
+    {
+        Debug.Log($"set walkable to {_newWalkable}");
+        isWalkable = _newWalkable;
     }
 }

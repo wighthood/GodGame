@@ -4,7 +4,7 @@ using UnityEngine;
 public class TaskManager : MonoBehaviour
 {
     public BlackBoard agentBlackboard {  get; private set; }
-    public BlackBoard colonieBlackboard { get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; } 
 
     private List<TaskBase> tasks = new List<TaskBase>();
     [SerializeField]
@@ -19,8 +19,6 @@ public class TaskManager : MonoBehaviour
         agentBlackboard = new();
 
         agentBlackboard.AddValue("transform", transform);
-
-        
     }
 
     private void Start()
@@ -60,29 +58,59 @@ public class TaskManager : MonoBehaviour
 
     private void ExecuteTask()
     {
-        isTaskFinished = currentTask.Do();
-        print("exe");
+        if (currentTask == null) return;
 
-        if (isTaskFinished)
+        isTaskFinished = currentTask.Do();
+        
+        if (isTaskFinished && currentTask != null)
         {
             currentTask.OnFinish();
             currentTask = null;
         }
     }
 
+    private bool IsTooHungry()
+    {
+        float hunger = agentBlackboard.GetValue<float>("hunger");
+        float hungerPriority = Mathf.Sqrt(hunger);
+        return (hungerPriority > 0.75f && GetHigherPriorityTask() is TaskEat);
+    }
+
     public void ResetTask()
     {
+        isTaskFinished = true;
         currentTask = null;
     }
 
     private void Update()
     {
+        //the colony blackboard linked
+        if (colonieBlackboard == null)
+        {
+            ColonyAgent agent = GetComponent<ColonyAgent>();
+            if (agent != null)
+            {
+                IColony col = agent.GetCurrentColony();
+                if (col != null && col is Colony concreteColony)
+                {
+                    colonieBlackboard = concreteColony.BlackBoard;
+                }
+            }
+        }
+
         if (isTaskFinished)
         {
             currentTask = GetHigherPriorityTask();
         }
         else
         {
+            if (IsTooHungry() && currentTask is not TaskEat)
+            {
+                currentTask.Cancel();
+                isTaskFinished = true;
+                return;
+            }
+
             ExecuteTask();
         }
     }
@@ -91,36 +119,6 @@ public class TaskManager : MonoBehaviour
     {
         if (!currentTask) return;
 
-        if (currentTask is TaskWandering wander)
-        {
-            if (wander.pathDebug == null || wander.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.green;
-
-            foreach (Cell cell in wander.pathDebug)
-            {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
-
-        if (currentTask is TaskEat eat)
-        {
-            if (eat.pathDebug == null || eat.pathDebug.Count == 0)
-                return;
-
-            Gizmos.color = Color.yellow;
-
-            foreach (Cell cell in eat.pathDebug)
-            {
-                if (cell == null) continue;
-                Gizmos.DrawCube(cell.position + new Vector2(0.5f, 0.5f),
-                                new Vector3(0.5f, 0.5f, 0.1f));
-            }
-        }
+        currentTask.DrawActionsGizmo();
     }
-
-
 }

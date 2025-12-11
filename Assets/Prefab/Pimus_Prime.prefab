@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 2133673559166816527}
   - component: {fileID: 711300630693085499}
   - component: {fileID: 543139912411055940}
+  - component: {fileID: 989185873531770416}
+  - component: {fileID: -2642006060528836289}
   m_Layer: 0
   m_Name: Pimus_Prime
   m_TagString: Untagged
@@ -84,12 +86,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1881946480290441159, guid: f7dedb1c8b1a2d04285ce800a06f9e66, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f7eafc94c001f64cbb237b7b97204c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 7.7382812, y: 7.1015625}
+  m_Size: {x: 10.8, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -130,8 +132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TaskManager
   taskCreators:
-  - {fileID: 11400000, guid: ca2a8b4262d11da458416cbdb74921ca, type: 2}
   - {fileID: 11400000, guid: d7acf939a823ad24ebcc52e6ca48d790, type: 2}
+  - {fileID: 11400000, guid: ca2a8b4262d11da458416cbdb74921ca, type: 2}
 --- !u!114 &2133673559166816527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +151,7 @@ MonoBehaviour:
     m_Bits: 128
   - serializedVersion: 2
     m_Bits: 64
+  storagePrefab: {fileID: 0}
 --- !u!114 &711300630693085499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,3 +182,35 @@ MonoBehaviour:
   hunger: 0
   health: 30
   maxHealth: 30
+--- !u!114 &989185873531770416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb3ffbf723f6488fba89ca6fbdeedb6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColonyAgent
+  autoRegister: 1
+  canFormColony: 1
+  species: Pimu
+  positionUpdateInterval: 0.5
+  movementThreshold: 0.25
+--- !u!114 &-2642006060528836289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71d562db466d24144b26d9284ced0d81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationManager
+  animations:
+  - {fileID: 11400000, guid: 345879fc9641f7648ae6c65e664f928a, type: 2}
+  - {fileID: 11400000, guid: a76862832b978944fa0f07567b5f0dad, type: 2}

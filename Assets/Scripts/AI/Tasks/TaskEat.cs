@@ -30,7 +30,7 @@ public class TaskEat : TaskBase
     public override void Cancel()
     {
         base.Cancel();
-        Debug.Log("Ya pas à manger");
+        Debug.Log("Ya pas ï¿½ manger");
     }
 
     public override bool Do()
@@ -39,13 +39,17 @@ public class TaskEat : TaskBase
         {
             return true;
         }
-        //TODO check in colonie inventory if there is food, if yes go take it
         else
         {
             if (targetFoodSource == null)
             {
                 GetNearestFoodIfExiste();
+                if (targetFoodSource == null)
+                {
+                    return true;
+                }
             }
+
             Vector3 selfPosition = transform.position;
             if (isArrive)
             {
@@ -63,22 +67,41 @@ public class TaskEat : TaskBase
     public override float GetPriority()
     {
         float hunger = manager.agentBlackboard.GetValue<float>("hunger");
-        Debug.Log("eat priority : " + Mathf.Sqrt(hunger));
         return Mathf.Sqrt(hunger);
     }
 
     public override void OnFinish()
     {
-        actions.Eat();
+        if (targetFoodSource != null && isArrive)
+        {
+            actions.Eat();
+        }
     }
 
     public override void OnStart()
     {
-        Debug.Log("Hungry !");
+        //Debug.Log("Hungry !");
     }
 
     protected override bool FinishCondition()
     {
         return actions.HasRessource(RessourceType.food);
+    }
+
+    public override void DrawActionsGizmo()
+    {
+        if (pathDebug == null || pathDebug.Count == 0)
+            return;
+
+        Gizmos.color = Color.green;
+
+        for (int i = 0; i < pathDebug.Count - 1; i++)
+        {
+            Vector2 firstPos = new();
+            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            Vector2 secPos = new();
+            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            Gizmos.DrawLine(firstPos, secPos);
+        }
     }
 }

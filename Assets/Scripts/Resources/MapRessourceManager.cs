@@ -1,10 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RessourceType
+{
+    none = 0,
+    wood = 1,
+    food = 2,
+}
+
 public class MapRessourceManager : MonoBehaviour
 {
-    private static MapRessourceManager instance;
-
     private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
 
     [SerializeField]
@@ -12,87 +17,81 @@ public class MapRessourceManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
-        { 
-            Destroy(gameObject);
-        }
-
-        instance = this;
+        Ressource.OnEmptyRessource += RemoveFromListForDestroy;
+        AgentActions.GetRessources += GetNearestRessource;
+        MapEditorScript.AddNewRessource += AddNewRessource;
+        WorldGeneration.AddNewRessource += AddNewRessource;
     }
 
-    private void Start()
+    public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
     {
-        ressources[RessourceType.wood] = new List<Ressource>();
-        ressources[RessourceType.food] = new List<Ressource>();
-        ressources[RessourceType.stone] = new List<Ressource>();
-        
-        //TODO remove this v
-        AddNewRessource(1, new Vector2(0, 10));
-        AddNewRessource(1, new Vector2(-10, 10));
-        AddNewRessource(1, new Vector2(8, 10));
-        AddNewRessource(1, new Vector2(-3, 5));
-    }
-
-    public void AddNewRessource(int _ressourceIndex, Vector2 _position)
-    {
-        GameObject newRessource = Instantiate(ressourcePrefab[_ressourceIndex], _position, Quaternion.identity, transform);
-        switch(_ressourceIndex)
-        {
-            case 0:
-                AddRessourceInDictionary(RessourceType.wood, newRessource.GetComponent<Ressource>());
-                break;
-            case 1:
-                AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
-                break;
-            case 2:
-                AddRessourceInDictionary(RessourceType.stone, newRessource.GetComponent<Ressource>());
-                break;
-        }
-    }
-    public void AddNewRessource(RessourceType ressourceType, Vector2 _position)
-    {
-        GameObject newRessource;
+        GameObject newRessource = null;
         switch (ressourceType)
         {
             case RessourceType.wood:
                 newRessource = Instantiate(ressourcePrefab[0], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(RessourceType.wood,
-    newRessource.GetComponent<Ressource>());
+                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
                 break;
             case RessourceType.food:
                 newRessource = Instantiate(ressourcePrefab[1], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(RessourceType.food, newRessource.GetComponent<Ressource>());
-                break;
-            case RessourceType.stone:
-                newRessource = Instantiate(ressourcePrefab[2], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(RessourceType.stone, newRessource.GetComponent<Ressource>());
+                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
                 break;
         }
+
+        return newRessource;
     }
 
-    private void AddRessourceInDictionary(RessourceType type, Ressource ressource)
+    private void AddRessourceInDictionary(Ressource ressource)
     {
-        if (!ressources.ContainsKey(type))
+        if (!ressources.ContainsKey(ressource.GetRessourceType()))
         {
-            ressources[type] = new List<Ressource>();
+            ressources[ressource.GetRessourceType()] = new List<Ressource>() { ressource };
+            return;
         }
 
-        ressources[type].Add(ressource);
+        ressources[ressource.GetRessourceType()].Add(ressource);
     }
 
-    public static MapRessourceManager Get() => instance;
-
-    public List<Ressource> GetRessources(RessourceType type)
+    public List<Ressource> GetRessources(RessourceType _type)
     {
-        if(!ressources.ContainsKey(type))
+        if(!ressources.ContainsKey(_type))
         {
             return null;
         }
-        return ressources[type];
+        return ressources[_type];
     }
 
-    public void RemoveFromListForDestroy(Ressource ressource)
+    public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
     {
+        List<Ressource> ressourcesList = GetRessources(_type);
+
+        float nearestDistance = float.MaxValue;
+
+        Transform nearestRessource = ressourcesList[0].transform;
+        foreach (Ressource ressource in ressourcesList)
+        {
+            if (ressource.GetRessourceType() == _type && Vector3.Distance(_fromEntity.position, ressource.transform.position) < nearestDistance)
+            {
+                nearestDistance = Vector3.Distance(_fromEntity.position, nearestRessource.transform.position);
+                nearestRessource = ressource.transform;
+            }
+        }
+
+        return nearestRessource;
+    }
+
+    private void RemoveFromListForDestroy(Ressource ressource)
+    {
+        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
         ressources[ressource.GetRessourceType()].Remove(ressource);
+        Destroy(ressource.gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
+        AgentActions.GetRessources -= GetNearestRessource;
+        MapEditorScript.AddNewRessource -= AddNewRessource;
+        WorldGeneration.AddNewRessource -= AddNewRessource;
     }
 }
