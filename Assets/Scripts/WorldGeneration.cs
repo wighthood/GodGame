@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -35,6 +36,8 @@ public class WorldGeneration : MonoBehaviour
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Action InitGraph;
+
+    private Vector3 treeOffSet = new Vector3(0, 0.2f, 0);
 
     void Start()
     {
@@ -107,8 +110,16 @@ public class WorldGeneration : MonoBehaviour
 
     private void SpawnResource(RessourceType type, Vector3 pos, (int, int) key)
     {
-        _spawnedLocation.Add(key);
-        _spawnedItem.Add(AddNewRessource?.Invoke(type, pos));
+        if (type == RessourceType.wood)
+        {
+            _spawnedLocation.Add(key);
+            _spawnedItem.Add(AddNewRessource?.Invoke(type, pos + treeOffSet));
+        }
+        else
+        {
+            _spawnedLocation.Add(key);
+            _spawnedItem.Add(AddNewRessource?.Invoke(type, pos));
+        }
     }
 
 
