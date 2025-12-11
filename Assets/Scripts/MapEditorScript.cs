@@ -16,6 +16,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
+    [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
 
     [SerializeField] private List<TileBase> notWalkableSprites = new();
@@ -128,13 +129,14 @@ public class MapEditorScript : MonoBehaviour
         cellToChange.SetIsWalakble(!IsWater(_selectedTile));
         OnGraphChange?.Invoke(cellToChange);
 
-        if (IsWater(tile))
+        if (IsWater(_selectedTile))
         {
             RaycastHit2D result;
             _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
 
             if (IsObject(_cellposForRaycast, out result))
             {
+                print("touche");
                 Destroy(result.collider.gameObject);
             }
         }
@@ -156,9 +158,13 @@ public class MapEditorScript : MonoBehaviour
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
             }
-            else
+            else if (ressource.GetRessourceType() == RessourceType.food )
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
+            }
+            else
+            {
+                AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + stoneOffset);
             }
         }
         else
