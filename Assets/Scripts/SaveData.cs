@@ -11,6 +11,11 @@ public class GameSceneController : MonoBehaviour
     public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
     
+    [Header("Réfs ressources")]
+    [SerializeField] private GameObject ressourceParent;
+    [SerializeField] private List<GameObject> ressourcePrefab;
+    
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Action InitGraph;
 
     void Start()
@@ -25,6 +30,8 @@ public class GameSceneController : MonoBehaviour
             worldGen.enabled = false;
             LoadStatsAndAgents();
             LoadTilemap();
+            LoadRessource();
+            LoadBlackBoard();
         }
     }
 
@@ -32,8 +39,10 @@ public class GameSceneController : MonoBehaviour
     {
         GameData stats = BuildStatsData();
         TilemapSave tData = BuildTilemapData();
+        RessourceSave rData = BuildRessourceData();
+        BlackboardSave bbData = BuildBlackBoard();
 
-        SaveManager.SaveAll(stats, tData);
+        SaveManager.SaveAll(stats, tData, rData, bbData);
     }
 
     GameData BuildStatsData()
@@ -55,7 +64,6 @@ public class GameSceneController : MonoBehaviour
 
             data.agentData.Add(a);
         }
-
         return data;
     }
 
@@ -95,6 +103,36 @@ public class GameSceneController : MonoBehaviour
         return save;
     }
 
+    RessourceSave BuildRessourceData()
+    {
+        RessourceSave save = new RessourceSave();
+        save.ress = new List<RessourceSaveData>();
+
+        for (int i = 0; i < ressourceParent.transform.childCount; i++)
+        {
+            Transform child = ressourceParent.transform.GetChild(i);
+            
+            Ressource res = child.GetComponent<Ressource>();
+            if (res == null) continue;
+            
+            RessourceSaveData saveData = new RessourceSaveData();
+            saveData.ressourcePos = child.position;
+            saveData.ressourceType = res.GetRessourceType();
+            
+            save.ress.Add(saveData);
+        }
+        return save;
+    }
+
+    BlackboardSave BuildBlackBoard()
+    {
+        BlackboardSave bbSave = new BlackboardSave();
+        bbSave.blackBoard = new BlackBoard();
+        bbSave.blackBoard.BbValues();
+        
+        return bbSave;
+    }
+
     void LoadStatsAndAgents()
     {
         GameData data = SaveManager.loadedStats;
@@ -113,13 +151,14 @@ public class GameSceneController : MonoBehaviour
 
         foreach (AgentData agentData in data.agentData)
         {
-            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos,
-                                           Quaternion.identity, agentParent.transform);
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent.transform);
             AIStats aiStats = agent.GetComponent<AIStats>();
             aiStats.hunger    = agentData.hunger;
             aiStats.health    = agentData.health;
             aiStats.maxHealth = agentData.maxHealth;
         }
+        
+        Debug.Log("Stats et agents bien chargés");
     }
 
     void LoadTilemap()
@@ -148,5 +187,41 @@ public class GameSceneController : MonoBehaviour
 
         tilemap.RefreshAllTiles();
         Debug.Log("Tilemap chargée");
+    }
+
+    void LoadRessource()
+    {
+        RessourceSave rData = SaveManager.loadedRessource;
+        
+        if (rData == null)
+        {
+            Debug.LogWarning("Pas de ressources");
+            return;
+        }
+        
+        for (int i = ressourceParent.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(ressourceParent.transform.GetChild(i).gameObject);
+        }
+
+        foreach (RessourceSaveData save in rData.ress)
+        {
+            AddNewRessource.Invoke(save.ressourceType, save.ressourcePos);
+        }
+        
+        Debug.Log("Ressource bien chargée(s)");
+    }
+
+    void LoadBlackBoard()
+    {
+        BlackboardSave bbSave = SaveManager.loadedBlackBoard;
+        
+        if (bbSave == null)
+        {
+            Debug.LogWarning("Pas de blackboard");
+            return;
+        }
+        
+        Debug.Log("BlackBoard bien chargé");
     }
 }

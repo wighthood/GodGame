@@ -5,13 +5,13 @@ public class MenusScript : MonoBehaviour
 {
     public static void Begin()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene SaveSystem");
         AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 
     public static void MainMenu()
     {
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("Main Menu saveSystem");
         AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
         Time.timeScale = 1;
     }

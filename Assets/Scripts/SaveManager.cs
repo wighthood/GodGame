@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-[System.Serializable]
+[Serializable]
 public class AgentData
 {
     public float hunger;
@@ -14,14 +14,14 @@ public class AgentData
     public Vector3 agentsPos;
 }
 
-[System.Serializable]
+[Serializable]
 public class GameData
 {
     public Vector3 cam;
     public List<AgentData> agentData = new List<AgentData>();
 }
 
-[System.Serializable]
+[Serializable]
 public class TileSaveData
 {
     public int x;
@@ -29,29 +29,51 @@ public class TileSaveData
     public int tileId;
 }
 
-[System.Serializable]
+[Serializable]
 public class TilemapSave
 {
     public List<TileSaveData> tiles = new List<TileSaveData>();
 }
 
+[Serializable]
+public class RessourceSave
+{
+    public List<RessourceSaveData> ress = new List<RessourceSaveData>();
+}
+
+[Serializable]
+public class RessourceSaveData
+{
+    public Vector3 ressourcePos;
+    public RessourceType ressourceType;
+}
+
+[Serializable]
+public class BlackboardSave
+{
+    public BlackBoard blackBoard;
+}
+
 public class SaveManager : MonoBehaviour
 {
-    // [SerializeField] private GameModeManager gameModeManager;
     
     public static GameData loadedStats;
     public static TilemapSave loadedTilemap;
+    public static RessourceSave loadedRessource;
+    public static BlackboardSave loadedBlackBoard;
 
     [Header("Palette commune pour la tilemap")]
     public TileBase[] tilePalette;
 
     string StatsPath => Application.persistentDataPath + "/AllData.json";
     string TilemapPath => Application.persistentDataPath + "/tilemap.json";
+    string RessourcePath => Application.persistentDataPath + "/ressource.json";
+    string BlackBoardPath => Application.persistentDataPath + "/blackboard.json";
 
     public void OnClickPlay()
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("GameScene SaveSystem");
     }
 
     public void OnClickLoad()
@@ -77,17 +99,41 @@ public class SaveManager : MonoBehaviour
         {
             loadedTilemap = null;
         }
+        
+        if (File.Exists(RessourcePath))
+        {
+            string json = File.ReadAllText(RessourcePath);
+            loadedRessource = JsonUtility.FromJson<RessourceSave>(json);
+        }
+        else
+        {
+            loadedRessource = null;
+        }
 
-        SceneManager.LoadScene("GameScene");
+        if (File.Exists(BlackBoardPath))
+        {
+            string json = File.ReadAllText(BlackBoardPath);
+            loadedBlackBoard = JsonUtility.FromJson<BlackboardSave>(json);
+        }
+        else
+        {
+            loadedBlackBoard = null;
+        }
+
+        SceneManager.LoadScene("GameScene SaveSystem");
     }
 
-    public static void SaveAll(GameData stats, TilemapSave tilemap)
+    public static void SaveAll(GameData stats, TilemapSave tilemap, RessourceSave ressources, BlackboardSave blackboard)
     {
         string statsPath = Application.persistentDataPath + "/AllData.json";
         string tilePath  = Application.persistentDataPath + "/tilemap.json";
+        string ressourcePath  = Application.persistentDataPath + "/ressource.json";
+        string blackBoardPath  = Application.persistentDataPath + "/blackboard.json";
 
         File.WriteAllText(statsPath,  JsonUtility.ToJson(stats));
         File.WriteAllText(tilePath,   JsonUtility.ToJson(tilemap));
+        File.WriteAllText(ressourcePath,   JsonUtility.ToJson(ressources));
+        File.WriteAllText(blackBoardPath,   JsonUtility.ToJson(blackboard));
 
         Debug.Log("Sauvegarde complète effectuée");
     }
