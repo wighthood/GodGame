@@ -2,54 +2,62 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Wandering", menuName = "Tasks/Wandering")]
-public class TaskWandering : TaskBase
+[CreateAssetMenu(fileName = "BuildHouse", menuName = "Tasks/BuildHouse")]
+public class TaskBuildHouse : TaskBase
 {
-    Vector3 targetPos;
-    private bool isFinished;
+    Vector3? batimentPosition;
     public List<Cell> pathDebug = new();
-    Transform transform;
-
-    public override void Init(TaskManager _manager, AgentActions _actions)
-    {
-        base.Init(_manager, _actions);
-        transform = _manager.agentBlackboard.GetValue<Transform>("transform");
-    }
+    bool isArrived;
 
     public override bool Do()
     {
-        isFinished = actions.MoveTo(targetPos);
+        if(batimentPosition == null) { return true; }
+
+        isArrived = actions.MoveTo((Vector2)batimentPosition);
         pathDebug = actions.GetPath();
         return FinishCondition();
     }
 
     public override float GetPriority()
     {
-        return 0.35f;
+        if (manager.colonieBlackboard == null)
+        {
+            return 0;
+        }
+
+        int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
+        int maxColonyPop = manager.colonieBlackboard.GetValue<int>("MaxHabitant");
+
+        //Debug.Log($"build priority : {(float)actualColonyPop / (float)maxColonyPop}");
+
+        return (float)actualColonyPop / (float)maxColonyPop;
     }
 
     public override void OnFinish()
     {
-        
+        actions.StartBuild(2f, BuildType.House);
     }
 
     public override void OnStart()
     {
-        Vector3 pos = transform.position;
-        targetPos.Set(pos.x + Random.Range(-8, 8), pos.y + Random.Range(-8, 8), 0);
+        batimentPosition = actions.GetValidBuildPosition();
+
+        if (batimentPosition == null)
+        {
+            isArrived = true;
+        }
     }
 
     protected override bool FinishCondition()
     {
-        bool cond = isFinished;
-        return cond;
+        return isArrived;
     }
 
     public override void DrawActionsGizmo()
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing Wandering task", style);
+        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing BuildHouse task", style);
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;

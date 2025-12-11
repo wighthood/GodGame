@@ -6,7 +6,7 @@ public interface IColony
 {
     int GetId();
     
-    Vector3 GetCenter();
+    Vector3 GetColonyCenter();
     
     int GetInhabitants();
    

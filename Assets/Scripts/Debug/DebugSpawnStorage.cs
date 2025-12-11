@@ -108,8 +108,8 @@ public class DebugSpawnStorage : MonoBehaviour
 
         if (attachToNearestColony)
         {
-            IColony nearestCol = ColonieSystem.Instance?.GetAllColonies()?.OrderBy(c => Vector3.Distance(c.GetCenter(), pos)).FirstOrDefault();
-            if (nearestCol != null && Vector3.Distance(nearestCol.GetCenter(), pos) <= searchRadius)
+            IColony nearestCol = ColonieSystem.Instance?.GetAllColonies()?.OrderBy(c => Vector3.Distance(c.GetColonyCenter(), pos)).FirstOrDefault();
+            if (nearestCol != null && Vector3.Distance(nearestCol.GetColonyCenter(), pos) <= searchRadius)
                 owner = nearestCol as Colony;
         }
 

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class Colony : IColony
+public class Colony : MonoBehaviour, IColony
 {
     public int Id;
-    public Vector3 Center;
     public int Inhabitants;
     public int MaxInhabitants;
-    public int BaseMaxInhabitants;
+    public int BaseMaxInhabitants; 
     public List<GameObject> Buildings;
-    public Dictionary<string, int> Resources;
+    [SerializeField] private GameObject buildParent;
+    public Dictionary<RessourceType, int> Resources;
     public float InfluenceRadius;
     private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
     public string Species;
@@ -18,7 +19,7 @@ public class Colony : IColony
     public BlackBoard BlackBoard { get; private set; }
 
     public int GetId() => Id;
-    public Vector3 GetCenter() => Center;
+    public Vector3 GetColonyCenter() => transform.position;
     public int GetInhabitants() => Inhabitants;
     public int GetMaxInhabitants() => MaxInhabitants;
     public IReadOnlyList<IColonyAgent> GetMembers() => _members.AsReadOnly();
@@ -26,38 +27,41 @@ public class Colony : IColony
 
     public List<IColonyAgent> Members => _members;
 
+    public Transform GetBuildingParent() => buildParent.transform;
+
     public static event Func<Vector3, Vector2Int> WorldToCellPos;
     public static event Func<Vector2Int, Vector3> CellToWorld;
     public static event Func<Vector2Int, Cell> GetCell;
 
-    public Colony()
+    public void InitColony()
     {
         Buildings = new List<GameObject>();
-        Resources = new Dictionary<string, int>();
+        Resources = new Dictionary<RessourceType, int>();
         BlackBoard = new BlackBoard();
-        BaseMaxInhabitants = 0;
-        MaxInhabitants = 0;
+        BaseMaxInhabitants = 5;
+        MaxInhabitants = BaseMaxInhabitants;
     }
 
-    public void SetBaseMaxInhabitants(int baseMax)
+    public void AddAgentToColony(IColonyAgent _newAgent)
     {
-        BaseMaxInhabitants = Mathf.Max(0, baseMax);
-        MaxInhabitants = BaseMaxInhabitants;
-        BlackBoard.AddValueOrModify("base_max_inhabitants", BaseMaxInhabitants);
+        _members.Add(_newAgent);
+        _newAgent.SetCurrentColony(this);
+        Inhabitants++;
+        BlackBoard.AddValueOrModify("Habitant", Inhabitants);
     }
 
     public void AddBuilding(GameObject b)
     {
         if (b == null) return;
         if (!Buildings.Contains(b)) Buildings.Add(b);
-        BlackBoard.AddValueOrModify("building_count", Buildings.Count);
+        BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
 
     public void RemoveBuilding(GameObject b)
     {
         if (b == null) return;
         if (Buildings.Contains(b)) Buildings.Remove(b);
-        BlackBoard.AddValueOrModify("building_count", Buildings.Count);
+        BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
 
     public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
@@ -72,12 +76,11 @@ public class Colony : IColony
 
     public Vector3? GetValidBuildingPosition()
     {
-        // Try 10 times
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 100; i++)
         {
             // Pick a random point
             Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * InfluenceRadius;
-            Vector3 candidatePos = Center + new Vector3(randomPoint.x, 0, randomPoint.y);
+            Vector3 candidatePos = GetColonyCenter() + (Vector3)randomPoint;
 
             // Align to grid
             Vector2Int cellPos = WorldToCellPos.Invoke(candidatePos);
@@ -105,5 +108,15 @@ public class Colony : IColony
         }
 
         return null;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.darkRed;
+        Gizmos.DrawWireSphere(transform.position, InfluenceRadius);
+
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.darkRed;
+        Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
     }
 }

@@ -351,7 +351,7 @@ MonoBehaviour:
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
-  agentCount: 1
+  agentCount: 5
   _spawnedAgent: []
 --- !u!114 &130282018
 MonoBehaviour:
@@ -1200,7 +1200,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
   selectionBar: {fileID: 1337844821}
   buttonPrefab: {fileID: 1394653423478889474, guid: ecb8ff15570edc5459b1094c7bae3e6d, type: 3}
-  navMesh: {fileID: 1502037527}
   Prefabs: []
   layermask:
     serializedVersion: 2
@@ -1208,6 +1207,7 @@ MonoBehaviour:
   treeOffset: {x: 0, y: 0, z: 0}
   berryBushOffset: {x: 0, y: 0, z: 0}
   tileOffset: 0
+  notWalkableSprites: []
 --- !u!1 &1502037526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1332,6 +1332,96 @@ Transform:
   m_Children:
   - {fileID: 130282012}
   m_Father: {fileID: 679938721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1962365963
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1962365967}
+  - component: {fileID: 1962365966}
+  - component: {fileID: 1962365965}
+  - component: {fileID: 1962365964}
+  m_Layer: 0
+  m_Name: System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1962365964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962365963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
+  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
+  spawnPoint: {fileID: 1962365967}
+  spawnKey: 98
+  attachToNearestColony: 1
+  searchRadius: 10
+  addWoodKey: 49
+  removeWoodKey: 50
+  addFoodKey: 51
+  removeFoodKey: 52
+  _mbm: {fileID: 1962365965}
+--- !u!114 &1962365965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962365963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5417b7966e5549529369404e785fa3b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapBuildingManager
+  building:
+  - {fileID: 2453019938693668466, guid: f24cc3838fe7fa74d84f358dd88e8e3f, type: 3}
+  - {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
+  - {fileID: 2453019938693668466, guid: 4984d70452505f14bb46fe1fe762cefc, type: 3}
+--- !u!114 &1962365966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962365963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 823d26a6dfad86f4cb23211b3ee86eec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::System.Colonie.ColonieSystem
+  requiredPimusToCreate: 5
+  groupingRadius: 5
+  defaultInfluenceRadius: 15
+  defaultMaxPerPimu: 2
+  scanInterval: 1
+  colonyPrefab: {fileID: 4631027790472223001, guid: 98d6ec0594a698845b32035d8bfc2367, type: 3}
+--- !u!4 &1962365967
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962365963}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2048272658
 PrefabInstance:
@@ -1556,3 +1646,4 @@ SceneRoots:
   - {fileID: 2106598273}
   - {fileID: 1187677961}
   - {fileID: 188331454}
+  - {fileID: 1962365967}
