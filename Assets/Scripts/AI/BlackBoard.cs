@@ -3,11 +3,10 @@ using UnityEngine;
 
 public class BlackBoard
 {
-    private Dictionary<string, object> blackBoardValues = new Dictionary<string, object>();
+    private Dictionary<string, object> blackBoardValues = new();
 
     public T GetValue<T>(string _varName)
     {
-        if (!blackBoardValues.ContainsKey(_varName)) return default;
         return (T)blackBoardValues[_varName];
     }
 
@@ -36,11 +35,5 @@ public class BlackBoard
     public bool HasKey(string _varName)
     {
         return blackBoardValues.ContainsKey(_varName);
-    }
-
-    public void AddValueOrModify(string _varName, object value)
-    {
-        if (blackBoardValues.ContainsKey(_varName)) blackBoardValues[_varName] = value;
-        else blackBoardValues[_varName] = value;
     }
 }

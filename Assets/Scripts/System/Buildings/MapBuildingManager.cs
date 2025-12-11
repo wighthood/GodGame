@@ -14,14 +14,12 @@ public class MapBuildingManager : MonoBehaviour
 
     void Awake()
     {
-        BuildingEvents.OnSpawnRequested += SpawnRequested;
-        BuildingEvents.GetNearestBuilding = HandleGetNearestBuilding;
+        BuildingEvents.GetNearestBuilding = GetNearestBuilding;
     }
 
     void OnDestroy()
     {
-        BuildingEvents.OnSpawnRequested -= SpawnRequested;
-        if (BuildingEvents.GetNearestBuilding == HandleGetNearestBuilding)
+        if (BuildingEvents.GetNearestBuilding == GetNearestBuilding)
             BuildingEvents.GetNearestBuilding = null;
     }
 
@@ -49,16 +47,9 @@ public class MapBuildingManager : MonoBehaviour
         {
             buildings.Add(b);
             AddToBucket(b);
-            BuildingEvents.OnBuildingSpawned?.Invoke(b);
-            BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
         return b;
-    }
-
-    public Building FindNearestBuilding(Vector3 pos)
-    {
-        return HandleGetNearestBuilding(pos);
     }
 
     public void DestroyBuilding(Building b)
@@ -69,8 +60,6 @@ public class MapBuildingManager : MonoBehaviour
             buildings.Remove(b);
             RemoveFromBucket(b);
         }
-        BuildingEvents.OnBuildingDestroyed?.Invoke(b);
-        BuildingEvents.OnBuildingsChanged?.Invoke();
         if (b.gameObject != null) Destroy(b.gameObject);
     }
 
@@ -104,7 +93,7 @@ public class MapBuildingManager : MonoBehaviour
         }
     }
 
-    private Building HandleGetNearestBuilding(Vector3 _pos)
+    public Building GetNearestBuilding(Vector3 _pos)
     {
         Building best = null;
         float bestDist = float.MaxValue;

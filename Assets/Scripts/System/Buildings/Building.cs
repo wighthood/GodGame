@@ -15,7 +15,6 @@ public class Building : MonoBehaviour
 
         if (_initialized)
         {
-            // If owner changed, update links
             if (Owner != owner)
             {
                 if (Owner != null) Owner.RemoveBuilding(Root);

@@ -43,21 +43,11 @@ public class ColonieSystem : MonoBehaviour
         }
         Instance = this;
         _cellSize = Mathf.Max(0.1f, groupingRadius);
-
-        BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
     }
 
     void OnDestroy()
     {
-        BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
         if (Instance == this) Instance = null;
-    }
-
-    private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
-    {
-        if (colony == null || !(colony is Colony concreteColony)) return null;
-
-        return concreteColony.GetValidBuildingPosition();
     }
 
     void Start()

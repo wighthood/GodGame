@@ -12,7 +12,7 @@ public class Colony : IColony
     public List<GameObject> Buildings;
     public Dictionary<string, int> Resources;
     public float InfluenceRadius;
-    private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
+    private readonly List<IColonyAgent> _members = new();
     public string Species;
 
     public BlackBoard BlackBoard { get; private set; }
@@ -43,24 +43,24 @@ public class Colony : IColony
     {
         BaseMaxInhabitants = Mathf.Max(0, baseMax);
         MaxInhabitants = BaseMaxInhabitants;
-        BlackBoard.AddValueOrModify("base_max_inhabitants", BaseMaxInhabitants);
+        BlackBoard.AddValue("base_max_inhabitants", BaseMaxInhabitants);
     }
 
     public void AddBuilding(GameObject b)
     {
         if (b == null) return;
         if (!Buildings.Contains(b)) Buildings.Add(b);
-        BlackBoard.AddValueOrModify("building_count", Buildings.Count);
+        BlackBoard.AddValue("building_count", Buildings.Count);
     }
 
     public void RemoveBuilding(GameObject b)
     {
         if (b == null) return;
         if (Buildings.Contains(b)) Buildings.Remove(b);
-        BlackBoard.AddValueOrModify("building_count", Buildings.Count);
+        BlackBoard.ModifyValue("building_count", Buildings.Count);
     }
 
-    public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
+    public GameObject GetNearestBuilding(Vector3 position)
     {
         if (BuildingEvents.GetNearestBuilding != null)
         {
@@ -72,28 +72,22 @@ public class Colony : IColony
 
     public Vector3? GetValidBuildingPosition()
     {
-        // Try 10 times
         for (int i = 0; i < 10; i++)
         {
-            // Pick a random point
             Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * InfluenceRadius;
             Vector3 candidatePos = Center + new Vector3(randomPoint.x, 0, randomPoint.y);
-
-            // Align to grid
+            
             Vector2Int cellPos = WorldToCellPos.Invoke(candidatePos);
             Vector3 alignedPos = CellToWorld.Invoke(cellPos);
-
-            // Check if walkable
+            
             Cell cell = GetCell.Invoke(cellPos);
             if (cell == null || !cell.isWalkable) continue;
-
-            // Check if occupied by another building
+            
             if (BuildingEvents.GetNearestBuilding != null)
             {
                 Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos);
                 if (nearest != null)
                 {
-                    // If a building is too close consider it occupied
                     if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
                     {
                         continue;

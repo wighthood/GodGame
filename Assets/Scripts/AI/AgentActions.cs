@@ -191,16 +191,6 @@ public class AgentActions : MonoBehaviour
 
     public Vector3? GetValidBuildPosition()
     {
-        if (colonyAgent.GetCurrentColony() != null)
-        {
-            return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
-        }
-
         return null;
-    }
-
-    public void Build(BuildType _buildType)
-    {
-        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
     }
 }

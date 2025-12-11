@@ -48,7 +48,7 @@ public class DebugSpawnStorage : MonoBehaviour
 
     private void ModifyNearestStorage(RessourceType type, int amount)
     {
-        Building nearest = _mbm.FindNearestBuilding(transform.position);
+        Building nearest = _mbm.GetNearestBuilding(transform.position);
         
         if (nearest == null)
         {
@@ -88,7 +88,7 @@ public class DebugSpawnStorage : MonoBehaviour
         }
     }
 
-    [ContextMenu("Spawn Storage Now")]
+    
     public void SpawnStorage()
     {
         if (_mbm == null)
