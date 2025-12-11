@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
@@ -21,16 +22,9 @@ public class TaskEat : TaskBase
 
         if (target == null)
         {
-            Cancel();
             return;
         }
         targetFoodSource = target;
-    }
-
-    public override void Cancel()
-    {
-        base.Cancel();
-        Debug.Log("Ya pas � manger");
     }
 
     public override bool Do()
@@ -90,6 +84,10 @@ public class TaskEat : TaskBase
 
     public override void DrawActionsGizmo()
     {
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.green;
+        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing Eat task", style);
+
         if (pathDebug == null || pathDebug.Count == 0)
             return;
 

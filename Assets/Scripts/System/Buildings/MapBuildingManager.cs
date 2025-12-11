@@ -34,26 +34,21 @@ public class MapBuildingManager : MonoBehaviour
     {
         if (prefab == null) return null;
         
-        GameObject go = Instantiate(prefab, position, Quaternion.identity);
+        GameObject BuildGameObject = Instantiate(prefab, position, Quaternion.identity, owner.GetBuildingParent());
         
-        Building b = go.GetComponent<Building>();
-        
-        if (b == null)
-        {
-            b = go.AddComponent<Building>();
-        }
+        Building building = BuildGameObject.GetComponent<Building>();
 
-        b.Initialize(type, owner, go);
+        building.Initialize(type, owner, BuildGameObject);
 
-        if (!buildings.Contains(b))
+        if (!buildings.Contains(building))
         {
-            buildings.Add(b);
-            AddToBucket(b);
-            BuildingEvents.OnBuildingSpawned?.Invoke(b);
+            buildings.Add(building);
+            AddToBucket(building);
+            BuildingEvents.OnBuildingSpawned?.Invoke(building);
             BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
-        return b;
+        return building;
     }
 
     public Building FindNearestBuilding(Vector3 pos)
