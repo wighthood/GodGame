@@ -661,7 +661,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1283987664}
-  - {fileID: 1095685155}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &519420033
@@ -1119,6 +1118,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1095685155}
   - {fileID: 1337844821}
   - {fileID: 2048272659}
   m_Father: {fileID: 0}
@@ -1137,8 +1137,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1095685155}
-  - component: {fileID: 1095685157}
   - component: {fileID: 1095685156}
+  - component: {fileID: 1095685157}
   m_Layer: 0
   m_Name: Rain
   m_TagString: Untagged
@@ -1146,21 +1146,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1095685155
-Transform:
+--- !u!224 &1095685155
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1095685154}
-  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1.843659, y: 1.8364452, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 100, y: 100, z: 54}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 519420032}
+  m_Father: {fileID: 865834969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &1095685156
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1207,18 +1211,18 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 3082882738047812159, guid: c07004c080f0a9e43968c080767bb04f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 19.23, y: 10.825037}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
+  m_Size: {x: 19.23, y: 10.845046}
+  m_AdaptiveModeThreshold: 1
+  m_SpriteTileMode: 1
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &1095685157
 Animator:
   serializedVersion: 7
@@ -6251,12 +6255,14 @@ MonoBehaviour:
   - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
   - {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
+  weatherState: 000000000100000002000000
   layermask:
     serializedVersion: 2
     m_Bits: 448
   treeOffset: {x: 0.5, y: 1.5, z: 0}
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
   tileOffset: 0.5
+  meteoManager: {fileID: 1887286167}
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0
@@ -6332,7 +6338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd6a880b1c1ea4488ef350e10213362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeteoManager
-  weatherRange: {x: 10, y: 15}
+  weatherRange: {x: 60, y: 120}
   currentWeatherState: 0
 --- !u!4 &1887286168
 Transform:
@@ -6364,6 +6370,7 @@ MonoBehaviour:
   oldState: 0
   mainLight: {fileID: 619394801}
   fog: {fileID: 1283987661}
+  rain: {fileID: 1095685154}
   animatorRain: {fileID: 1095685157}
 --- !u!1001 &2048272658
 PrefabInstance:

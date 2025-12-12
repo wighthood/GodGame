@@ -9,6 +9,7 @@ public class MeteoEffect : MonoBehaviour
     public Light2D mainLight;
 
     [SerializeField] private GameObject fog;
+    [SerializeField] private GameObject rain;
 
     private ParticleSystem particuleSystem;
 
@@ -26,7 +27,7 @@ public class MeteoEffect : MonoBehaviour
     private void OnMeteoChange(WeatherState currentState)
     {
         EndWeather();
-
+        
         switch (currentState)
         {
             case WeatherState.Sunny:
@@ -35,13 +36,14 @@ public class MeteoEffect : MonoBehaviour
                 break;
             case WeatherState.Rain:
                 Debug.Log("Rain");
+                rain.SetActive(true);
                 animatorRain.SetBool("IsActive", true);
-                mainLight.intensity = 0.5f;
+                
                 break;
-            case WeatherState.Storm:
+            /*case WeatherState.Storm:
                 Debug.Log("Storm");
                 mainLight.intensity = 0.5f;
-                break;
+                break;*/
 
             case WeatherState.Fog:
                 Debug.Log("Fog");
@@ -51,14 +53,14 @@ public class MeteoEffect : MonoBehaviour
                 particuleSystem.Play();
 
                 break;
-            case WeatherState.Poison:
+            /*case WeatherState.Poison:
                 Debug.Log("Poison");
                 mainLight.intensity = 0.8f;
-                break;
-            case WeatherState.Care:
+                break;*/
+           /* case WeatherState.Care:
                 Debug.Log("Care");
                 mainLight.intensity = 1f;
-                break;
+                break;*/
         }
         oldState = currentState;
     }
@@ -74,22 +76,23 @@ public class MeteoEffect : MonoBehaviour
             case WeatherState.Rain:
                 Debug.Log("fin rain");
                 animatorRain.SetBool("IsActive", false);
+                rain.SetActive(false);
                 break;
-            case WeatherState.Storm:
+            /*case WeatherState.Storm:
                 Debug.Log("fin Storm");
-                break;
+                break;*/
 
             case WeatherState.Fog:
                 StartCoroutine(WeatherFade());
                 break;
 
-            case WeatherState.Poison:
+           /* case WeatherState.Poison:
                 Debug.Log("fin poison");
-                break;
+                break;*/
             
-            case WeatherState.Care:
+           /* case WeatherState.Care:
                 Debug.Log("fin care");
-                break;
+                break;*/
         }
     }
   
@@ -97,6 +100,7 @@ public class MeteoEffect : MonoBehaviour
     {
         MeteoManager.OnWeatherChanged += OnMeteoChange;  
         fog.SetActive(false);
+        rain.SetActive(false);
     }
 
     private void OnDestroy()

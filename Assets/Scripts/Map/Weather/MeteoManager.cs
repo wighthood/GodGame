@@ -31,8 +31,13 @@ public class MeteoManager : MonoBehaviour
 
     private void MeteoChange()
     {
-        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 6);
+        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 3);
         OnWeatherChanged.Invoke(currentWeatherState);
+    }
+
+    public void MeteoChange(WeatherState state)
+    {
+        OnWeatherChanged.Invoke(state);
     }
 
     private void WeatherTime()
@@ -40,12 +45,13 @@ public class MeteoManager : MonoBehaviour
         timerWeather = UnityEngine.Random.Range(weatherRange.x, weatherRange.y);
     }      
 }
+
 public enum WeatherState
 {
     Sunny = 0,
     Rain,
-    Storm,
     Fog,
+    /*Storm,
     Poison,
-    Care,
+    Care,*/
 }
