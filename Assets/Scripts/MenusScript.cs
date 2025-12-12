@@ -34,7 +34,7 @@ public class MenusScript : MonoBehaviour
         AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
         Time.timeScale = 1;
     }
-    
+
     public static void Quit()
     {
         Application.Quit();
