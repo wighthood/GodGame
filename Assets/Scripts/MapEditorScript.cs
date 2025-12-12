@@ -180,4 +180,9 @@ public class MapEditorScript : MonoBehaviour
             _isPainting = false;
         }
     }
+
+    private void OnDestroy()
+    {
+        Ressource.GetTile -= GetTile;
+    }
 }

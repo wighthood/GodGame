@@ -1055,6 +1055,54 @@ Transform:
   - {fileID: 1809394900}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &741698162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741698164}
+  - component: {fileID: 741698163}
+  m_Layer: 0
+  m_Name: Save
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &741698163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741698162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSceneController
+  worldGen: {fileID: 130282017}
+  tilemap: {fileID: 130282014}
+  agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
+  agentParent: {fileID: 188331453}
+--- !u!4 &741698164
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741698162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.31411, y: -3.36361, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &836012061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
@@ -1348,16 +1396,6 @@ MonoBehaviour:
   tileOffset: 0.5
   notWalkableSprites:
   - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
-  stoneSprites:
-  - {fileID: 21300000, guid: b06bf95944a03924e80d0e7087807d72, type: 3}
-  - {fileID: -5678677137911296802, guid: 308ae6c10bf8a5b4e9249ea1718507b6, type: 3}
-  bushSprites:
-  - {fileID: 21300000, guid: 531a87d6c304a714e84a0acc82989625, type: 3}
-  - {fileID: 21300000, guid: c682a24dc7842634c91e445c192b9224, type: 3}
-  treeSprites:
-  - {fileID: 21300000, guid: 86c1a98b77d9880438c6092cf097169c, type: 3}
-  - {fileID: 21300000, guid: 7192c218359abbf478c7841772a4d9ec, type: 3}
-  - {fileID: 21300000, guid: 3a6a91c39f7ba114393f77a16112c891, type: 3}
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0
@@ -1499,6 +1537,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 741698163}
+    - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickSave
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameSceneController, Assembly-CSharp
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1521,3 +1571,4 @@ SceneRoots:
   - {fileID: 1187677961}
   - {fileID: 188331454}
   - {fileID: 668700269}
+  - {fileID: 741698164}

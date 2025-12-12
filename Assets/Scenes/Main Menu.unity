@@ -214,6 +214,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1207601073}
+        m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
+        m_MethodName: OnClickPlay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &116855317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,8 +587,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1207601073}
-        m_TargetAssemblyTypeName: LoadData, Assembly-CSharp
-        m_MethodName: LoadFromJson
+        m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
+        m_MethodName: OnClickLoad
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1165,9 +1177,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1207601070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48c8b8a4991a6ce4eb8c3981e8c4166f, type: 3}
+  m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+  tilePalette:
+  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!114 &1207601074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1180,6 +1196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb06b51faf726646bcd5dc77a51b03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameModeManager
+  saveManager: {fileID: 1207601073}
   currentMode: 0
 --- !u!1001 &1309652775
 PrefabInstance:
