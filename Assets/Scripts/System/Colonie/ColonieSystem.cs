@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class ColonieSystem : MonoBehaviour
 {
@@ -48,17 +47,33 @@ public class ColonieSystem : MonoBehaviour
         _cellSize = Mathf.Max(0.1f, groupingRadius);
 
         BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
+        BuildingEvents.OnBuildingSpawned += BuildingSpawned;
     }
 
     void OnDestroy()
     {
         BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
+        BuildingEvents.OnBuildingSpawned -= BuildingSpawned;
         if (Instance == this) Instance = null;
+    }
+
+    private void BuildingSpawned(BuildType _type, Colony _colony)
+    {
+        switch(_type)
+        {
+            case BuildType.House:
+                _colony.AddMaxPop();
+                break;
+            case BuildType.Farm:
+                break;
+            case BuildType.Storage:
+                break;
+        }
     }
 
     private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
     {
-        if (colony == null || !(colony is Colony concreteColony)) return null;
+        if (colony == null || colony is not Colony concreteColony) return null;
 
         return concreteColony.GetValidBuildingPosition();
     }
@@ -172,7 +187,6 @@ public class ColonieSystem : MonoBehaviour
         foreach (Colony col in _colonies)
         {
             if (col == null) continue;
-            if (!string.Equals(col.Species, agent.GetSpecies(), StringComparison.OrdinalIgnoreCase)) continue;
             if (col.Inhabitants >= col.MaxInhabitants) continue;
 
             float d = Vector3.Distance(col.GetColonyCenter(), pos);
@@ -274,7 +288,6 @@ public class ColonieSystem : MonoBehaviour
         colony.BlackBoard.AddValueOrModify("Habitant", colony.Inhabitants);
 
         colony.InfluenceRadius = defaultInfluenceRadius;
-        colony.Species = _members.Count > 0 ? _members[0].GetSpecies() : "Unknown";
 
         _colonies.Add(colony);
 

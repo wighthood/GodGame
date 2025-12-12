@@ -14,7 +14,6 @@ public class Colony : MonoBehaviour, IColony
     public Dictionary<RessourceType, int> Resources;
     public float InfluenceRadius;
     private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
-    public string Species;
 
     public BlackBoard BlackBoard { get; private set; }
 
@@ -23,7 +22,6 @@ public class Colony : MonoBehaviour, IColony
     public int GetInhabitants() => Inhabitants;
     public int GetMaxInhabitants() => MaxInhabitants;
     public IReadOnlyList<IColonyAgent> GetMembers() => _members.AsReadOnly();
-    public string GetSpecies() => Species;
 
     public List<IColonyAgent> Members => _members;
 
@@ -40,6 +38,11 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard = new BlackBoard();
         BaseMaxInhabitants = 5;
         MaxInhabitants = BaseMaxInhabitants;
+    }
+
+    public void AddMaxPop()
+    {
+        MaxInhabitants += 2;
     }
 
     public void AddAgentToColony(IColonyAgent _newAgent)
@@ -63,6 +66,8 @@ public class Colony : MonoBehaviour, IColony
         if (Buildings.Contains(b)) Buildings.Remove(b);
         BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
+
+
 
     public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
     {

@@ -104,7 +104,7 @@ public class ColonyAgent : MonoBehaviour, IColonyAgent
         string label = "No colony";
         if (col != null)
         {
-            label = $"Colony {col.GetId()} ({col.GetSpecies()}) - {col.GetInhabitants()}/{col.GetMaxInhabitants()}";
+            label = $"Colony {col.GetId()} - {col.GetInhabitants()}/{col.GetMaxInhabitants()}";
         }
         Handles.Label(transform.position + Vector3.up * 1.2f, label);
     }

@@ -208,6 +208,8 @@ public class AgentActions : MonoBehaviour
     private void Build(BuildType _buildType)
     {
         BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+
+        BuildingEvents.OnBuildingSpawned?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
     }
 
     public void StartBuild(float _buildTime, BuildType _buildType)

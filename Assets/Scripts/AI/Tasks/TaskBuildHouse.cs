@@ -5,16 +5,49 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BuildHouse", menuName = "Tasks/BuildHouse")]
 public class TaskBuildHouse : TaskBase
 {
+    [SerializeField] private BuildingTable buildingTable;
+
     Vector3? batimentPosition;
     public List<Cell> pathDebug = new();
     bool isArrived;
+    AIInventory inventory;
+
+    bool isArrivedToRessource;
+    Transform targetRessource;
 
     public override bool Do()
     {
-        if(batimentPosition == null) { return true; }
+        if (batimentPosition == null) { return true; }
+
+        if(actions.GetPath() != null && actions.GetPath().Count > 0)
+        {
+            pathDebug = actions.GetPath();
+        }
+
+        if(!HasEnoughRessources())
+        {
+            //TODO check dans le stockage
+
+            if(!targetRessource)
+            {
+                targetRessource = actions.GetNearestFoodRessource(RessourceType.wood);
+                return false;
+            }
+
+            if(isArrivedToRessource)
+            {
+                actions.HarvrestRessources(RessourceType.wood);
+            }
+            else
+            {
+                isArrivedToRessource = actions.MoveTo(targetRessource.position);
+            }
+
+            return false;
+        }
 
         isArrived = actions.MoveTo((Vector2)batimentPosition);
-        pathDebug = actions.GetPath();
+        
         return FinishCondition();
     }
 
@@ -35,11 +68,20 @@ public class TaskBuildHouse : TaskBase
 
     public override void OnFinish()
     {
+        inventory.RemoveRessources(5);
         actions.StartBuild(2f, BuildType.House);
     }
 
     public override void OnStart()
     {
+        if (!inventory)
+        {
+            inventory = manager.GetComponent<AIInventory>();
+        }
+
+        targetRessource = null;
+        isArrivedToRessource = false;
+
         batimentPosition = actions.GetValidBuildPosition();
 
         if (batimentPosition == null)
@@ -51,6 +93,19 @@ public class TaskBuildHouse : TaskBase
     protected override bool FinishCondition()
     {
         return isArrived;
+    }
+
+    private bool HasEnoughRessources()
+    {
+        foreach (RessourceCollection ressourceCollection in buildingTable.ressourcesNeeded)
+        {
+            if (inventory.GetRessourceType() != ressourceCollection.RessourceType) { continue; }
+
+            if(inventory.GetRessources().amount == ressourceCollection.number)
+            { return true; }
+        }
+
+        return false;
     }
 
     public override void DrawActionsGizmo()

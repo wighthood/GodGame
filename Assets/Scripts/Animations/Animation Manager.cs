@@ -60,8 +60,6 @@ public class AnimationManager : MonoBehaviour
     {
         foreach (SO_AnimBase anim in animations)
         {
-            print($"{anim.name} cond : {anim.CanPlay(gameObject)}");
-
             if (anim.CanPlay(gameObject))
             {
                 currentAnimation = anim;

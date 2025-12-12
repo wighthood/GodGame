@@ -45,9 +45,19 @@ public class AIInventory : MonoBehaviour
         ressourceStockedData.ressource = RessourceType.none;
     }
 
+    public void RemoveRessources(int _amount)
+    {
+        ressourceStockedData.amount -= _amount;
+
+        if(ressourceStockedData.amount <= 0)
+        {
+            ResetRessource();
+        }
+    }
+
     public void RemoveOne()
     {
-        ressourceStockedData.amount--;
+        RemoveRessources(1);
     }
 }
 

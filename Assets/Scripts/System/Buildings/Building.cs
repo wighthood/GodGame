@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Building : MonoBehaviour
 {
@@ -8,14 +9,15 @@ public class Building : MonoBehaviour
 
     private bool _initialized = false;
 
+    public BuildingTable BuildingTable;
+
     public void Initialize(BuildType type, Colony owner, GameObject root)
     {
         Type = type;
-        Root = root ?? gameObject;
+        Root = root != null ? root : gameObject;
 
         if (_initialized)
         {
-            // If owner changed, update links
             if (Owner != owner)
             {
                 if (Owner != null) Owner.RemoveBuilding(Root);
@@ -44,7 +46,7 @@ public class Building : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, 0.3f);
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, Owner.GetColonyCenter());
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} sp={Owner.GetSpecies()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
         }
         else
         {
@@ -54,6 +56,13 @@ public class Building : MonoBehaviour
         }
     }
 #endif
+}
+
+[System.Serializable]
+public class RessourceCollection
+{
+    public RessourceType RessourceType;
+    public uint number;
 }
 
 public enum BuildType : int

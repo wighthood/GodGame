@@ -44,7 +44,6 @@ public class MapBuildingManager : MonoBehaviour
         {
             buildings.Add(building);
             AddToBucket(building);
-            BuildingEvents.OnBuildingSpawned?.Invoke(building);
             BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
