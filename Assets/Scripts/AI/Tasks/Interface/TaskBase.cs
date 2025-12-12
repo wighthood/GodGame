@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -20,15 +21,10 @@ public abstract class TaskBase : ScriptableObject
 
     public abstract void OnFinish();
 
-    public virtual void Cancel()
-    {
-        manager.ResetTask();
-    }
-
     public abstract float GetPriority();
 
     public virtual void DrawActionsGizmo()
     {
-
+        
     }
 }

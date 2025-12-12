@@ -42,7 +42,7 @@ public class Building : MonoBehaviour
             Gizmos.color = new Color(0f, 1f, 0f, 0.6f);
             Gizmos.DrawWireSphere(transform.position, 0.3f);
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, Owner.GetCenter());
+            Gizmos.DrawLine(transform.position, Owner.GetColonyCenter());
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} sp={Owner.GetSpecies()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
         }
         else

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,8 +27,13 @@ public class AgentActions : MonoBehaviour
 
     public Action<Building> OnNearestBuildingChanged;
 
+    #region values for animations
+
     private Vector3 lastPos;
     public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
+
+    public bool isBuilding {  get; private set; }
+    #endregion
 
     private void Awake()
     {
@@ -192,5 +198,34 @@ public class AgentActions : MonoBehaviour
     public Vector3? GetValidBuildPosition()
     {
         return null;
+    }
+
+    private void Build(BuildType _buildType)
+    {
+        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+    }
+
+    public void StartBuild(float _buildTime, BuildType _buildType)
+    {
+        isBuilding = true;
+
+        StartCoroutine(WaitAndBuild(_buildTime, _buildType));
+    }
+
+    private IEnumerator WaitAndBuild(float _buildTime, BuildType _buildType)
+    {
+        while (isBuilding)
+        {
+            _buildTime -= Time.deltaTime;
+
+            if( _buildTime <= 0 )
+            {
+                isBuilding = false;
+            }
+
+            yield return null;
+        }
+
+        Build(_buildType);
     }
 }

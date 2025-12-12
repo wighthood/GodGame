@@ -14,37 +14,47 @@ public class MapBuildingManager : MonoBehaviour
 
     void Awake()
     {
-        BuildingEvents.GetNearestBuilding = GetNearestBuilding;
+        BuildingEvents.OnSpawnRequested += SpawnRequested;
+        BuildingEvents.GetNearestBuilding = HandleGetNearestBuilding;
     }
 
     void OnDestroy()
     {
-        if (BuildingEvents.GetNearestBuilding == GetNearestBuilding)
+        BuildingEvents.OnSpawnRequested -= SpawnRequested;
+        if (BuildingEvents.GetNearestBuilding == HandleGetNearestBuilding)
             BuildingEvents.GetNearestBuilding = null;
+    }
+
+    private void SpawnRequested(BuildType _type, Vector3 _position, Colony _owner)
+    {
+        SpawnBuilding(building[(int)_type], _position, _owner, _type);
     }
 
     public Building SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
     {
-        if (prefab == null)
-            return null;
+        if (prefab == null) return null;
         
-        GameObject buildingObject = Instantiate(prefab, position, Quaternion.identity);
+        GameObject BuildGameObject = Instantiate(prefab, position, Quaternion.identity, owner.GetBuildingParent());
         
-        Building building = buildingObject.GetComponent<Building>();
-        if (building == null)
-            building = buildingObject.AddComponent<Building>();
-        
-        building.Initialize(type, owner, buildingObject);
-        
+        Building building = BuildGameObject.GetComponent<Building>();
+
+        building.Initialize(type, owner, BuildGameObject);
+
         if (!buildings.Contains(building))
         {
             buildings.Add(building);
             AddToBucket(building);
+            BuildingEvents.OnBuildingSpawned?.Invoke(building);
+            BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
         return building;
     }
 
+    public Building FindNearestBuilding(Vector3 pos)
+    {
+        return HandleGetNearestBuilding(pos);
+    }
 
     public void DestroyBuilding(Building b)
     {
@@ -54,84 +64,74 @@ public class MapBuildingManager : MonoBehaviour
             buildings.Remove(b);
             RemoveFromBucket(b);
         }
+        BuildingEvents.OnBuildingDestroyed?.Invoke(b);
+        BuildingEvents.OnBuildingsChanged?.Invoke();
         if (b.gameObject != null) Destroy(b.gameObject);
     }
-    
-    private long GetCellKey(Vector3 worldPosition)
-    {
-        int cellX = Mathf.FloorToInt(worldPosition.x / _cellSize);
-        int cellZ = Mathf.FloorToInt(worldPosition.z / _cellSize);
-        
-        long cellKey = ((long)cellX << 32) ^ (uint)cellZ;
 
-        return cellKey;
+    // Spatial Hashing Logic
+
+    private long GetCellKey(Vector3 pos)
+    {
+        int x = Mathf.FloorToInt(pos.x / _cellSize);
+        int z = Mathf.FloorToInt(pos.z / _cellSize);
+        return ((long)x << 32) ^ (uint)z;
     }
 
-
-    private void AddToBucket(Building building)
+    private void AddToBucket(Building b)
     {
-        long cellKey = GetCellKey(building.transform.position);
-        
-        if (!_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
+        long key = GetCellKey(b.transform.position);
+        if (!_spatialBuckets.TryGetValue(key, out List<Building> list))
         {
-            bucket = new List<Building>();
-            _spatialBuckets[cellKey] = bucket;
+            list = new List<Building>();
+            _spatialBuckets[key] = list;
         }
-        if (!bucket.Contains(building))
-            bucket.Add(building);
+        if (!list.Contains(b)) list.Add(b);
     }
-    
-    private void RemoveFromBucket(Building building)
+
+    private void RemoveFromBucket(Building b)
     {
-        
-        long cellKey = GetCellKey(building.transform.position);
-        
-        if (_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
+        long key = GetCellKey(b.transform.position);
+        if (_spatialBuckets.TryGetValue(key, out List<Building> list))
         {
-            bucket.Remove(building);
-            
-            if (bucket.Count == 0)
-                _spatialBuckets.Remove(cellKey);
+            list.Remove(b);
+            if (list.Count == 0) _spatialBuckets.Remove(key);
         }
     }
 
-
-    public Building GetNearestBuilding(Vector3 position)
+    private Building HandleGetNearestBuilding(Vector3 _pos)
     {
-        Building bestBuilding = null;
+        Building best = null;
+        float bestDist = float.MaxValue;
         
-        float bestDistance = float.MaxValue;
-        
-        int cellX = Mathf.FloorToInt(position.x / _cellSize);
-        int cellZ = Mathf.FloorToInt(position.z / _cellSize);
-        
-        for (int offsetX = -1; offsetX <= 1; offsetX++)
+        int cx = Mathf.FloorToInt(_pos.x / _cellSize);
+        int cz = Mathf.FloorToInt(_pos.z / _cellSize);
+
+        for (int dx = -1; dx <= 1; dx++)
         {
-            for (int offsetZ = -1; offsetZ <= 1; offsetZ++)
+            for (int dz = -1; dz <= 1; dz++)
             {
-                int neighborCellX = cellX + offsetX;
-                int neighborCellZ = cellZ + offsetZ;
-                
-                long cellKey = ((long)neighborCellX << 32) ^ (uint)neighborCellZ;
+                int nx = cx + dx;
+                int nz = cz + dz;
+                long key = ((long)nx << 32) ^ (uint)nz;
 
-                if (_spatialBuckets.TryGetValue(cellKey, out List<Building> bucket))
+                if (_spatialBuckets.TryGetValue(key, out List<Building> list))
                 {
-                    foreach (Building b in bucket)
+                    foreach (Building b in list)
                     {
                         if (b == null) continue;
 
-                        float d = Vector3.Distance(b.transform.position, position);
-                        if (d < bestDistance)
+                        float d = Vector3.Distance(b.transform.position, _pos);
+                        if (d < bestDist)
                         {
-                            bestDistance = d;
-                            bestBuilding = b;
+                            bestDist = d;
+                            best = b;
                         }
                     }
                 }
             }
         }
 
-        return bestBuilding;
+        return best;
     }
-
 }

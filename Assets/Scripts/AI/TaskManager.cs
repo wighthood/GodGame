@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public BlackBoard agentBlackboard {  get; private set; }
-    public BlackBoard colonieBlackboard { get; private set; } 
+    public BlackBoard agentBlackboard { get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; }
 
     private List<TaskBase> tasks = new List<TaskBase>();
     [SerializeField]
@@ -13,6 +14,8 @@ public class TaskManager : MonoBehaviour
 
     private bool isTaskFinished = true;
     private TaskBase currentTask;
+
+    private AgentActions actions;
 
     private void Awake()
     {
@@ -23,7 +26,7 @@ public class TaskManager : MonoBehaviour
 
     private void Start()
     {
-        if(!isInitialized)
+        if (!isInitialized)
         {
             InitTasks();
             isInitialized = true;
@@ -32,9 +35,9 @@ public class TaskManager : MonoBehaviour
 
     private void InitTasks()
     {
-        AgentActions actions = GetComponent<AgentActions>();
+        actions = GetComponent<AgentActions>();
 
-        foreach(TaskCreator tc in taskCreators)
+        foreach (TaskCreator tc in taskCreators)
         {
             tasks.Add(tc.CreateTask(this, actions));
         }
@@ -61,25 +64,12 @@ public class TaskManager : MonoBehaviour
         if (currentTask == null) return;
 
         isTaskFinished = currentTask.Do();
-        
+
         if (isTaskFinished && currentTask != null)
         {
             currentTask.OnFinish();
             currentTask = null;
         }
-    }
-
-    private bool IsTooHungry()
-    {
-        float hunger = agentBlackboard.GetValue<float>("hunger");
-        float hungerPriority = Mathf.Sqrt(hunger);
-        return (hungerPriority > 0.75f && GetHigherPriorityTask() is TaskEat);
-    }
-
-    public void ResetTask()
-    {
-        isTaskFinished = true;
-        currentTask = null;
     }
 
     private void Update()
@@ -98,26 +88,45 @@ public class TaskManager : MonoBehaviour
             }
         }
 
+        if (IsOccupied()) { return; }
+
         if (isTaskFinished)
         {
             currentTask = GetHigherPriorityTask();
         }
         else
         {
-            if (IsTooHungry() && currentTask is not TaskEat)
-            {
-                currentTask.Cancel();
-                isTaskFinished = true;
-                return;
-            }
-
             ExecuteTask();
         }
     }
 
+    private bool IsOccupied()
+    {
+        return actions.isBuilding;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        if (!currentTask) return;
+        if (!currentTask)
+        {
+            GUIStyle style = new GUIStyle();
+
+            if (!IsOccupied())
+            {
+                style.normal.textColor = Color.red;
+                Handles.Label(transform.position + Vector3.up * 0.5f, $"Idle", style);
+                return;
+            }
+
+            style.normal.textColor = Color.green;
+
+            if (actions.isBuilding)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.5f, $"Building", style);
+            }
+
+            return;
+        }
 
         currentTask.DrawActionsGizmo();
     }
