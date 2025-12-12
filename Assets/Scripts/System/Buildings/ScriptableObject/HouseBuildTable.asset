@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffddfafb432717d4abad38a25aa719ae, type: 3}
-  m_Name: BuildHouse
-  m_EditorClassIdentifier: Assembly-CSharp::TaskBuildHouse
-  buildingTable: {fileID: 11400000, guid: e3f37e29e8980f243a6ae6c11bb0f298, type: 2}
+  m_Script: {fileID: 11500000, guid: ea040699a31a7de4ba8edd4374144038, type: 3}
+  m_Name: HouseBuildTable
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingTable
+  buildType: 0
+  ressourcesNeeded:
+  - RessourceType: 1
+    number: 5

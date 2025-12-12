@@ -54,6 +54,7 @@ public class TaskManager : MonoBehaviour
             }
         }
 
+        print($"starting {higherPriorityTask.name}");
         higherPriorityTask.OnStart();
         isTaskFinished = false;
         return higherPriorityTask;
@@ -64,9 +65,11 @@ public class TaskManager : MonoBehaviour
         if (currentTask == null) return;
 
         isTaskFinished = currentTask.Do();
+        print($"doing {currentTask.name}");
 
         if (isTaskFinished && currentTask != null)
         {
+            print($"finish {currentTask.name}");
             currentTask.OnFinish();
             currentTask = null;
         }

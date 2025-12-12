@@ -13,8 +13,6 @@ public interface IColony
     int GetMaxInhabitants();
     
     IReadOnlyList<IColonyAgent> GetMembers();
-    
-    string GetSpecies();
 }
 
 public interface IColonyAgent
