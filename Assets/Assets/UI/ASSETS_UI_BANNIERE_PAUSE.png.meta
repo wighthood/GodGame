@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: eae053eb4b3c906428fef7d2183570de
+guid: ba5f744828b8bba4fa70e7f0ea27cd71
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 558078692818065520
-    second: ASSETS_UI_BANNIERE_PAUSE_0
+      213: 1565621602637445828
+    second: ASSETS_UI_BANNIERE_PAUSE(1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ASSETS_UI_BANNIERE_PAUSE_0
+      name: ASSETS_UI_BANNIERE_PAUSE(1)_0
       rect:
         serializedVersion: 2
         x: 589
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 07892224d91beb700800000000000000
-      internalID: 558078692818065520
+      spriteID: 4caf1e57d843ab510800000000000000
+      internalID: 1565621602637445828
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ASSETS_UI_BANNIERE_PAUSE_0: 558078692818065520
+      ASSETS_UI_BANNIERE_PAUSE(1)_0: 1565621602637445828
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
