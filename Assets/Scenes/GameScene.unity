@@ -1348,6 +1348,16 @@ MonoBehaviour:
   tileOffset: 0.5
   notWalkableSprites:
   - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
+  stoneSprites:
+  - {fileID: 21300000, guid: b06bf95944a03924e80d0e7087807d72, type: 3}
+  - {fileID: -5678677137911296802, guid: 308ae6c10bf8a5b4e9249ea1718507b6, type: 3}
+  bushSprites:
+  - {fileID: 21300000, guid: 531a87d6c304a714e84a0acc82989625, type: 3}
+  - {fileID: 21300000, guid: c682a24dc7842634c91e445c192b9224, type: 3}
+  treeSprites:
+  - {fileID: 21300000, guid: 86c1a98b77d9880438c6092cf097169c, type: 3}
+  - {fileID: 21300000, guid: 7192c218359abbf478c7841772a4d9ec, type: 3}
+  - {fileID: 21300000, guid: 3a6a91c39f7ba114393f77a16112c891, type: 3}
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0
