@@ -22,6 +22,7 @@ public class MapRessourceManager : MonoBehaviour
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.AddNewRessource += AddNewRessource;
+        GameSceneController.AddNewRessource += AddNewRessource;
     }
 
     public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
@@ -84,5 +85,6 @@ public class MapRessourceManager : MonoBehaviour
         AgentActions.GetRessources -= GetNearestRessource;
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.AddNewRessource -= AddNewRessource;
+        GameSceneController.AddNewRessource -= AddNewRessource;
     }
 }
