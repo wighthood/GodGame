@@ -87,7 +87,7 @@ public class GameSceneController : MonoBehaviour
         int minY = -worldGen.MapHeight() / 2;
         int maxY =  worldGen.MapHeight() / 2;
 
-        SaveManager menu = FindObjectOfType<SaveManager>();
+        SaveManager menu = GetComponent<SaveManager>();
         TileBase[] palette = menu.tilePalette;
 
         for (int x = minX; x < maxX; x++)
@@ -183,7 +183,7 @@ public class GameSceneController : MonoBehaviour
 
         tilemap.ClearAllTiles();
 
-        SaveManager menu = FindObjectOfType<SaveManager>();
+        SaveManager menu = GetComponent<SaveManager>();
         TileBase[] palette = menu.tilePalette;
 
         foreach (TileSaveData data in tData.tiles)

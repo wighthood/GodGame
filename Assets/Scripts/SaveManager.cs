@@ -138,6 +138,4 @@ public class SaveManager : MonoBehaviour
 
         Debug.Log("Sauvegarde complète effectuée");
     }
-    
-    
 }
