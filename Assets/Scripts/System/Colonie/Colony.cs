@@ -15,6 +15,8 @@ public class Colony : MonoBehaviour, IColony
     public float InfluenceRadius;
     private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
 
+    public Storage storage {  get; private set; }
+
     public BlackBoard BlackBoard { get; private set; }
 
     public int GetId() => Id;
@@ -39,6 +41,16 @@ public class Colony : MonoBehaviour, IColony
         BaseMaxInhabitants = 5;
         MaxInhabitants = BaseMaxInhabitants;
         BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
+        BlackBoard.AddValue("HasStorage", false);
+        BlackBoard.AddValue("StorageTransform", null);
+    }
+
+    public void DefineStorage(Storage _storage)
+    {
+        if(storage != null) { return; }
+
+        storage = _storage;
+        BlackBoard.AddValueOrModify("StorageTransform", _storage.transform.position);
     }
 
     public void AddMaxPop()

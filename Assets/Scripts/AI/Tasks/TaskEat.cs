@@ -86,7 +86,7 @@ public class TaskEat : TaskBase
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing Eat task", style);
+        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Eat task", style);
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;

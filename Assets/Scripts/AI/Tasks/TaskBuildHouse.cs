@@ -14,6 +14,7 @@ public class TaskBuildHouse : TaskBase
 
     bool isArrivedToRessource;
     Transform targetRessource;
+    Transform storagePosition;
 
     public override bool Do()
     {
@@ -26,21 +27,40 @@ public class TaskBuildHouse : TaskBase
 
         if(!HasEnoughRessources())
         {
-            //TODO check dans le stockage
+            RessourceCollection ressourceCollection =  buildingTable.ressourcesNeeded[0];
 
-            if(!targetRessource)
+            if (manager.colonieBlackboard != null && manager.colonieBlackboard.GetValue<Transform>("StorageTransfom") != null)
             {
-                targetRessource = actions.GetNearestFoodRessource(RessourceType.wood);
-                return false;
-            }
+                if(storagePosition == null)
+                {
+                    storagePosition = manager.colonieBlackboard.GetValue<Transform>("StorageTransfom");
+                }
 
-            if(isArrivedToRessource)
-            {
-                actions.HarvrestRessources(RessourceType.wood);
+                if(isArrivedToRessource)
+                {
+                    actions.TakeRessourcesFromStorage(ressourceCollection.RessourceType, ressourceCollection.number);
+                }
+                else
+                {
+                    isArrivedToRessource = actions.MoveTo(storagePosition);
+                }
             }
             else
             {
-                isArrivedToRessource = actions.MoveTo(targetRessource.position);
+                if (!targetRessource)
+                {
+                    targetRessource = actions.GetNearestFoodRessource(ressourceCollection.RessourceType);
+                    return false;
+                }
+
+                if (isArrivedToRessource)
+                {
+                    actions.HarvrestRessources(ressourceCollection.RessourceType);
+                }
+                else
+                {
+                    isArrivedToRessource = actions.MoveTo(targetRessource.position);
+                }
             }
 
             return false;
@@ -61,15 +81,13 @@ public class TaskBuildHouse : TaskBase
         int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
         int maxColonyPop = manager.colonieBlackboard.GetValue<int>("MaxHabitant");
 
-        Debug.Log($"actualColonyPop {actualColonyPop} maxColonyPop {maxColonyPop} \n build priority : {(float)actualColonyPop / (float)maxColonyPop}");
-
         return (float)actualColonyPop / (float)maxColonyPop;
     }
 
     public override void OnFinish()
     {
         inventory.RemoveRessources(5);
-        actions.StartBuild(2f, BuildType.House);
+        actions.StartBuild(2f, buildingTable.buildType);
     }
 
     public override void OnStart()
@@ -112,7 +130,7 @@ public class TaskBuildHouse : TaskBase
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing BuildHouse task", style);
+        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing {name}", style);
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;

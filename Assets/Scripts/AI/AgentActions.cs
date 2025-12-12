@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,9 +22,6 @@ public class AgentActions : MonoBehaviour
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
     ColonyAgent colonyAgent;
-
-    [Header("Building Prefabs")]
-    public GameObject storagePrefab;
 
     public Action<Building> OnNearestBuildingChanged;
 
@@ -196,6 +194,23 @@ public class AgentActions : MonoBehaviour
     {
         inventory.RemoveOne();
         stats.SetHungerFull();
+    }
+
+    public void TakeRessourcesFromStorage(RessourceType _ressourceType, uint _number)
+    {
+        if(inventory.HasRessource() && inventory.GetRessourceType() != _ressourceType)
+        {
+            DropRessourcesOnStorage();
+        }
+
+        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.TakeRessources(_ressourceType)
+            , _ressourceType);
+    }
+
+    public void DropRessourcesOnStorage()
+    {
+        ((Colony)colonyAgent.GetCurrentColony()).storage.AddRessources(inventory.GetRessourceType(), inventory.GetRessources().amount);
+        inventory.ResetRessource();
     }
 
     public bool HasRessource(RessourceType _ressource)

@@ -351,7 +351,7 @@ MonoBehaviour:
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
-  agentCount: 5
+  agentCount: 1
   _spawnedAgent: []
 --- !u!114 &130282018
 MonoBehaviour:
