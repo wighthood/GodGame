@@ -11,6 +11,7 @@ public class BlackBoard
         return (T)blackBoardValues[_varName];
     }
 
+
     public void AddValue(string _varName, object value)
     {
         if (blackBoardValues.ContainsKey(_varName))
@@ -42,5 +43,10 @@ public class BlackBoard
     {
         if (blackBoardValues.ContainsKey(_varName)) blackBoardValues[_varName] = value;
         else blackBoardValues[_varName] = value;
+    }
+    
+    public Dictionary<string, object> BbValues()
+    {
+        return blackBoardValues;
     }
 }
