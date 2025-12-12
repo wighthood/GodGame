@@ -2,14 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System;
+using System.Collections;
+using UnityEditor.Overlays;
+using UnityEngine.UI;
 
 public class GameSceneController : MonoBehaviour
 {
     [Header("Réfs scène de jeu")]
     public WorldGeneration worldGen;
+    public SaveManager saveManager;
     public Tilemap tilemap;
     public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
+    public GameObject saveButton;
+    public GameObject panelPauseMenu;
     
     [Header("Réfs ressources")]
     [SerializeField] private GameObject ressourceParent;
@@ -17,6 +23,8 @@ public class GameSceneController : MonoBehaviour
     
     [Header("Réfs IA / Blackboard")]
     public BlackBoard existingBlackboard;
+    
+    
     
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Action InitGraph;
@@ -228,5 +236,10 @@ public class GameSceneController : MonoBehaviour
         existingBlackboard = bbSave.blackBoard;
 
         Debug.Log("BlackBoard bien chargé");
+    }
+    
+    public void SendAlertSave()
+    {
+        saveButton.SetActive(true);
     }
 }

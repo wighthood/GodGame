@@ -4,6 +4,8 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Collections;
+using UnityEngine.UI;
 
 [Serializable]
 public class AgentData
@@ -56,12 +58,11 @@ public class BlackboardSave
 
 public class SaveManager : MonoBehaviour
 {
-    
     public static GameData loadedStats;
     public static TilemapSave loadedTilemap;
     public static RessourceSave loadedRessource;
     public static BlackboardSave loadedBlackBoard;
-
+    
     [Header("Palette commune pour la tilemap")]
     public TileBase[] tilePalette;
 
@@ -73,10 +74,10 @@ public class SaveManager : MonoBehaviour
     public void OnClickPlay()
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
-        SceneManager.LoadScene("GameScene SaveSystem");
+        SceneManager.LoadScene("GameScene");
     }
 
-    public void OnClickLoad()
+    public void LoadAll()
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
 
@@ -120,7 +121,7 @@ public class SaveManager : MonoBehaviour
             loadedBlackBoard = null;
         }
 
-        SceneManager.LoadScene("GameScene SaveSystem");
+        SceneManager.LoadScene("GameScene");
     }
 
     public static void SaveAll(GameData stats, TilemapSave tilemap, RessourceSave ressources, BlackboardSave blackboard)
@@ -135,6 +136,8 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(ressourcePath,   JsonUtility.ToJson(ressources));
         File.WriteAllText(blackBoardPath,   JsonUtility.ToJson(blackboard));
 
-        Debug.LogAssertion("Sauvegarde complète effectuée");
+        Debug.Log("Sauvegarde complète effectuée");
     }
+    
+    
 }
