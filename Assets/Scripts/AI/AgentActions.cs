@@ -196,6 +196,11 @@ public class AgentActions : MonoBehaviour
         stats.SetHungerFull();
     }
 
+    public Storage GetStorage()
+    {
+        return ((Colony)colonyAgent.GetCurrentColony()).storage;
+    }
+
     public void TakeRessourcesFromStorage(RessourceType _ressourceType, uint _number)
     {
         if(inventory.HasRessource() && inventory.GetRessourceType() != _ressourceType)
@@ -203,7 +208,7 @@ public class AgentActions : MonoBehaviour
             DropRessourcesOnStorage();
         }
 
-        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.TakeRessources(_ressourceType)
+        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType)
             , _ressourceType);
     }
 
@@ -211,6 +216,16 @@ public class AgentActions : MonoBehaviour
     {
         ((Colony)colonyAgent.GetCurrentColony()).storage.AddRessources(inventory.GetRessourceType(), inventory.GetRessources().amount);
         inventory.ResetRessource();
+    }
+
+    public uint GetStoredfood()
+    {
+        if(((Colony)colonyAgent.GetCurrentColony()).storage)
+        {
+            return 0;
+        }
+
+        return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(RessourceType.food);
     }
 
     public bool HasRessource(RessourceType _ressource)
@@ -221,6 +236,29 @@ public class AgentActions : MonoBehaviour
     public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
         return GetRessources.Invoke(_ressourceType, transform);
+    }
+
+    public Transform GetNearestHouse()
+    {
+        GameObject currentNearestHouse = null;
+
+        foreach (GameObject building in ((Colony)colonyAgent.GetCurrentColony()).Buildings)
+        {
+            if(building.GetComponent<Building>().Type == BuildType.House)
+            {
+                if (currentNearestHouse == null)
+                {
+                    currentNearestHouse = building;
+                }
+
+                if(Vector3.Distance(transform.position, currentNearestHouse.transform.position) > Vector3.Distance(transform.position, building.transform.position))
+                {
+                    currentNearestHouse = building;
+                }
+            }
+        }
+
+        return currentNearestHouse.transform;
     }
 
     public Vector3? GetValidBuildPosition()

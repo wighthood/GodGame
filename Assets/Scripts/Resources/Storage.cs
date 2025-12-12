@@ -7,7 +7,7 @@ public class Storage : MonoBehaviour
 
     public void AddRessources(RessourceType _type, uint _numberToAdd)
     {
-        RessourceCollection ressourceCollection = getCollectionOfType(_type);
+        RessourceCollection ressourceCollection = GetCollectionOfType(_type);
 
         if (ressourceCollection == null)
         {
@@ -18,9 +18,9 @@ public class Storage : MonoBehaviour
         ressourceCollection.number += _numberToAdd;
     }
 
-    public uint TakeRessources(RessourceType _type)
+    public uint GetRessourceNumber(RessourceType _type)
     {
-        RessourceCollection ressourceCollection = getCollectionOfType(_type);
+        RessourceCollection ressourceCollection = GetCollectionOfType(_type);
 
         if(ressourceCollection == null) {  return 0; }
 
@@ -40,7 +40,7 @@ public class Storage : MonoBehaviour
         return false;
     }
 
-    private RessourceCollection getCollectionOfType(RessourceType _type)
+    public RessourceCollection GetCollectionOfType(RessourceType _type)
     {
         foreach (RessourceCollection ressourceCol in ressourcesStocked)
         {
