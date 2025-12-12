@@ -8,6 +8,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float maxZoom = 1f;
     [SerializeField] private float minZoom = 25f;
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject settings;
     [SerializeField] private Texture2D pressedMouseCursor;
     [SerializeField] private Texture2D normalMouseCursor;
     [SerializeField] private Vector2 cameraLimit;
@@ -42,6 +43,7 @@ public class PlayerControl : MonoBehaviour
         {
             Debug.LogError("No pause menu assigned");
         }
+        settings.SetActive(false);
         MenusScript.Pause();
     }
 
