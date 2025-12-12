@@ -73,7 +73,7 @@ public class SaveManager : MonoBehaviour
     public void OnClickPlay()
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
-        SceneManager.LoadScene("GameScene SaveSystem");
+        SceneManager.LoadScene("GameScene");
     }
 
     public void OnClickLoad()
@@ -120,7 +120,7 @@ public class SaveManager : MonoBehaviour
             loadedBlackBoard = null;
         }
 
-        SceneManager.LoadScene("GameScene SaveSystem");
+        SceneManager.LoadScene("GameScene");
     }
 
     public static void SaveAll(GameData stats, TilemapSave tilemap, RessourceSave ressources, BlackboardSave blackboard)

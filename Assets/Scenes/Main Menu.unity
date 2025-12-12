@@ -586,8 +586,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1207601073}
-        m_TargetAssemblyTypeName: SaveManager, Assembly-CSharp
+      - m_Target: {fileID: 1521575539}
+        m_TargetAssemblyTypeName: MenusScript, Assembly-CSharp
         m_MethodName: OnClickLoad
         m_Mode: 1
         m_Arguments:
