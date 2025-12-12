@@ -50,7 +50,7 @@ public class Colony : MonoBehaviour, IColony
         if(storage != null) { return; }
 
         storage = _storage;
-        BlackBoard.AddValueOrModify("StorageTransform", _storage.transform.position);
+        BlackBoard.AddValueOrModify("StorageTransform", _storage.transform);
     }
 
     public void AddMaxPop()

@@ -29,11 +29,11 @@ public class TaskBuildHouse : TaskBase
         {
             RessourceCollection ressourceCollection =  buildingTable.ressourcesNeeded[0];
 
-            if (manager.colonieBlackboard != null && manager.colonieBlackboard.GetValue<Transform>("StorageTransfom") != null)
+            if (manager.colonieBlackboard != null && actions.GetStorage() != null)
             {
                 if(storagePosition == null)
                 {
-                    storagePosition = manager.colonieBlackboard.GetValue<Transform>("StorageTransfom");
+                    storagePosition = actions.GetStorage().transform;
                 }
 
                 if(isArrivedToRessource)
