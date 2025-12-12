@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class Stockage : MonoBehaviour
 {
-    public int capaciteMax = 100;
+    [SerializeField] private int capaciteMax = 100;
 
-    private Dictionary<RessourceType, int> ressources = new Dictionary<RessourceType, int>();
+    private Dictionary<RessourceType, int> ressources = new();
 
     public bool AddRessources(RessourceType type, int quantite)
     {
@@ -41,4 +41,5 @@ public class Stockage : MonoBehaviour
     {
         return new Dictionary<RessourceType, int>(ressources);
     }
+    
 }

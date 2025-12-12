@@ -3,25 +3,24 @@ using UnityEngine;
 
 public class MapBuildingManager : MonoBehaviour
 {
-    private List<Building> buildings = new List<Building>();
-    public List<Building> GetAllBuildings() => new List<Building>(buildings);
+    private List<Building> buildings = new();
+    public List<Building> GetAllBuildings() => new(buildings);
 
-    [SerializeField] private List<GameObject> building = new List<GameObject>();
-
-    // Spatial Hashing
-    private Dictionary<long, List<Building>> _spatialBuckets = new Dictionary<long, List<Building>>();
+    [SerializeField] private List<GameObject> building = new();
+    
+    private Dictionary<long, List<Building>> _spatialBuckets = new();
     private float _cellSize = 20f;
 
     void Awake()
     {
         BuildingEvents.OnSpawnRequested += SpawnRequested;
-        BuildingEvents.GetNearestBuilding = HandleGetNearestBuilding;
+        BuildingEvents.GetNearestBuilding = GetNearestBuilding;
     }
 
     void OnDestroy()
     {
         BuildingEvents.OnSpawnRequested -= SpawnRequested;
-        if (BuildingEvents.GetNearestBuilding == HandleGetNearestBuilding)
+        if (BuildingEvents.GetNearestBuilding == GetNearestBuilding)
             BuildingEvents.GetNearestBuilding = null;
     }
 
@@ -53,7 +52,7 @@ public class MapBuildingManager : MonoBehaviour
 
     public Building FindNearestBuilding(Vector3 pos)
     {
-        return HandleGetNearestBuilding(pos);
+        return GetNearestBuilding(pos);
     }
 
     public void DestroyBuilding(Building b)
@@ -68,8 +67,6 @@ public class MapBuildingManager : MonoBehaviour
         BuildingEvents.OnBuildingsChanged?.Invoke();
         if (b.gameObject != null) Destroy(b.gameObject);
     }
-
-    // Spatial Hashing Logic
 
     private long GetCellKey(Vector3 pos)
     {
@@ -99,7 +96,7 @@ public class MapBuildingManager : MonoBehaviour
         }
     }
 
-    private Building HandleGetNearestBuilding(Vector3 _pos)
+    private Building GetNearestBuilding(Vector3 _pos)
     {
         Building best = null;
         float bestDist = float.MaxValue;

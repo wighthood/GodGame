@@ -64,16 +64,6 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
 
-    public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
-    {
-        if (BuildingEvents.GetNearestBuilding != null)
-        {
-            Building b = BuildingEvents.GetNearestBuilding.Invoke(position);
-            return b != null ? b.gameObject : null;
-        }
-        return null;
-    }
-
     public Vector3? GetValidBuildingPosition()
     {
         for (int i = 0; i < 100; i++)
@@ -96,7 +86,6 @@ public class Colony : MonoBehaviour, IColony
                 Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos);
                 if (nearest != null)
                 {
-                    // If a building is too close consider it occupied
                     if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
                     {
                         continue;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,7 +13,6 @@ public class ColonieSystem : MonoBehaviour
 
     [Header("Colony defaults")]
     public float defaultInfluenceRadius = 15f;
-    public int defaultMaxPerPimu = 2;
 
     [Header("Scan settings")]
     public float scanInterval = 1f;
@@ -26,16 +26,14 @@ public class ColonieSystem : MonoBehaviour
     public Action<IColony, IColonyAgent> OnMemberJoined;
     public Action<IColony, IColonyAgent> OnMemberLeft;
 
-    private List<Colony> _colonies = new List<Colony>();
-    private Dictionary<IColonyAgent, Colony> _assignment = new Dictionary<IColonyAgent, Colony>();
+    private List<Colony> _colonies = new();
+    private Dictionary<IColonyAgent, Colony> _assignment = new();
 
-    private HashSet<IColonyAgent> _registeredAgents = new HashSet<IColonyAgent>();
-    private Dictionary<long, List<IColonyAgent>> _spatialBuckets = new Dictionary<long, List<IColonyAgent>>();
+    private HashSet<IColonyAgent> _registeredAgents = new();
+    private Dictionary<long, List<IColonyAgent>> _spatialBuckets = new();
     private float _cellSize = 5f;
 
     private int _nextColonyId = 1;
-
-    private float _scanTimer;
 
     void Awake()
     {
@@ -55,17 +53,7 @@ public class ColonieSystem : MonoBehaviour
 
     void Start()
     {
-        _scanTimer = scanInterval;
-    }
-
-    void Update()
-    {
-        _scanTimer += Time.deltaTime;
-        if (_scanTimer >= scanInterval)
-        {
-            _scanTimer = 0f;
-            ScanForColonies();
-        }
+        StartCoroutine(ScanRoutine());
     }
 
     public void RegisterAgent(IColonyAgent agent)
@@ -102,6 +90,13 @@ public class ColonieSystem : MonoBehaviour
         RemoveFromBucket(agent, previousPosition);
         AddToBucket(agent);
         TryJoinNearestColony(agent);
+    }
+    
+    private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
+    {
+        if (colony == null || !(colony is Colony concreteColony)) return null;
+
+        return concreteColony.GetValidBuildingPosition();
     }
 
     private long GetCellKey(Vector3 pos)
@@ -274,13 +269,6 @@ public class ColonieSystem : MonoBehaviour
         OnColonyCreated?.Invoke(colony);
     }
 
-    public IColony GetColonyForAgent(IColonyAgent agent)
-    {
-        if (agent == null) return null;
-        if (_assignment.TryGetValue(agent, out Colony col)) return col;
-        return null;
-    }
-
     public List<IColony> GetAllColonies()
     {
         return _colonies.Cast<IColony>().ToList();
@@ -297,5 +285,14 @@ public class ColonieSystem : MonoBehaviour
         OnMemberLeft?.Invoke(colony, agent);
 
         Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} left Colony Id={colony.Id} (now {colony.Inhabitants}/{colony.MaxInhabitants})");
+    }
+    
+    IEnumerator ScanRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(scanInterval);
+            ScanForColonies();
+        }
     }
 }
