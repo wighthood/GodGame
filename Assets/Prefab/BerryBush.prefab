@@ -106,6 +106,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Ressource
   ressourceType: 2
   ressourceRemaining: 5
+  Sprites:
+  - {fileID: 21300000, guid: 531a87d6c304a714e84a0acc82989625, type: 3}
+  - {fileID: 21300000, guid: c682a24dc7842634c91e445c192b9224, type: 3}
+  tiles:
+  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!61 &4947971163186206774
 BoxCollider2D:
   m_ObjectHideFlags: 0

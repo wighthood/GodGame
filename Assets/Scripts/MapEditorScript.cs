@@ -31,7 +31,6 @@ public class MapEditorScript : MonoBehaviour
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
 
-
     void Start()
     {
         _camera = Camera.main;
@@ -57,6 +56,15 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
+        Ressource.GetTile += GetTile;
+
+
+    }
+
+    private TileBase GetTile(Vector3 position)
+    {
+        Vector3Int Position = Vector3Int.FloorToInt(position);
+        return tilemap.GetTile(Position);
     }
 
     private void SetSelector(GameObject test = null, TileBase test2 = null)
@@ -91,7 +99,7 @@ public class MapEditorScript : MonoBehaviour
         return notWalkableSprites.Contains(_tile);
     }
 
-    private bool IsObject(Vector2 _mousePosition)
+    public bool IsObject(Vector2 _mousePosition)
     {
         return Physics2D.Raycast(_mousePosition, Camera.main.transform.forward, layermask);
     }
@@ -136,7 +144,6 @@ public class MapEditorScript : MonoBehaviour
 
             if (IsObject(_cellposForRaycast, out result))
             {
-                print("touche");
                 Destroy(result.collider.gameObject);
             }
         }
