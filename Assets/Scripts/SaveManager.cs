@@ -135,6 +135,6 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(ressourcePath,   JsonUtility.ToJson(ressources));
         File.WriteAllText(blackBoardPath,   JsonUtility.ToJson(blackboard));
 
-        Debug.Log("Sauvegarde complète effectuée");
+        Debug.LogAssertion("Sauvegarde complète effectuée");
     }
 }

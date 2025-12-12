@@ -15,6 +15,9 @@ public class GameSceneController : MonoBehaviour
     [SerializeField] private GameObject ressourceParent;
     [SerializeField] private List<GameObject> ressourcePrefab;
     
+    [Header("Réfs IA / Blackboard")]
+    public BlackBoard existingBlackboard;
+    
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Action InitGraph;
 
@@ -127,8 +130,8 @@ public class GameSceneController : MonoBehaviour
     BlackboardSave BuildBlackBoard()
     {
         BlackboardSave bbSave = new BlackboardSave();
-        bbSave.blackBoard = new BlackBoard();
-        bbSave.blackBoard.BbValues();
+        
+        bbSave.blackBoard = existingBlackboard;
         
         return bbSave;
     }
@@ -215,13 +218,15 @@ public class GameSceneController : MonoBehaviour
     void LoadBlackBoard()
     {
         BlackboardSave bbSave = SaveManager.loadedBlackBoard;
-        
-        if (bbSave == null)
+
+        if (bbSave == null || bbSave.blackBoard == null)
         {
             Debug.LogWarning("Pas de blackboard");
             return;
         }
-        
+
+        existingBlackboard = bbSave.blackBoard;
+
         Debug.Log("BlackBoard bien chargé");
     }
 }
