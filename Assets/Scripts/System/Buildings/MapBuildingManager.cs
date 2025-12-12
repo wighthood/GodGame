@@ -30,9 +30,9 @@ public class MapBuildingManager : MonoBehaviour
         SpawnBuilding(building[(int)_type], _position, _owner, _type);
     }
 
-    public Building SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
+    public void SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
     {
-        if (prefab == null) return null;
+        if (prefab == null) return;
         
         GameObject BuildGameObject = Instantiate(prefab, position, Quaternion.identity, owner.GetBuildingParent());
         
@@ -47,7 +47,10 @@ public class MapBuildingManager : MonoBehaviour
             BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
-        return building;
+        if(building.TryGetComponent(out Storage storage))
+        {
+            owner.DefineStorage(storage);
+        }
     }
 
     public Building FindNearestBuilding(Vector3 pos)

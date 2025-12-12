@@ -49,7 +49,7 @@ public class TaskWandering : TaskBase
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f, $"doing Wandering task", style);
+        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Wandering task", style);
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;
