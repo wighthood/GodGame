@@ -61,7 +61,7 @@ public class TaskBuildHouse : TaskBase
         int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
         int maxColonyPop = manager.colonieBlackboard.GetValue<int>("MaxHabitant");
 
-        //Debug.Log($"build priority : {(float)actualColonyPop / (float)maxColonyPop}");
+        Debug.Log($"actualColonyPop {actualColonyPop} maxColonyPop {maxColonyPop} \n build priority : {(float)actualColonyPop / (float)maxColonyPop}");
 
         return (float)actualColonyPop / (float)maxColonyPop;
     }

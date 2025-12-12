@@ -38,11 +38,13 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard = new BlackBoard();
         BaseMaxInhabitants = 5;
         MaxInhabitants = BaseMaxInhabitants;
+        BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
     }
 
     public void AddMaxPop()
     {
         MaxInhabitants += 2;
+        BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
     }
 
     public void AddAgentToColony(IColonyAgent _newAgent)

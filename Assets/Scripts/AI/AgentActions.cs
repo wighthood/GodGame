@@ -145,18 +145,31 @@ public class AgentActions : MonoBehaviour
             return;
         }
 
+        Ressource ressourceToHarverest = null;
+
         foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
 
             if (ressource.GetRessourceType() == _ressource)
             {
-                if (inventory.AddRessources(1, ressource.GetRessourceType()))
+                if(ressourceToHarverest == null) 
+                { 
+                    ressourceToHarverest = ressource;
+                    continue;
+                }
+
+                if(Vector3.Distance(ressourceToHarverest.transform.position, transform.position) > Vector3.Distance(ressource.transform.position, transform.position))
                 {
-                    ressource.OnHarvrestingRessource();
-                    return;
+                    ressourceToHarverest = ressource;
                 }
             }
+        }
+
+        if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
+        {
+            ressourceToHarverest.OnHarvrestingRessource();
+            return;
         }
     }
 
