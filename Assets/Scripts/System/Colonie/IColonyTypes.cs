@@ -6,15 +6,13 @@ public interface IColony
 {
     int GetId();
     
-    Vector3 GetCenter();
+    Vector3 GetColonyCenter();
     
     int GetInhabitants();
    
     int GetMaxInhabitants();
     
     IReadOnlyList<IColonyAgent> GetMembers();
-    
-    string GetSpecies();
 }
 
 public interface IColonyAgent

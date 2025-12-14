@@ -1,4 +1,6 @@
+using Mono.Cecil;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,44 +21,39 @@ public class AgentActions : MonoBehaviour
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
-    [Header("Building Prefabs")]
-    public GameObject storagePrefab;
+    ColonyAgent colonyAgent;
 
-    private Building _nearestBuilding;
     public Action<Building> OnNearestBuildingChanged;
+
+    #region values for animations
 
     private Vector3 lastPos;
     public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
+
+    public bool isBuilding {  get; private set; }
+    #endregion
 
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
+        colonyAgent = GetComponent<ColonyAgent>();
         pathFinding = new PathFinding();
-
 
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
     }
 
     private void RebuildPathIfNeeded(Cell _modifiedCell)
     {
-        if(currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
+        if (currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
         { return; }
 
         CalculPath();
     }
 
-    private void Start()
-    {
-        BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
-        BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
-    }
-
     private void OnDestroy()
     {
-        BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
         MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
-        BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
     }
 
     public List<Cell> GetPath()
@@ -77,12 +74,6 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Vector2 _targetWorld)
     {
-        if (pathFinding == null)
-        {
-            Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
-            return true;
-        }
-        
         if (currentPath == null)
         {
             currentTargetWorld = _targetWorld;
@@ -102,24 +93,7 @@ public class AgentActions : MonoBehaviour
         }
 
         Vector3 nextWorld;
-        if (CellToWorld != null)
-        {
-            nextWorld = CellToWorld.Invoke(nextCell.position);
-        }
-        else
-        {
-            Graph graph = UnityEngine.Object.FindObjectOfType<Graph>();
-            if (graph != null)
-            {
-                nextWorld = graph.CellToWorld(nextCell.position);
-            }
-            else
-            {
-                Debug.LogError("AgentActions: No CellToWorld delegate and no Graph found in scene. Using agent position as fallback.");
-                nextWorld = transform.position;
-            }
-        }
-
+        nextWorld = CellToWorld.Invoke(nextCell.position);
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
@@ -135,11 +109,6 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Transform _target)
     {
-        if (_target == null)
-        {
-            Debug.LogWarning("AgentActions.MoveTo called with null target; aborting move.");
-            return true;
-        }
         return MoveTo(_target.position);
     }
 
@@ -162,7 +131,7 @@ public class AgentActions : MonoBehaviour
                 break;
         }
 
-        TryAutoCreateStorage();
+        //TryAutoCreateStorage();
     }
 
     private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
@@ -174,25 +143,37 @@ public class AgentActions : MonoBehaviour
             return;
         }
 
+        Ressource ressourceToHarverest = null;
+
         foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
 
             if (ressource.GetRessourceType() == _ressource)
             {
-                if (inventory.AddRessources(1, ressource.GetRessourceType()))
+                if(ressourceToHarverest == null) 
+                { 
+                    ressourceToHarverest = ressource;
+                    continue;
+                }
+
+                if(Vector3.Distance(ressourceToHarverest.transform.position, transform.position) > Vector3.Distance(ressource.transform.position, transform.position))
                 {
-                    ressource.OnHarvrestingRessource();
-                    return;
+                    ressourceToHarverest = ressource;
                 }
             }
         }
+
+        if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
+        {
+            ressourceToHarverest.OnHarvrestingRessource();
+            return;
+        }
     }
 
-    private void TryAutoCreateStorage()
+    /*private void TryAutoCreateStorage()
     {
         if (storagePrefab == null) return;
-        if (inventory == null) return;
 
         RessourceStockedData data = inventory.GetRessources();
         if (data.ressource == RessourceType.wood && data.amount >= 5)
@@ -200,14 +181,14 @@ public class AgentActions : MonoBehaviour
             inventory.ResetRessource();
             Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
             Colony owner = null;
-            ColonyAgent ca = GetComponent<ColonyAgent>();
-            if (ca != null)
+            ColonyAgent agent = GetComponent<ColonyAgent>();
+            if (agent != null)
             {
-                owner = ca.GetCurrentColony() as Colony;
+                owner = agent.GetCurrentColony() as Colony;
             }
             BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
         }
-    }
+    }*/
 
     public void Eat()
     {
@@ -215,42 +196,109 @@ public class AgentActions : MonoBehaviour
         stats.SetHungerFull();
     }
 
-    public bool HasRessource(RessourceType ressource)
+    public Storage GetStorage()
     {
-        return inventory.GetRessourceType() == ressource;
+        return ((Colony)colonyAgent.GetCurrentColony()).storage;
+    }
+
+    public void TakeRessourcesFromStorage(RessourceType _ressourceType, uint _number)
+    {
+        if(inventory.HasRessource() && inventory.GetRessourceType() != _ressourceType)
+        {
+            DropRessourcesOnStorage();
+        }
+
+        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType)
+            , _ressourceType);
+    }
+
+    public void DropRessourcesOnStorage()
+    {
+        ((Colony)colonyAgent.GetCurrentColony()).storage.AddRessources(inventory.GetRessourceType(), inventory.GetRessources().amount);
+        inventory.ResetRessource();
+    }
+
+    public uint GetStoredfood()
+    {
+        if(((Colony)colonyAgent.GetCurrentColony()).storage)
+        {
+            return 0;
+        }
+
+        return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(RessourceType.food);
+    }
+
+    public bool HasRessource(RessourceType _ressource)
+    {
+        return inventory.GetRessourceType() == _ressource;
     }
 
     public Transform GetNearestFoodRessource(RessourceType _ressourceType)
     {
         return GetRessources.Invoke(_ressourceType, transform);
     }
-    
-    private void OnBuildingSpawned(Building b)
+
+    public Transform GetNearestHouse()
     {
-        UpdateNearestBuilding();
+        GameObject currentNearestHouse = null;
+
+        foreach (GameObject building in ((Colony)colonyAgent.GetCurrentColony()).Buildings)
+        {
+            if(building.GetComponent<Building>().Type == BuildType.House)
+            {
+                if (currentNearestHouse == null)
+                {
+                    currentNearestHouse = building;
+                }
+
+                if(Vector3.Distance(transform.position, currentNearestHouse.transform.position) > Vector3.Distance(transform.position, building.transform.position))
+                {
+                    currentNearestHouse = building;
+                }
+            }
+        }
+
+        return currentNearestHouse.transform;
     }
 
-    private void OnBuildingsChanged()
+    public Vector3? GetValidBuildPosition()
     {
-        UpdateNearestBuilding();
-    }
+        if (colonyAgent.GetCurrentColony() != null)
+        {
+            return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
+        }
 
-    private void UpdateNearestBuilding()
-    {
-        Building found = FindNearestBuilding(null);
-        if (found != _nearestBuilding)
-        {
-            _nearestBuilding = found;
-            OnNearestBuildingChanged?.Invoke(_nearestBuilding);
-        }
-    }
-    
-    public Building FindNearestBuilding(string typeFilter = null)
-    {
-        if (BuildingEvents.GetNearestBuilding != null)
-        {
-            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
-        }
         return null;
+    }
+
+    private void Build(BuildType _buildType)
+    {
+        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+
+        BuildingEvents.OnBuildingSpawned?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
+    }
+
+    public void StartBuild(float _buildTime, BuildType _buildType)
+    {
+        isBuilding = true;
+
+        StartCoroutine(WaitAndBuild(_buildTime, _buildType));
+    }
+
+    private IEnumerator WaitAndBuild(float _buildTime, BuildType _buildType)
+    {
+        while (isBuilding)
+        {
+            _buildTime -= Time.deltaTime;
+
+            if( _buildTime <= 0 )
+            {
+                isBuilding = false;
+            }
+
+            yield return null;
+        }
+
+        Build(_buildType);
     }
 }

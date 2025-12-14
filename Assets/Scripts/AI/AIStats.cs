@@ -58,7 +58,7 @@ public class AIStats : MonoBehaviour
                 TakeDamage(1);
                 yield return new WaitForSeconds(1);
             }
-            else if (hungerCooldown == 1)
+            else if (hungerCooldown == 20)
             {
                 hungerCooldown = 0;
                 hunger += 0.1f;
