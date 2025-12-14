@@ -7,14 +7,14 @@ public class MeteoEffect : MonoBehaviour
     [HideInInspector] public WeatherState oldState;
 
     public Light2D mainLight;
+    private ParticleSystem particuleSystem;
+    private Coroutine stormCoroutine;
 
     [SerializeField] private GameObject fog;
     [SerializeField] private GameObject rain;
-
-    private ParticleSystem particuleSystem;
-
     [SerializeField] private Animator animatorRain;
-
+    [SerializeField] private float lightningMinDelay = 3f; 
+    [SerializeField] private float lightningMaxDelay = 8f;
 
 
 
@@ -40,10 +40,16 @@ public class MeteoEffect : MonoBehaviour
                 animatorRain.SetBool("IsActive", true);
                 
                 break;
-            /*case WeatherState.Storm:
+           case WeatherState.Storm:
                 Debug.Log("Storm");
+                rain.SetActive(true);
+                animatorRain.SetBool("IsActive", true);
+                if (stormCoroutine != null)
+                    StopCoroutine(stormCoroutine);
+
+                stormCoroutine = StartCoroutine(StormRoutine());
                 mainLight.intensity = 0.5f;
-                break;*/
+                break;
 
             case WeatherState.Fog:
                 Debug.Log("Fog");
@@ -78,9 +84,20 @@ public class MeteoEffect : MonoBehaviour
                 animatorRain.SetBool("IsActive", false);
                 rain.SetActive(false);
                 break;
-            /*case WeatherState.Storm:
+            case WeatherState.Storm:
                 Debug.Log("fin Storm");
-                break;*/
+
+                if (stormCoroutine != null)
+                {
+                    StopCoroutine(stormCoroutine);
+                    stormCoroutine = null;
+                }
+
+                mainLight.intensity = 1f;
+                animatorRain.SetBool("IsActive", false);
+                rain.SetActive(false);
+
+                break;
 
             case WeatherState.Fog:
                 StartCoroutine(WeatherFade());
@@ -141,4 +158,27 @@ public class MeteoEffect : MonoBehaviour
 
         fog.SetActive(false);
     }
+
+    private IEnumerator StormRoutine()
+    {
+        while (true)
+        {
+
+            float baseIntensity = mainLight.intensity;
+
+            yield return new WaitForSeconds(Random.Range(lightningMinDelay, lightningMaxDelay));
+        
+            mainLight.intensity = 1.5f;
+            yield return new WaitForSeconds(0.05f);
+
+            mainLight.intensity = baseIntensity;
+            yield return new WaitForSeconds(0.08f);
+
+            mainLight.intensity = 1.2f;
+            yield return new WaitForSeconds(0.03f);
+
+            mainLight.intensity = baseIntensity;
+        }
+    }
+
 }

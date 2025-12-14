@@ -62,7 +62,8 @@ public class MapEditorScript : MonoBehaviour
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             
-            button.onClick.AddListener(() => SetMeteo(state));
+            button.onClick.AddListener(() =>
+                SetMeteo(state));
         }
     
     }
