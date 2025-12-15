@@ -14,6 +14,7 @@ public class MenusScript : MonoBehaviour
     
     public void Start()
     {
+        if (buttonLoad == null) return;
         if (File.Exists(StatsPath) || File.Exists(TilemapPath) || File.Exists(RessourcePath) ||
             File.Exists(BlackBoardPath))
         {
