@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 [Serializable]
 public class SaveFileStructure
