@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ public abstract class TaskHarverestBase : TaskBase
 
     public override bool Do()
     {
-        if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() < 5)
+        if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() >= 5)
         {
             pathDebug = actions.GetPath();
             actions.MoveTo(storage.transform);
@@ -60,7 +61,7 @@ public abstract class TaskHarverestBase : TaskBase
             }
             else
             {
-                if (Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
                 {
                     actions.Harvrest(ressource);
                     if (actions.GetRessourceTransportedNumber() < 5)

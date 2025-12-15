@@ -74,8 +74,12 @@ public class MapRessourceManager : MonoBehaviour
 
     private void RemoveFromListForDestroy(Ressource ressource)
     {
-        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
+        if (ressource == null || !ressources.ContainsKey(ressource.GetRessourceType())) return;
+
         ressources[ressource.GetRessourceType()].Remove(ressource);
+
+        if(ressource == null) { return; }
+
         Destroy(ressource.gameObject);
     }
 
