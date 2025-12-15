@@ -18,6 +18,8 @@ public class Ressource : MonoBehaviour
     public static event Action<Ressource> OnEmptyRessource;
     public static event Func<Vector3, TileBase> GetTile;
 
+    public bool isBeeingHarversted;
+
     public RessourceType GetRessourceType()
     {
         return ressourceType;

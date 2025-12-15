@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -20,15 +21,12 @@ public abstract class TaskBase : ScriptableObject
 
     public abstract void OnFinish();
 
-    public virtual void Cancel()
-    {
-        manager.ResetTask();
-    }
-
     public abstract float GetPriority();
 
     public virtual void DrawActionsGizmo()
     {
-
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.green;
+        Handles.Label(manager.transform.position + Vector3.up * 0.75f + Vector3.left, $"doing {name}", style);
     }
 }

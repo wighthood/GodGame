@@ -2,20 +2,21 @@
 
 public class Building : MonoBehaviour
 {
-    public string Type { get; private set; }
+    public BuildType Type { get; private set; }
     public Colony Owner { get; private set; }
     public GameObject Root { get; private set; }
 
     private bool _initialized = false;
 
-    public void Initialize(string type, Colony owner, GameObject root)
+    public BuildingTable BuildingTable;
+
+    public void Initialize(BuildType type, Colony owner, GameObject root)
     {
         Type = type;
-        Root = root ?? gameObject;
+        Root = root != null ? root : gameObject;
 
         if (_initialized)
         {
-            // If owner changed, update links
             if (Owner != owner)
             {
                 if (Owner != null) Owner.RemoveBuilding(Root);
@@ -43,17 +44,29 @@ public class Building : MonoBehaviour
             Gizmos.color = new Color(0f, 1f, 0f, 0.6f);
             Gizmos.DrawWireSphere(transform.position, 0.3f);
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, Owner.GetCenter());
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} sp={Owner.GetSpecies()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
+            Gizmos.DrawLine(transform.position, Owner.GetColonyCenter());
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Owner Id={Owner.GetId()} size={Owner.GetInhabitants()}/{Owner.GetMaxInhabitants()}");
         }
         else
         {
             Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.6f);
             Gizmos.DrawWireSphere(transform.position, 0.3f);
-#if UNITY_EDITOR
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, "Owner=null");
-#endif
         }
     }
 #endif
+}
+
+[System.Serializable]
+public class RessourceCollection
+{
+    public RessourceType RessourceType;
+    public uint number;
+}
+
+public enum BuildType : int
+{
+    House,
+    Storage,
+    Farm
 }
