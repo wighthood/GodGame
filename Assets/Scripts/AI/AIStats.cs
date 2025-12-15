@@ -72,4 +72,9 @@ public class AIStats : MonoBehaviour
             }
         }
     }
+
+    public void DestroyPimus()
+    {
+        Destroy(gameObject);
+    }
 }
