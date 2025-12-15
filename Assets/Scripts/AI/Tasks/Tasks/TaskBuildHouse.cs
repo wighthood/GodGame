@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -129,9 +128,7 @@ public class TaskBuildHouse : TaskBase
 
     public override void DrawActionsGizmo()
     {
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing {name}", style);
+        base.DrawActionsGizmo();
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;

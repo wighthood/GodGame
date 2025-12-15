@@ -28,7 +28,7 @@ public class AgentActions : MonoBehaviour
 
     #region values for animations
 
-    private Vector3 lastPos;
+    private Vector3 lastPos = Vector3.zero;
     public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
 
     public bool isBuilding { get; private set; }
@@ -43,6 +43,7 @@ public class AgentActions : MonoBehaviour
         pathFinding = new PathFinding();
 
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
+        lastPos = transform.position;
     }
 
     private void RebuildPathIfNeeded(Cell _modifiedCell)

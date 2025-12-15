@@ -25,6 +25,8 @@ public abstract class TaskBase : ScriptableObject
 
     public virtual void DrawActionsGizmo()
     {
-        
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.green;
+        Handles.Label(manager.transform.position + Vector3.up * 0.75f + Vector3.left, $"doing {name}", style);
     }
 }

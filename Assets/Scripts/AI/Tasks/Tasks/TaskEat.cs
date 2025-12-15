@@ -101,9 +101,7 @@ public class TaskEat : TaskBase
 
     public override void DrawActionsGizmo()
     {
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Eat task", style);
+        base.DrawActionsGizmo();
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;
