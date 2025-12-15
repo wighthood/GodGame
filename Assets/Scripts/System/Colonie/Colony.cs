@@ -15,7 +15,6 @@ public class Colony : MonoBehaviour, I_Colony
     public int BaseMaxInhabitants; 
     private readonly List<I_ColonyAgent> members = new();
     public IReadOnlyList<I_ColonyAgent> Members => members;
-
     public void AddMember(I_ColonyAgent _agent)
     {
         if (!members.Contains(_agent))

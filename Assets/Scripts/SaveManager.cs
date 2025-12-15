@@ -4,11 +4,12 @@ using System.IO;
 using System.Linq;
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public class SaveFileStructure
 {
-    public List<SystemSaveData> SystemsData = new List<SystemSaveData>();
+    public List<SystemSaveData> SystemsData = new();
 }
 
 [Serializable]
@@ -18,50 +19,40 @@ public class SystemSaveData
     public string JsonData;
 }
 
+[DefaultExecutionOrder(-10)] // Ensure SaveManager initializes early
 public class SaveManager : MonoBehaviour
 {
     private string SavePath => Application.persistentDataPath + "/savegame.json";
     
-    private List<ISaveable> _saveables = new List<ISaveable>();
-    private bool _shouldLoadAfterSceneChange;
+    private List<ISaveable> _saveables = new();
 
-    private static bool _isInitialized;
-
-    private void Awake()
+    private IEnumerator Start()
     {
-        if (_isInitialized)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        yield return null;
 
-        _isInitialized = true;
-        // Manager must persist to handle scene changes
-        DontDestroyOnLoad(gameObject);
+        if (SaveEvents.ShouldLoadOnStart)
+        {
+            LoadGame();
+            SaveEvents.ShouldLoadOnStart = false;
+        }
+        else
+        {
+            SaveEvents.OnNewGameStartEvent?.Invoke();
+        }
     }
 
     private void OnEnable()
     {
         SaveEvents.OnRegisterSaveableEvent += Register;
         SaveEvents.OnUnregisterSaveableEvent += Unregister;
-        
-        SaveEvents.OnRequestNewGameEvent += HandleRequestNewGame;
-        SaveEvents.OnRequestLoadGameEvent += HandleRequestLoadGame;
         SaveEvents.OnRequestSaveEvent += HandleRequestSave;
-        
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
         SaveEvents.OnRegisterSaveableEvent -= Register;
         SaveEvents.OnUnregisterSaveableEvent -= Unregister;
-        
-        SaveEvents.OnRequestNewGameEvent -= HandleRequestNewGame;
-        SaveEvents.OnRequestLoadGameEvent -= HandleRequestLoadGame;
         SaveEvents.OnRequestSaveEvent -= HandleRequestSave;
-
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Register(ISaveable saveable)
@@ -94,41 +85,9 @@ public class SaveManager : MonoBehaviour
         if (_saveables.Contains(saveable)) _saveables.Remove(saveable);
     }
 
-    private void HandleRequestNewGame(string sceneName)
-    {
-        _shouldLoadAfterSceneChange = false;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-    }
-
-    private void HandleRequestLoadGame(string sceneName)
-    {
-        _shouldLoadAfterSceneChange = true;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-    }
-
     private void HandleRequestSave()
     {
         SaveGame();
-    }
-
-    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
-    {
-        if (scene.name == "Main Menu") return;
-
-        if (_shouldLoadAfterSceneChange)
-        {
-            StartCoroutine(LoadGameRoutine());
-        }
-        else
-        {
-            SaveEvents.OnNewGameStartEvent?.Invoke();
-        }
-    }
-
-    private IEnumerator LoadGameRoutine()
-    {
-        yield return null;
-        LoadGame();
     }
 
     public void SaveGame()
@@ -156,6 +115,7 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(SavePath, finalJson);
         
         Debug.Log($"Sauvegarde terminée avec succès ! ({globalSave.SystemsData.Count} systèmes sauvegardés)");
+        SaveEvents.OnSaveCompletedEvent?.Invoke();
     }
     
     public void LoadGame()
@@ -174,7 +134,7 @@ public class SaveManager : MonoBehaviour
         if (globalSave == null) return;
         
         Dictionary<string, string> dataMap = new Dictionary<string, string>();
-        foreach (var data in globalSave.SystemsData)
+        foreach (SystemSaveData data in globalSave.SystemsData)
         {
             if (dataMap.ContainsKey(data.ID))
             {

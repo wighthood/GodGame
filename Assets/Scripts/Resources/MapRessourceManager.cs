@@ -42,15 +42,15 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         return newRessource;
     }
 
-    private void AddRessourceInDictionary(Ressource ressource)
+    private void AddRessourceInDictionary(Ressource _ressource)
     {
-        if (!ressources.ContainsKey(ressource.GetRessourceType()))
+        if (!ressources.ContainsKey(_ressource.GetRessourceType()))
         {
-            ressources[ressource.GetRessourceType()] = new List<Ressource>() { ressource };
+            ressources[_ressource.GetRessourceType()] = new List<Ressource>() { _ressource };
             return;
         }
 
-        ressources[ressource.GetRessourceType()].Add(ressource);
+        ressources[_ressource.GetRessourceType()].Add(_ressource);
     }
 
     public List<Ressource> GetRessources(RessourceType _type)
@@ -83,11 +83,11 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         return nearestRessource;
     }
 
-    private void RemoveFromListForDestroy(Ressource ressource)
+    private void RemoveFromListForDestroy(Ressource _ressource)
     {
-        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
-        ressources[ressource.GetRessourceType()].Remove(ressource);
-        Destroy(ressource.gameObject);
+        if (!ressources.ContainsKey(_ressource.GetRessourceType())) return;
+        ressources[_ressource.GetRessourceType()].Remove(_ressource);
+        Destroy(_ressource.gameObject);
     }
 
     private void OnDestroy()

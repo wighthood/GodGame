@@ -4,23 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class AgentSpatialSystem : MonoBehaviour
 {
-    public static AgentSpatialSystem Instance { get; private set; }
-
     private float cellSize = 5f;
     private Dictionary<long, List<I_ColonyAgent>> spatialBuckets = new Dictionary<long, List<I_ColonyAgent>>();
     private HashSet<I_ColonyAgent> registeredAgents = new HashSet<I_ColonyAgent>();
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-
+    
     private void OnEnable()
     {
         ColonyEvents.OnRegisterAgentEvent += RegisterAgent;
@@ -81,7 +68,7 @@ public class AgentSpatialSystem : MonoBehaviour
     private void AddToBucket(I_ColonyAgent _a)
     {
         long key = GetCellKey(_a.transform.position);
-        if (!spatialBuckets.TryGetValue(key, out var list))
+        if (!spatialBuckets.TryGetValue(key, out List<I_ColonyAgent> list))
         {
             list = new List<I_ColonyAgent>();
             spatialBuckets[key] = list;
@@ -97,7 +84,7 @@ public class AgentSpatialSystem : MonoBehaviour
     private void RemoveFromBucket(I_ColonyAgent _a, Vector3 _fromPos)
     {
         long key = GetCellKey(_fromPos);
-        if (spatialBuckets.TryGetValue(key, out var list))
+        if (spatialBuckets.TryGetValue(key, out List<I_ColonyAgent> list))
         {
             list.Remove(_a);
             if (list.Count == 0) spatialBuckets.Remove(key);
@@ -119,9 +106,9 @@ public class AgentSpatialSystem : MonoBehaviour
                 int nz = cz + dz;
                 long key = ((long)nx << 32) ^ (uint)nz;
 
-                if (spatialBuckets.TryGetValue(key, out var list))
+                if (spatialBuckets.TryGetValue(key, out List<I_ColonyAgent> list))
                 {
-                    foreach (var agent in list)
+                    foreach (I_ColonyAgent agent in list)
                     {
                         if (agent == null || (agent is UnityEngine.Object obj && obj == null)) continue;
                         
