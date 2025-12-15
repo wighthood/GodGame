@@ -41,6 +41,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private GameObject ressourceBar;
     [SerializeField] private GameObject weatherBar;
     [SerializeField] private GameObject entityBar;
+    [SerializeField] private Transform AgentParent;
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Func<Vector3, Cell> GetCell;
@@ -60,7 +61,6 @@ public class MapEditorScript : MonoBehaviour
         _camera = Camera.main;
         Tilebutton();
         Ressourcebutton();
-        Ressource.GetTile += GetTile;
 
         foreach (TileBase tile in tiles)
         {
@@ -83,6 +83,7 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener(() =>
                 SetSelector(prefab));
         }
+        // entity and WeatherState are inverted it still works
         foreach (GameObject prefab in Entity)
         {
             GameObject newButton = Instantiate(buttonPrefab, weatherBar.transform);
@@ -257,7 +258,7 @@ public class MapEditorScript : MonoBehaviour
         }
         else
         {
-            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
+            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity, AgentParent);
             _isPainting = false;
         }
     }

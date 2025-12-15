@@ -6995,6 +6995,7 @@ MonoBehaviour:
   ressourceBar: {fileID: 790512037}
   weatherBar: {fileID: 134833322}
   entityBar: {fileID: 205632666}
+  AgentParent: {fileID: 188331454}
 --- !u!1 &1454747964
 GameObject:
   m_ObjectHideFlags: 0
