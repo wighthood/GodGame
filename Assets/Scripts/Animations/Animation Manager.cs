@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -74,5 +75,10 @@ public class AnimationManager : MonoBehaviour
     {
         if (currentAnimName == "") { return; }
         animator.CrossFade(currentAnimName, 0.1f);
+    }
+
+    private void OnDestroy()
+    {
+        if(animator != null) return;
     }
 }
