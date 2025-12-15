@@ -1,10 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System;
-using System.Collections;
-using UnityEditor.Overlays;
-using UnityEngine.UI;
 
 public class GameSceneController : MonoBehaviour
 {
@@ -98,7 +95,7 @@ public class GameSceneController : MonoBehaviour
                 TileBase tile = tilemap.GetTile(pos);
                 if (tile == null) continue;
 
-                int id = System.Array.IndexOf(palette, tile);
+                int id = Array.IndexOf(palette, tile);
                 if (id < 0) continue;
 
                 TileSaveData data = new TileSaveData
