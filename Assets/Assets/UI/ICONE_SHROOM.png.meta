@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 314fa7746d152a241aabc3db338c456a
+guid: 0b30ffcff8032c74f96f71b3c6c4e396
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1299194050631972554
-    second: ASSETS_UI_ICONE_ORAGE_0
+      213: -4502135756475682215
+    second: ICONE_SHROOM_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ASSETS_UI_ICONE_ORAGE_0
+      name: ICONE_SHROOM_0
       rect:
         serializedVersion: 2
-        x: 104
-        y: 322
-        width: 864
-        height: 385
+        x: 242
+        y: 184
+        width: 624
+        height: 723
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 639c7c5f4e558fde0800000000000000
-      internalID: -1299194050631972554
+      spriteID: 952bea002633581c0800000000000000
+      internalID: -4502135756475682215
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ASSETS_UI_ICONE_ORAGE_0: -1299194050631972554
+      ICONE_SHROOM_0: -4502135756475682215
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
