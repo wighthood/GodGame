@@ -75,13 +75,8 @@ public class MapEditorScript : MonoBehaviour
     private void SetMeteo(WeatherState state)
     {
         meteoManager.MeteoChange(state);
-            button.onClick.AddListener((() =>
-                SetSelector(prefab)));
-        }
-        Ressource.GetTile += GetTile;
-
-
     }
+
 
     private TileBase GetTile(Vector3 position)
     {
