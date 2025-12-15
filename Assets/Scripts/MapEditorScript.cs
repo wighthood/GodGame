@@ -9,23 +9,38 @@ using UnityEngine.UI;
 
 public class MapEditorScript : MonoBehaviour
 {
+    [Header("map edition")]
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private List<TileBase> tiles;
+
+    [Header("Tool Bar")]
     [SerializeField] private Transform selectionBar;
     [SerializeField] private GameObject buttonPrefab;
+
+    [Header("object to spawn")]
     [SerializeField] private List<GameObject> Prefabs;
     [SerializeField] private List<GameObject> Entity;
-    [SerializeField] private List<WeatherState> weatherState; 
+    [SerializeField] private List<WeatherState> weatherState;
+
+    [Header("objects offset")]
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
-    [SerializeField] private MeteoManager meteoManager;
 
+    [Header("meteo edition")]
+    [SerializeField] private MeteoManager meteoManager;
     [SerializeField] private Sprite[] WeatherImages;
 
+    [Header("setup not walkable tiles")]
     [SerializeField] private List<TileBase> notWalkableSprites = new();
+
+    [Header("setup the different references")]
+    [SerializeField] private GameObject tileBar;
+    [SerializeField] private GameObject ressourceBar;
+    [SerializeField] private GameObject weatherBar;
+    [SerializeField] private GameObject entityBar;
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Func<Vector3, Cell> GetCell;
@@ -37,6 +52,7 @@ public class MapEditorScript : MonoBehaviour
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
 
+
     void Start()
     {
         _camera = Camera.main;
@@ -44,64 +60,78 @@ public class MapEditorScript : MonoBehaviour
         Ressourcebutton();
         Ressource.GetTile += GetTile;
 
-        int i = 0;
-        foreach (WeatherState state in weatherState)
-        {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
-            Image buttonImage = newButton.GetComponent<Image>();
-            Button button = newButton.GetComponent<Button>();
-            buttonImage.sprite = WeatherImages[i];
-            button.onClick.AddListener(() => SetMeteo(state));
-            i++;
-        } 
-    }
-
-
-    public void Tilebutton ()
-    {
         foreach (TileBase tile in tiles)
         {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, tileBar.transform);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             if (tile is RuleTile T)
             {
                 buttonImage.sprite = T.m_DefaultSprite;
             }
-            button.onClick.AddListener(() => 
-               SetSelector(null,tile));
+            button.onClick.AddListener(() =>
+               SetSelector(null, tile));
         }
-    }
-
-    public void Ressourcebutton()
-    {
         foreach (GameObject prefab in Prefabs)
         {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, ressourceBar.transform);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-            button.onClick.AddListener (() => 
+            button.onClick.AddListener(() =>
                 SetSelector(prefab));
         }
-    }
-
-    public void Weatherbutton()
-    {
-
-    }
-
-    public void Entitybutton()
-    {
         foreach (GameObject prefab in Entity)
         {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, weatherBar.transform);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
             button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
+        int i = 0;
+        foreach (WeatherState state in weatherState)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, entityBar.transform);
+            Image buttonImage = newButton.GetComponent<Image>();
+            Button button = newButton.GetComponent<Button>();
+            buttonImage.sprite = WeatherImages[i];
+            button.onClick.AddListener(() => SetMeteo(state));
+            i++;
+        }
+    }
+
+    public void HideButtons()
+    {
+        tileBar.SetActive(false);
+        entityBar.SetActive(false);
+        ressourceBar.SetActive(false);
+        weatherBar.SetActive(false);
+    }
+
+    public void Tilebutton ()
+    {
+        HideButtons();
+        tileBar.SetActive(true);
+    }
+    
+    public void Ressourcebutton()
+    {
+        HideButtons();
+        ressourceBar.SetActive(true);
+    }
+
+    public void Weatherbutton()
+    {
+        HideButtons();
+        weatherBar.SetActive(true);
+    }
+
+    public void Entitybutton()
+    {
+        HideButtons();
+        entityBar.SetActive(true);
     }
 
     private void SetMeteo(WeatherState state)
