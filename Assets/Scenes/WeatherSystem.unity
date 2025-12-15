@@ -1580,7 +1580,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 0.19215687}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.2509804}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -6255,7 +6255,7 @@ MonoBehaviour:
   - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
   - {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
-  weatherState: 000000000100000002000000
+  weatherState: 00000000010000000300000002000000
   layermask:
     serializedVersion: 2
     m_Bits: 448
@@ -6263,6 +6263,11 @@ MonoBehaviour:
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
   tileOffset: 0.5
   meteoManager: {fileID: 1887286167}
+  WeatherImages:
+  - {fileID: 21300000, guid: 63f094ad1f611ec488c8d4ae1f0a1e9c, type: 3}
+  - {fileID: 21300000, guid: 5342bc145b7ad0d40b6bfc49599269f2, type: 3}
+  - {fileID: -1299194050631972554, guid: 314fa7746d152a241aabc3db338c456a, type: 3}
+  - {fileID: 21300000, guid: 0eff52f630c8ed14f809775cfc5f5963, type: 3}
 --- !u!1 &1809394898
 GameObject:
   m_ObjectHideFlags: 0
@@ -6372,6 +6377,8 @@ MonoBehaviour:
   fog: {fileID: 1283987661}
   rain: {fileID: 1095685154}
   animatorRain: {fileID: 1095685157}
+  lightningMinDelay: 3
+  lightningMaxDelay: 8
 --- !u!1001 &2048272658
 PrefabInstance:
   m_ObjectHideFlags: 0

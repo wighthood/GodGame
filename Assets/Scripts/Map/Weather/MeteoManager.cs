@@ -5,11 +5,10 @@ using UnityEngine;
 public class MeteoManager : MonoBehaviour
 {
     [SerializeField] private Vector2 weatherRange = new(60, 120);
-
     [SerializeField] private WeatherState currentWeatherState;
     private float timerWeather;
 
-    public static event Action <WeatherState> OnWeatherChanged;  //Lorsque WeatherState est appelé, alors 
+    public static event Action <WeatherState> OnWeatherChanged; 
   
     void Start()
     {
@@ -50,8 +49,8 @@ public enum WeatherState
 {
     Sunny = 0,
     Rain,
-    Fog,
     Storm,
+    Fog,
     /*Poison,
     Care,*/
 }

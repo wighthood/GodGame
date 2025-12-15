@@ -22,6 +22,8 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private float tileOffset;
     [SerializeField] private MeteoManager meteoManager;
 
+    [SerializeField] private Sprite[] WeatherImages;
+
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
 
     private Camera _camera;
@@ -56,22 +58,21 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener (() => 
                 SetSelector(prefab));
         }
+        int i = 0;
         foreach (WeatherState state in weatherState)
         {
             GameObject newButton = Instantiate(buttonPrefab, selectionBar);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
-            
-            button.onClick.AddListener(() =>
-                SetMeteo(state));
-        }
-    
+            buttonImage.sprite = WeatherImages[i];
+            button.onClick.AddListener(() => SetMeteo(state));
+            i++;
+        } 
     }
 
     private void SetMeteo(WeatherState state)
     {
         meteoManager.MeteoChange(state);
-
     }
 
     private void SetSelector(GameObject test = null, TileBase test2 = null)

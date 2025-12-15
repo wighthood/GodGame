@@ -163,7 +163,6 @@ public class MeteoEffect : MonoBehaviour
     {
         while (true)
         {
-
             float baseIntensity = mainLight.intensity;
 
             yield return new WaitForSeconds(Random.Range(lightningMinDelay, lightningMaxDelay));
@@ -180,5 +179,4 @@ public class MeteoEffect : MonoBehaviour
             mainLight.intensity = baseIntensity;
         }
     }
-
 }
