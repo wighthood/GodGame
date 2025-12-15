@@ -5904,7 +5904,6 @@ GameObject:
   - component: {fileID: 668700269}
   - component: {fileID: 668700268}
   - component: {fileID: 668700270}
-  - component: {fileID: 668700271}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -5929,6 +5928,7 @@ MonoBehaviour:
   defaultInfluenceRadius: 15
   defaultMaxPerPimu: 2
   scanInterval: 1
+  colonyPrefab: {fileID: 4631027790472223001, guid: 98d6ec0594a698845b32035d8bfc2367, type: 3}
 --- !u!4 &668700269
 Transform:
   m_ObjectHideFlags: 0
@@ -5956,28 +5956,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5417b7966e5549529369404e785fa3b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapBuildingManager
---- !u!114 &668700271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668700267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
-  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
-  spawnPoint: {fileID: 668700269}
-  spawnKey: 98
-  attachToNearestColony: 1
-  searchRadius: 10
-  addWoodKey: 49
-  removeWoodKey: 50
-  addFoodKey: 51
-  removeFoodKey: 52
-  _mbm: {fileID: 668700270}
+  building:
+  - {fileID: 2453019938693668466, guid: f24cc3838fe7fa74d84f358dd88e8e3f, type: 3}
+  - {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
+  - {fileID: 2453019938693668466, guid: 4984d70452505f14bb46fe1fe762cefc, type: 3}
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
