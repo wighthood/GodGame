@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
+    [SerializeField] AudioClip[] audioClips;
     public float storedVolume { get; private set; } = 0.5f;
     public enum SoundType
     {
@@ -17,6 +19,7 @@ public class AudioManager : MonoBehaviour
     {
         public SoundType Type;
         public AudioClip Clip;
+
 
         [Range(0f, 1f)]
         public float volume = 1f;
@@ -55,6 +58,22 @@ public class AudioManager : MonoBehaviour
         ChangeMusic(SoundType.Music_Menu);
     }
 
+    private void Update()
+    {
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameScene") && !_musicSource.isPlaying)
+        {
+            if (_musicSource.clip != audioClips[0])
+            {
+                _musicSource.clip = audioClips[0];
+            }
+            else
+            {
+                _musicSource.clip = audioClips[1];
+            }
+            _musicSource.Play();
+        }
+    }
+
     public SoundType SelectedSound;
 
     //appel pour jouer un son
@@ -76,7 +95,6 @@ public class AudioManager : MonoBehaviour
 
         //play the sound
         audioSrc.Play();
-
         //Destroy the object
         Destroy(soundObj, s.Clip.length);
     }
@@ -90,8 +108,9 @@ public class AudioManager : MonoBehaviour
             return; 
         }
 
+        _musicSource.loop = !_musicSource.loop;
+
         _musicSource.Stop();
-        _musicSource.loop = true;
         _musicSource.clip = track.Clip;
         _musicSource.Play();
     }

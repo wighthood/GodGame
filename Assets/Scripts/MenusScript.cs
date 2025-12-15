@@ -1,4 +1,3 @@
-using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +14,7 @@ public class MenusScript : MonoBehaviour
     
     public void Start()
     {
+        if (buttonLoad == null) return;
         if (File.Exists(StatsPath) || File.Exists(TilemapPath) || File.Exists(RessourcePath) ||
             File.Exists(BlackBoardPath))
         {
@@ -34,7 +34,7 @@ public class MenusScript : MonoBehaviour
         AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
         Time.timeScale = 1;
     }
-    
+
     public static void Quit()
     {
         Application.Quit();
