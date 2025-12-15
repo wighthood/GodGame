@@ -5411,10 +5411,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 100
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 0
+  m_Spacing: 100
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -5596,7 +5596,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2386012049191439489, guid: 17d5e2b26828c21448299f3a7e094ed2, type: 3}
+  m_Sprite: {fileID: -4502135756475682215, guid: 0b30ffcff8032c74f96f71b3c6c4e396, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5665,10 +5665,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 100
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 0
+  m_Spacing: 100
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -6059,10 +6059,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 100
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 0
+  m_Spacing: 100
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -6229,8 +6229,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
-  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
-  spawnPoint: {fileID: 668700269}
+  storagePrefab: {fileID: 0}
+  spawnPoint: {fileID: 0}
   spawnKey: 98
   attachToNearestColony: 1
   searchRadius: 10
@@ -6238,7 +6238,7 @@ MonoBehaviour:
   removeWoodKey: 50
   addFoodKey: 51
   removeFoodKey: 52
-  _mbm: {fileID: 668700270}
+  _mbm: {fileID: 0}
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
@@ -6887,10 +6887,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 100
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 0
+  m_Spacing: 100
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -7214,7 +7214,7 @@ MonoBehaviour:
   WeatherImages:
   - {fileID: 21300000, guid: 63f094ad1f611ec488c8d4ae1f0a1e9c, type: 3}
   - {fileID: 21300000, guid: 5342bc145b7ad0d40b6bfc49599269f2, type: 3}
-  - {fileID: -1299194050631972554, guid: 314fa7746d152a241aabc3db338c456a, type: 3}
+  - {fileID: 21300000, guid: 314fa7746d152a241aabc3db338c456a, type: 3}
   - {fileID: 21300000, guid: 0eff52f630c8ed14f809775cfc5f5963, type: 3}
   notWalkableSprites:
   - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
@@ -7279,7 +7279,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4502135756475682215, guid: 0b30ffcff8032c74f96f71b3c6c4e396, type: 3}
+  m_Sprite: {fileID: -2386012049191439489, guid: 17d5e2b26828c21448299f3a7e094ed2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
