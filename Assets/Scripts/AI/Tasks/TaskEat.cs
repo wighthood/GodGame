@@ -30,6 +30,7 @@ public class TaskEat : TaskBase
     public override void Cancel()
     {
         base.Cancel();
+        Debug.Log("Ya pas � manger");
     }
 
     public override bool Do()
@@ -38,13 +39,17 @@ public class TaskEat : TaskBase
         {
             return true;
         }
-        //TODO check in colonie inventory if there is food, if yes go take it
         else
         {
             if (targetFoodSource == null)
             {
                 GetNearestFoodIfExiste();
+                if (targetFoodSource == null)
+                {
+                    return true;
+                }
             }
+
             Vector3 selfPosition = transform.position;
             if (isArrive)
             {
@@ -67,12 +72,15 @@ public class TaskEat : TaskBase
 
     public override void OnFinish()
     {
-        actions.Eat();
+        if (targetFoodSource != null && isArrive)
+        {
+            actions.Eat();
+        }
     }
 
     public override void OnStart()
     {
-        Debug.Log("Hungry !");
+        //Debug.Log("Hungry !");
     }
 
     protected override bool FinishCondition()

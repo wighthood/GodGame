@@ -1,17 +1,33 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Collections.Generic;
+using System;
+using System.Collections;
+using UnityEditor.Overlays;
+using UnityEngine.UI;
 
 public class GameSceneController : MonoBehaviour
 {
     [Header("Réfs scène de jeu")]
     public WorldGeneration worldGen;
+    public SaveManager saveManager;
     public Tilemap tilemap;
     public GameObject agentPrefab;
     [SerializeField] private GameObject agentParent;
+    public GameObject saveButton;
+    public GameObject panelPauseMenu;
+    
+    [Header("Réfs ressources")]
+    [SerializeField] private GameObject ressourceParent;
+    [SerializeField] private List<GameObject> ressourcePrefab;
+    
+    [Header("Réfs IA / Blackboard")]
+    public BlackBoard existingBlackboard;
+    
+    
+    
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+    public static event Action InitGraph;
 
     void Start()
     {
@@ -25,6 +41,8 @@ public class GameSceneController : MonoBehaviour
             worldGen.enabled = false;
             LoadStatsAndAgents();
             LoadTilemap();
+            LoadRessource();
+            LoadBlackBoard();
         }
     }
 
@@ -32,8 +50,10 @@ public class GameSceneController : MonoBehaviour
     {
         GameData stats = BuildStatsData();
         TilemapSave tData = BuildTilemapData();
+        RessourceSave rData = BuildRessourceData();
+        BlackboardSave bbData = BuildBlackBoard();
 
-        SaveManager.SaveAll(stats, tData);
+        SaveManager.SaveAll(stats, tData, rData, bbData);
     }
 
     GameData BuildStatsData()
@@ -55,7 +75,6 @@ public class GameSceneController : MonoBehaviour
 
             data.agentData.Add(a);
         }
-
         return data;
     }
 
@@ -95,6 +114,36 @@ public class GameSceneController : MonoBehaviour
         return save;
     }
 
+    RessourceSave BuildRessourceData()
+    {
+        RessourceSave save = new RessourceSave();
+        save.ress = new List<RessourceSaveData>();
+
+        for (int i = 0; i < ressourceParent.transform.childCount; i++)
+        {
+            Transform child = ressourceParent.transform.GetChild(i);
+            
+            Ressource res = child.GetComponent<Ressource>();
+            if (res == null) continue;
+            
+            RessourceSaveData saveData = new RessourceSaveData();
+            saveData.ressourcePos = child.position;
+            saveData.ressourceType = res.GetRessourceType();
+            
+            save.ress.Add(saveData);
+        }
+        return save;
+    }
+
+    BlackboardSave BuildBlackBoard()
+    {
+        BlackboardSave bbSave = new BlackboardSave();
+        
+        bbSave.blackBoard = existingBlackboard;
+        
+        return bbSave;
+    }
+
     void LoadStatsAndAgents()
     {
         GameData data = SaveManager.loadedStats;
@@ -113,13 +162,14 @@ public class GameSceneController : MonoBehaviour
 
         foreach (AgentData agentData in data.agentData)
         {
-            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos,
-                                           Quaternion.identity, agentParent.transform);
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent.transform);
             AIStats aiStats = agent.GetComponent<AIStats>();
             aiStats.hunger    = agentData.hunger;
             aiStats.health    = agentData.health;
             aiStats.maxHealth = agentData.maxHealth;
         }
+        
+        Debug.Log("Stats et agents bien chargés");
     }
 
     void LoadTilemap()
@@ -144,8 +194,52 @@ public class GameSceneController : MonoBehaviour
             TileBase tile = palette[data.tileId];
             tilemap.SetTile(pos, tile);
         }
+        InitGraph?.Invoke();
 
         tilemap.RefreshAllTiles();
         Debug.Log("Tilemap chargée");
+    }
+
+    void LoadRessource()
+    {
+        RessourceSave rData = SaveManager.loadedRessource;
+        
+        if (rData == null)
+        {
+            Debug.LogWarning("Pas de ressources");
+            return;
+        }
+        
+        for (int i = ressourceParent.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(ressourceParent.transform.GetChild(i).gameObject);
+        }
+
+        foreach (RessourceSaveData save in rData.ress)
+        {
+            AddNewRessource.Invoke(save.ressourceType, save.ressourcePos);
+        }
+        
+        Debug.Log("Ressource bien chargée(s)");
+    }
+
+    void LoadBlackBoard()
+    {
+        BlackboardSave bbSave = SaveManager.loadedBlackBoard;
+
+        if (bbSave == null || bbSave.blackBoard == null)
+        {
+            Debug.LogWarning("Pas de blackboard");
+            return;
+        }
+
+        existingBlackboard = bbSave.blackBoard;
+
+        Debug.Log("BlackBoard bien chargé");
+    }
+    
+    public void SendAlertSave()
+    {
+        saveButton.SetActive(true);
     }
 }
