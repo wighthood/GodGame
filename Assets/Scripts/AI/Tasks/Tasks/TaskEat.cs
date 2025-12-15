@@ -98,6 +98,7 @@ public class TaskEat : TaskBase
         return actions.HasRessource(RessourceType.food);
     }
 
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -116,4 +117,5 @@ public class TaskEat : TaskBase
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
+#endif
 }
