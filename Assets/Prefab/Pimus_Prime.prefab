@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 543139912411055940}
   - component: {fileID: 989185873531770416}
   - component: {fileID: -2642006060528836289}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pimus_Prime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,9 +152,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AgentActions
   ressourcesMask:
   - serializedVersion: 2
+    m_Bits: 64
+  - serializedVersion: 2
     m_Bits: 128
   - serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 512
 --- !u!114 &711300630693085499
 MonoBehaviour:
   m_ObjectHideFlags: 0

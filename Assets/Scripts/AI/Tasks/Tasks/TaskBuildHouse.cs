@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildHouse", menuName = "Tasks/BuildHouse")]
@@ -12,63 +11,72 @@ public class TaskBuildHouse : TaskBase
     bool isArrived;
     AIInventory inventory;
 
-    bool isArrivedToRessource;
     Transform targetRessource;
-    Transform storagePosition;
+    Transform transform;
+    protected Storage storage;
+
+    public override void Init(TaskManager _manager, AgentActions _actions)
+    {
+        base.Init(_manager, _actions);
+        transform = actions.transform;
+    }
 
     public override bool Do()
     {
         if (batimentPosition == null) { return true; }
 
-        if(actions.GetPath() != null && actions.GetPath().Count > 0)
+        if (actions.GetRessourceTransported() == buildingTable.ressourcesNeeded[0].RessourceType && actions.GetRessourceTransportedNumber() >= buildingTable.ressourcesNeeded[0].number)
         {
+            Debug.Log($"build position {(Vector2)batimentPosition}");
             pathDebug = actions.GetPath();
+            isArrived = actions.MoveTo((Vector2)batimentPosition);
+            return FinishCondition();
         }
-
-        if(!HasEnoughRessources())
+        else
         {
-            RessourceCollection ressourceCollection =  buildingTable.ressourcesNeeded[0];
-
-            if (manager.colonieBlackboard != null && actions.GetStorage() != null)
+            if (targetRessource == null)
             {
-                if(storagePosition == null)
+                GetNearestIfExiste();
+                if (targetRessource == null)
                 {
-                    storagePosition = actions.GetStorage().transform;
-                }
-
-                if(isArrivedToRessource)
-                {
-                    actions.TakeRessourcesFromStorage(ressourceCollection.RessourceType, ressourceCollection.number);
-                }
-                else
-                {
-                    isArrivedToRessource = actions.MoveTo(storagePosition);
+                    return true;
                 }
             }
             else
             {
-                if (!targetRessource)
+                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
                 {
-                    targetRessource = actions.GetNearestRessource(ressourceCollection.RessourceType);
-                    return false;
-                }
-
-                if (isArrivedToRessource)
-                {
-                    actions.Harvrest(ressourceCollection.RessourceType);
+                    actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
+                    if (!CanBuild())
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    isArrivedToRessource = actions.MoveTo(targetRessource.position);
+                    pathDebug = actions.GetPath();
+                    actions.MoveTo(targetRessource);
                 }
             }
-
-            return false;
         }
 
-        isArrived = actions.MoveTo((Vector2)batimentPosition);
-        
-        return FinishCondition();
+        return false;
+    }
+
+    private void GetNearestIfExiste()
+    {
+        Transform target = actions.GetNearestRessource(buildingTable.ressourcesNeeded[0].RessourceType);
+
+        if (target == null)
+        {
+            return;
+        }
+        targetRessource = target;
+    }
+
+    private bool CanBuild()
+    {
+        return actions.GetRessourceTransported() == buildingTable.ressourcesNeeded[0].RessourceType && actions.GetRessourceTransportedNumber() >= buildingTable.ressourcesNeeded[0].number;
     }
 
     public override float GetPriority()
@@ -76,6 +84,10 @@ public class TaskBuildHouse : TaskBase
         if (manager.colonieBlackboard == null)
         {
             return 0;
+        }
+        if(storage == null && actions.GetStorage())
+        {
+            storage = actions.GetStorage();
         }
 
         int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
@@ -86,6 +98,11 @@ public class TaskBuildHouse : TaskBase
 
     public override void OnFinish()
     {
+        if(!CanBuild())
+        {
+            return;
+        }
+
         inventory.RemoveRessources(buildingTable.ressourcesNeeded[0].number);
         actions.StartBuild(2f, buildingTable.buildType);
     }
@@ -98,32 +115,16 @@ public class TaskBuildHouse : TaskBase
         }
 
         targetRessource = null;
-        isArrivedToRessource = false;
+        isArrived = false;
 
         batimentPosition = actions.GetValidBuildPosition();
 
-        if (batimentPosition == null)
-        {
-            isArrived = true;
-        }
+        Debug.Log($"build position {(Vector2)batimentPosition}");
     }
 
     protected override bool FinishCondition()
     {
         return isArrived;
-    }
-
-    private bool HasEnoughRessources()
-    {
-        foreach (RessourceCollection ressourceCollection in buildingTable.ressourcesNeeded)
-        {
-            if (inventory.GetRessourceType() != ressourceCollection.RessourceType) { continue; }
-
-            if(inventory.GetRessources().amount == ressourceCollection.number)
-            { return true; }
-        }
-
-        return false;
     }
 
     public override void DrawActionsGizmo()

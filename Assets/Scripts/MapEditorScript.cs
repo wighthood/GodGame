@@ -55,6 +55,8 @@ public class MapEditorScript : MonoBehaviour
 
     void Start()
     {
+        Ressource.GetTile += GetTile;
+
         _camera = Camera.main;
         Tilebutton();
         Ressourcebutton();
