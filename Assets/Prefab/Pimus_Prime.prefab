@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 543139912411055940}
   - component: {fileID: 989185873531770416}
   - component: {fileID: -2642006060528836289}
+  - component: {fileID: 2560039575587006412}
   m_Layer: 8
   m_Name: Pimus_Prime
   m_TagString: Untagged
@@ -221,3 +222,49 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3af25d6a0b1d7af4bb32c6d0221eaa5d, type: 2}
   - {fileID: 11400000, guid: 016baf31b03e26c4d97119eea3820eef, type: 2}
   - {fileID: 11400000, guid: 3361e68086f465a4daa691f4a7afff5f, type: 2}
+--- !u!61 &2560039575587006412
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226159496368005823}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 10.8, y: 10.8}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
