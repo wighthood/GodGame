@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -13,6 +14,8 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Transform selectionBar;
     [SerializeField] private GameObject buttonPrefab;
     [SerializeField] private List<GameObject> Prefabs;
+    [SerializeField] private List<GameObject> Weather;
+    [SerializeField] private List<GameObject> Entity;
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
@@ -34,6 +37,14 @@ public class MapEditorScript : MonoBehaviour
     void Start()
     {
         _camera = Camera.main;
+        Tilebutton();
+        Ressourcebutton();
+        Ressource.GetTile += GetTile;
+
+
+    }
+    public void Tilebutton ()
+    {
         foreach (TileBase tile in tiles)
         {
             GameObject newButton = Instantiate(buttonPrefab, selectionBar);
@@ -46,7 +57,10 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener((() =>
                SetSelector(null, tile)));
         }
+    }
 
+    public void Ressourcebutton()
+    {
         foreach (GameObject prefab in Prefabs)
         {
             GameObject newButton = Instantiate(buttonPrefab, selectionBar);
@@ -56,9 +70,24 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
-        Ressource.GetTile += GetTile;
+    }
 
+    public void Weatherbutton()
+    {
 
+    }
+
+    public void Entitybutton()
+    {
+        foreach (GameObject prefab in Entity)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            Image buttonImage = newButton.GetComponent<Image>();
+            Button button = newButton.GetComponent<Button>();
+            buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
+            button.onClick.AddListener((() =>
+                SetSelector(prefab)));
+        }
     }
 
     private TileBase GetTile(Vector3 position)
