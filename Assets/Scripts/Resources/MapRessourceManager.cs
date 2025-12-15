@@ -9,26 +9,35 @@ public enum RessourceType
     stone = 3,
 }
 
-public class MapRessourceManager : MonoBehaviour
+public class MapRessourceManager : MonoBehaviour, ISaveable
 {
-    private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
+    private Dictionary<RessourceType, List<Ressource>> ressources = new();
 
     [SerializeField]
-    private List<GameObject> ressourcePrefab = new List<GameObject>();
+    private List<GameObject> ressourcePrefab = new();
 
     private void Awake()
     {
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
-        WorldGeneration.AddNewRessource += AddNewRessource;
-        GameSceneController.AddNewRessource += AddNewRessource;
+        WorldGeneration.OnAddNewRessourceEvent += AddNewRessource;
     }
 
-    public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
+    private void OnEnable()
+    {
+        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
+    }
+
+    private void OnDisable()
+    {
+        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
+    }
+
+    public GameObject AddNewRessource(RessourceType _ressourceType, Vector2 _position)
     {
         GameObject newRessource = null;
-        newRessource = Instantiate(ressourcePrefab[(int)ressourceType], _position, Quaternion.identity, transform);
+        newRessource = Instantiate(ressourcePrefab[(int)_ressourceType], _position, Quaternion.identity, transform);
         AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
         return newRessource;
     }
@@ -57,6 +66,8 @@ public class MapRessourceManager : MonoBehaviour
     {
         List<Ressource> ressourcesList = GetRessources(_type);
 
+        if (ressourcesList == null || ressourcesList.Count == 0) return null;
+
         float nearestDistance = float.MaxValue;
 
         Transform nearestRessource = ressourcesList[0].transform;
@@ -84,7 +95,54 @@ public class MapRessourceManager : MonoBehaviour
         Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
         AgentActions.GetRessources -= GetNearestRessource;
         MapEditorScript.AddNewRessource -= AddNewRessource;
-        WorldGeneration.AddNewRessource -= AddNewRessource;
-        GameSceneController.AddNewRessource -= AddNewRessource;
+        WorldGeneration.OnAddNewRessourceEvent -= AddNewRessource;
+    }
+
+    public string CaptureState()
+    {
+        RessourceSave save = new RessourceSave();
+        foreach (KeyValuePair<RessourceType, List<Ressource>> kvp in ressources)
+        {
+            foreach (Ressource r in kvp.Value)
+            {
+                if (r == null) continue;
+                save.ress.Add(new RessourceSaveData
+                {
+                    ressourceType = r.GetRessourceType(),
+                    ressourcePos = r.transform.position
+                });
+            }
+        }
+        return JsonUtility.ToJson(save);
+    }
+
+    public void RestoreState(string _state)
+    {
+        foreach (KeyValuePair<RessourceType, List<Ressource>> kvp in ressources)
+        {
+            foreach (Ressource r in kvp.Value)
+            {
+                if (r != null) Destroy(r.gameObject);
+            }
+        }
+        ressources.Clear();
+        
+        if (string.IsNullOrEmpty(_state)) return;
+
+        RessourceSave save = JsonUtility.FromJson<RessourceSave>(_state);
+        if (save != null && save.ress != null)
+        {
+            foreach (RessourceSaveData data in save.ress)
+            {
+                AddNewRessource(data.ressourceType, data.ressourcePos);
+            }
+        }
+    }
+
+    public string GetSaveID()
+    {
+        return "Ressources";
     }
 }
+
+

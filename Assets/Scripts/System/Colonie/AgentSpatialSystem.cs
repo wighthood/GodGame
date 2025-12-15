@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AgentSpatialSystem : MonoBehaviour
 {
@@ -28,6 +27,7 @@ public class AgentSpatialSystem : MonoBehaviour
         ColonyEvents.OnUnregisterAgentEvent += UnregisterAgent;
         ColonyEvents.OnUpdateAgentPositionEvent += UpdateAgentPosition;
         ColonyEvents.OnRequestNeighborsEvent += GetNeighbors;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
@@ -36,6 +36,18 @@ public class AgentSpatialSystem : MonoBehaviour
         ColonyEvents.OnUnregisterAgentEvent -= UnregisterAgent;
         ColonyEvents.OnUpdateAgentPositionEvent -= UpdateAgentPosition;
         ColonyEvents.OnRequestNeighborsEvent -= GetNeighbors;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Clear();
+    }
+
+    public void Clear()
+    {
+        registeredAgents.Clear();
+        spatialBuckets.Clear();
     }
 
     private void RegisterAgent(I_ColonyAgent _agent)
@@ -111,7 +123,9 @@ public class AgentSpatialSystem : MonoBehaviour
                 {
                     foreach (var agent in list)
                     {
-                        if (agent != null && Vector3.Distance(agent.transform.position, _position) <= _radius)
+                        if (agent == null || (agent is UnityEngine.Object obj && obj == null)) continue;
+                        
+                        if (Vector3.Distance(agent.transform.position, _position) <= _radius)
                         {
                             results.Add(agent);
                         }

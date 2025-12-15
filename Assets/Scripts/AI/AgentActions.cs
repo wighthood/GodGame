@@ -164,6 +164,10 @@ public class AgentActions : MonoBehaviour
             }
         }
 
+
+
+        if (ressourceToHarverest == null) return;
+
         if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
         {
             ressourceToHarverest.OnHarvrestingRessource();

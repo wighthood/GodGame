@@ -971,10 +971,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::System.Colonie.ColonieSystem
   requiredPimusToCreate: 5
-  groupingRadius: 5
+  groupingRadius: 10
   defaultInfluenceRadius: 15
-  defaultMaxPerPimu: 2
   scanInterval: 1
+  colonyPrefab: {fileID: 4631027790472223001, guid: 98d6ec0594a698845b32035d8bfc2367, type: 3}
+  pimuPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
 --- !u!4 &668700269
 Transform:
   m_ObjectHideFlags: 0
@@ -1002,6 +1003,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5417b7966e5549529369404e785fa3b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapBuildingManager
+  building:
+  - {fileID: 2453019938693668466, guid: f24cc3838fe7fa74d84f358dd88e8e3f, type: 3}
+  - {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
 --- !u!114 &668700271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1011,19 +1015,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 668700267}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
+  m_Script: {fileID: 11500000, guid: 160b727003be8dd49be1400c65349694, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
-  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
-  spawnPoint: {fileID: 668700269}
-  spawnKey: 98
-  attachToNearestColony: 1
-  searchRadius: 10
-  addWoodKey: 49
-  removeWoodKey: 50
-  addFoodKey: 51
-  removeFoodKey: 52
-  _mbm: {fileID: 668700270}
+  m_EditorClassIdentifier: Assembly-CSharp::AgentSpatialSystem
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,59 +1048,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1809394900}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &741698162
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 741698164}
-  - component: {fileID: 741698163}
-  m_Layer: 0
-  m_Name: Save
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &741698163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741698162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameSceneController
-  worldGen: {fileID: 130282017}
-  tilemap: {fileID: 130282014}
-  agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
-  agentParent: {fileID: 188331453}
-  ressourceParent: {fileID: 1187677960}
-  ressourcePrefab:
-  - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
-  - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
-  - {fileID: 5218013249053032955, guid: 101bb3f08730bae41bd68dbc4a5ee8e6, type: 3}
---- !u!4 &741698164
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741698162}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.31411, y: -3.36361, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &836012061 stripped
@@ -1492,6 +1433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1809394900}
   - component: {fileID: 1809394899}
+  - component: {fileID: 1809394901}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -1527,6 +1469,23 @@ Transform:
   - {fileID: 130282012}
   m_Father: {fileID: 679938721}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1809394901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809394898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ff5c84f9adaeab458dc05626715c582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TilemapManager
+  tilemap: {fileID: 130282014}
+  palette:
+  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!1001 &2048272658
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1542,6 +1501,10 @@ PrefabInstance:
     - target: {fileID: 20318935353030005, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 106254193976476297, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_Name
+      value: Quit Button
       objectReference: {fileID: 0}
     - target: {fileID: 219249902823148558, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_fontAsset
@@ -1758,14 +1721,14 @@ PrefabInstance:
     - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 741698163}
+      objectReference: {fileID: 2048272660}
     - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickSave
+      value: Save
       objectReference: {fileID: 0}
     - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GameSceneController, Assembly-CSharp
+      value: MenusScript, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7859552327799205134, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_fontSize
@@ -1808,6 +1771,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
   m_PrefabInstance: {fileID: 2048272658}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2048272660 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8307017329690881927, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+  m_PrefabInstance: {fileID: 2048272658}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836012061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d46d44ceeb7a140852881a78dfae2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenusScript
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1820,4 +1794,3 @@ SceneRoots:
   - {fileID: 1187677961}
   - {fileID: 188331454}
   - {fileID: 668700269}
-  - {fileID: 741698164}

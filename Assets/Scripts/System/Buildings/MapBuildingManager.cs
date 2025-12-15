@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MapBuildingManager : MonoBehaviour
+public class MapBuildingManager : MonoBehaviour, ISaveable
 {
     private List<Building> buildings = new ();
     public List<Building> GetAllBuildings() => new(buildings);
@@ -11,6 +11,16 @@ public class MapBuildingManager : MonoBehaviour
     // Spatial Hashing
     private Dictionary<long, List<Building>> spatialBuckets = new();
     private float _cellSize = 20f;
+
+    void OnEnable()
+    {
+        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
+    }
+
+    void OnDisable()
+    {
+        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
+    }
 
     void Awake()
     {
@@ -179,5 +189,78 @@ public class MapBuildingManager : MonoBehaviour
         }
 
         return best;
+    }
+
+    public string GetSaveID()
+    {
+        return "MapBuildingManager";
+    }
+
+    public string CaptureState()
+    {
+        MapBuildingSystemSaveData data = new MapBuildingSystemSaveData();
+
+        foreach (var b in buildings)
+        {
+            if (b == null) continue;
+            
+            BuildingSaveData bData = new BuildingSaveData();
+            bData.position = b.transform.position;
+            bData.buildTypeId = (int)b.Type;
+            
+            if (b.Owner != null)
+            {
+                bData.ownerColonyId = b.Owner.GetId();
+            }
+            else
+            {
+                bData.ownerColonyId = -1;
+            }
+            
+            data.buildings.Add(bData);
+        }
+
+        return JsonUtility.ToJson(data);
+    }
+
+    public void RestoreState(string _state)
+    {
+        foreach (var b in buildings)
+        {
+            if (b != null && b.gameObject != null) Destroy(b.gameObject);
+        }
+        buildings.Clear();
+        spatialBuckets.Clear();
+
+        if (string.IsNullOrEmpty(_state)) return;
+
+        MapBuildingSystemSaveData data = JsonUtility.FromJson<MapBuildingSystemSaveData>(_state);
+        if (data == null) return;
+        
+        foreach (var bData in data.buildings)
+        {
+            Colony owner = null;
+            if (bData.ownerColonyId != -1)
+            {
+               // Helper to find colony by ID without direct reference
+               if (ColonieSystem.OnRequestColonyByIDEvent != null)
+               {
+                   owner = ColonieSystem.OnRequestColonyByIDEvent.Invoke(bData.ownerColonyId);
+               }
+            }
+            
+            // Resolve Prefab
+            if (bData.buildTypeId < 0 || bData.buildTypeId >= building.Count) continue;
+            GameObject prefab = building[bData.buildTypeId];
+            
+            if (owner != null)
+            {
+                 SpawnBuilding(prefab, bData.position, owner, (BuildType)bData.buildTypeId);
+            }
+            else
+            {
+                // Debug.LogWarning($"Building at {bData.position} skipped because owner colony {bData.ownerColonyId} not found (via Event).");
+            }
+        }
     }
 }

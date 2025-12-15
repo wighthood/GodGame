@@ -33,24 +33,33 @@ public class WorldGeneration : MonoBehaviour
 
     [HideInInspector] public List<GameObject> _spawnedAgent = new();
 
-    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
-    public static event Action InitGraph;
+    public static event Func<RessourceType, Vector2, GameObject> OnAddNewRessourceEvent;
+    public static event Action OnInitGraphEvent;
 
     private Vector3 treeOffSet = new Vector3(0, 0.2f, 0);
     private Vector3 stoneOffSet = new Vector3(0, -0.29f, 0);
 
-    void Start()
+    void Awake()
     {
         _tilemap = GetComponent<Tilemap>();
+    }
 
-        if (GameModeManager.Instance == null ||
-            GameModeManager.Instance.currentMode == GameModeManager.GameMode.Play)
-        {
-            MapGeneration();
-            RessourcesGeneration();
-            InitGraph.Invoke();
-            SpawnAgent();
-        }
+    private void OnEnable()
+    {
+        SaveEvents.OnNewGameStartEvent += GenerateWorld;
+    }
+
+    private void OnDisable()
+    {
+        SaveEvents.OnNewGameStartEvent -= GenerateWorld;
+    }
+
+    private void GenerateWorld()
+    {
+        MapGeneration();
+        RessourcesGeneration();
+        OnInitGraphEvent?.Invoke();
+        SpawnAgent();
     }
 
     private void MapGeneration()
@@ -113,17 +122,17 @@ public class WorldGeneration : MonoBehaviour
         if (type == RessourceType.wood)
         {
             _spawnedLocation.Add(key);
-            _spawnedItem.Add(AddNewRessource?.Invoke(type, pos + treeOffSet));
+            _spawnedItem.Add(OnAddNewRessourceEvent?.Invoke(type, pos + treeOffSet));
         }
         else if (type == RessourceType.stone)
         {
             _spawnedLocation.Add(key);
-            _spawnedItem.Add(AddNewRessource?.Invoke(type, pos + stoneOffSet));
+            _spawnedItem.Add(OnAddNewRessourceEvent?.Invoke(type, pos + stoneOffSet));
         }
         else
         {
             _spawnedLocation.Add(key);
-            _spawnedItem.Add(AddNewRessource?.Invoke(type, pos));
+            _spawnedItem.Add(OnAddNewRessourceEvent?.Invoke(type, pos));
         }
     }
 

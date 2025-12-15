@@ -951,6 +951,7 @@ GameObject:
   - component: {fileID: 668700268}
   - component: {fileID: 668700270}
   - component: {fileID: 668700271}
+  - component: {fileID: 668700272}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -1017,6 +1018,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 160b727003be8dd49be1400c65349694, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AgentSpatialSystem
+--- !u!114 &668700272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668700267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!1 &679938718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,21 +1088,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 741698162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14bbdfe3968b593438cd1fa432a79936, type: 3}
+  m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSceneController
-  worldGen: {fileID: 130282017}
-  saveManager: {fileID: 0}
-  tilemap: {fileID: 130282014}
-  agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
-  agentParent: {fileID: 188331453}
-  saveButton: {fileID: 0}
-  panelPauseMenu: {fileID: 0}
-  ressourceParent: {fileID: 1187677960}
-  ressourcePrefab:
-  - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
-  - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
-  - {fileID: 5218013249053032955, guid: 101bb3f08730bae41bd68dbc4a5ee8e6, type: 3}
 --- !u!4 &741698164
 Transform:
   m_ObjectHideFlags: 0
