@@ -104,10 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d2e8363bf7ed44b8d60e64a9c88bb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stockage
-  capaciteMax: 100
-  pvMax: 10
-  pvActuels: 10
-  coutCreation: 10
 --- !u!114 &-3855971957837498365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,4 +116,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ac688770444b2094000342c596e3e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Building
-  Health: 10
+  BuildingTable: {fileID: 11400000, guid: 28ec234062c536e428cd04bcd3a24a0e, type: 2}

@@ -25,13 +25,9 @@ public class TaskBuildHouse : TaskBase
     {
         if (batimentPosition == null) { return true; }
 
-        if(actions.GetPath() != null && actions.GetPath().Count > 0)
-        {
-            pathDebug = actions.GetPath();
-        }
-
         if (actions.GetRessourceTransported() == buildingTable.ressourcesNeeded[0].RessourceType && actions.GetRessourceTransportedNumber() >= buildingTable.ressourcesNeeded[0].number)
         {
+            Debug.Log($"build position {(Vector2)batimentPosition}");
             pathDebug = actions.GetPath();
             isArrived = actions.MoveTo((Vector2)batimentPosition);
             return FinishCondition();
@@ -43,7 +39,6 @@ public class TaskBuildHouse : TaskBase
                 GetNearestIfExiste();
                 if (targetRessource == null)
                 {
-                    Debug.Log("non pas bon");
                     return true;
                 }
             }
@@ -120,13 +115,11 @@ public class TaskBuildHouse : TaskBase
         }
 
         targetRessource = null;
+        isArrived = false;
 
         batimentPosition = actions.GetValidBuildPosition();
 
-        if (batimentPosition == null)
-        {
-            isArrived = true;
-        }
+        Debug.Log($"build position {(Vector2)batimentPosition}");
     }
 
     protected override bool FinishCondition()
