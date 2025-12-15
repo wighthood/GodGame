@@ -24,10 +24,13 @@ public class Graph : MonoBehaviour
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
         GameSceneController.InitGraph += InitGraph;
+        Colony.WorldToCellPos += WorldToCellPos;
+        Colony.CellToWorld += CellToWorld;
+        Colony.GetCell += GetCell;
 
         tilemap = GetComponent<Tilemap>();
     }
-    
+
     public List<Cell> GetCellsFromDict()
     {
         return graphDict.Values.ToList();
@@ -84,13 +87,13 @@ public class Graph : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if(graphDict != null)
+        if (graphDict != null)
         {
             Vector3 size = new(0.5f, 0.5f, 0.1f);
             Gizmos.color = Color.blue;
-            foreach(Cell cell in graphDict.Values)
+            foreach (Cell cell in graphDict.Values)
             {
-                if(cell.isWalkable)
+                if (cell.isWalkable)
                 {
                     Gizmos.color = Color.blue;
                     Gizmos.DrawCube(CellToWorld(cell.position), size);
@@ -114,5 +117,8 @@ public class Graph : MonoBehaviour
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
         GameSceneController.InitGraph -= InitGraph;
+        Colony.WorldToCellPos -= WorldToCellPos;
+        Colony.CellToWorld -= CellToWorld;
+        Colony.GetCell -= GetCell;
     }
 }

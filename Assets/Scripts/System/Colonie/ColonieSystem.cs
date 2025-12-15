@@ -16,6 +16,8 @@ public class ColonieSystem : MonoBehaviour
     [Header("Scan settings")]
     public float scanInterval = 1f;
 
+    [SerializeField] private GameObject colonyPrefab;
+
     public static ColonieSystem Instance { get; private set; }
 
     public Action<IColony> OnColonyCreated;
@@ -45,22 +47,35 @@ public class ColonieSystem : MonoBehaviour
         _cellSize = Mathf.Max(0.1f, groupingRadius);
 
         BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
+        BuildingEvents.OnBuildingSpawned += BuildingSpawned;
     }
 
     void OnDestroy()
     {
         BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
+        BuildingEvents.OnBuildingSpawned -= BuildingSpawned;
         if (Instance == this) Instance = null;
+    }
+
+    private void BuildingSpawned(BuildType _type, Colony _colony)
+    {
+        switch(_type)
+        {
+            case BuildType.House:
+                _colony.AddMaxPop();
+                break;
+            case BuildType.Farm:
+                break;
+            case BuildType.Storage:
+                break;
+        }
     }
 
     private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
     {
-        if (colony == null || !(colony is Colony concreteColony)) return null;
-        
-        Graph graph = Graph.OnGetGraph?.Invoke();
-        if (graph == null) return null;
+        if (colony == null || colony is not Colony concreteColony) return null;
 
-        return concreteColony.GetValidBuildingPosition(agentPos, graph);
+        return concreteColony.GetValidBuildingPosition();
     }
 
     void Start()
@@ -172,10 +187,9 @@ public class ColonieSystem : MonoBehaviour
         foreach (Colony col in _colonies)
         {
             if (col == null) continue;
-            if (!string.Equals(col.Species, agent.GetSpecies(), StringComparison.OrdinalIgnoreCase)) continue;
             if (col.Inhabitants >= col.MaxInhabitants) continue;
 
-            float d = Vector3.Distance(col.Center, pos);
+            float d = Vector3.Distance(col.GetColonyCenter(), pos);
             if (d <= col.InfluenceRadius && d < bestDist)
             {
                 best = col;
@@ -186,10 +200,8 @@ public class ColonieSystem : MonoBehaviour
         if (best != null)
         {
             _assignment[agent] = best;
-            best.Members.Add(agent);
-            best.Inhabitants = best.Members.Count;
+            best.AddAgentToColony(agent);
 
-            agent.SetCurrentColony(best);
             OnMemberJoined?.Invoke(best, agent);
             Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} joined Colony Id={best.Id} (now {best.Inhabitants}/{best.MaxInhabitants})");
             return true;
@@ -255,16 +267,17 @@ public class ColonieSystem : MonoBehaviour
         return results;
     }
 
-    private void CreateColony(Vector3 center, List<IColonyAgent> members)
+    private void CreateColony(Vector3 _colonySpawnPoint, List<IColonyAgent> _members)
     {
-        members = members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
+        _members = _members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
 
-        Colony colony = new Colony();
+        Colony colony = Instantiate(colonyPrefab, _colonySpawnPoint, Quaternion.identity, transform).GetComponent<Colony>();
+        colony.InitColony();
         colony.Id = _nextColonyId++;
-        colony.Center = center;
-        colony.Members.Clear();
 
-        foreach (IColonyAgent m in members)
+        colony.name = $"Colony {colony.Id}";
+
+        foreach (IColonyAgent m in _members)
         {
             _assignment[m] = colony;
             colony.Members.Add(m);
@@ -272,19 +285,15 @@ public class ColonieSystem : MonoBehaviour
         }
 
         colony.Inhabitants = colony.Members.Count;
-        colony.SetBaseMaxInhabitants(colony.Inhabitants * defaultMaxPerPimu);
+        colony.BlackBoard.AddValueOrModify("Habitant", colony.Inhabitants);
 
-        colony.Buildings = new List<GameObject>();
-        colony.Resources = new Dictionary<string, int>();
         colony.InfluenceRadius = defaultInfluenceRadius;
-        colony.Species = members.Count > 0 ? members[0].GetSpecies() : "Unknown";
 
         _colonies.Add(colony);
 
         foreach (IColonyAgent m in colony.Members)
             OnMemberJoined?.Invoke(colony, m);
 
-        Debug.Log($"Colony created (Id={colony.Id}) at {center} with {colony.Inhabitants} habitants (max {colony.MaxInhabitants}) species={colony.Species}");
         OnColonyCreated?.Invoke(colony);
     }
 

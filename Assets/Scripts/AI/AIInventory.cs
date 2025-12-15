@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AIInventory : MonoBehaviour
@@ -16,12 +17,17 @@ public class AIInventory : MonoBehaviour
         return ressourceStockedData.ressource;
     }
 
+    public uint GetRessourceTransportedNumber()
+    {
+        return ressourceStockedData.amount;
+    }
+
     public bool HasRessource()
     {
         return !(ressourceStockedData.ressource == RessourceType.none);
     }
 
-    public bool AddRessources(int _amount, RessourceType ressource)
+    public bool AddRessources(uint _amount, RessourceType ressource)
     {
         if(HasRessource() && GetRessourceType() != ressource)
         {
@@ -45,9 +51,19 @@ public class AIInventory : MonoBehaviour
         ressourceStockedData.ressource = RessourceType.none;
     }
 
+    public void RemoveRessources(uint _amount)
+    {
+        ressourceStockedData.amount -= _amount;
+
+        if(ressourceStockedData.amount <= 0)
+        {
+            ResetRessource();
+        }
+    }
+
     public void RemoveOne()
     {
-        ressourceStockedData.amount--;
+        RemoveRessources(1);
     }
 }
 
@@ -55,5 +71,5 @@ public class AIInventory : MonoBehaviour
 public struct RessourceStockedData
 {
     public RessourceType ressource;
-    public int amount;
+    public uint amount;
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimationManager : MonoBehaviour
 {
-    [SerializeField] private List<SO_AnimBase> animations = new List<SO_AnimBase>();
+    [SerializeField] private List<AnimCreator> animationCreators = new List<AnimCreator>();
+    private List<SO_AnimBase> animations = new List<SO_AnimBase>();
 
     private Animator animator;
 
@@ -12,9 +13,25 @@ public class AnimationManager : MonoBehaviour
     private string currentAnimName;
     private SO_AnimBase currentAnimation;
 
+    private bool isInitialized;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
+
+        if (!isInitialized)
+        {
+            InitTasks();
+            isInitialized = true;
+        }
+    }
+
+    private void InitTasks()
+    {
+        foreach (AnimCreator animCreator in animationCreators)
+        {
+            animations.Add(animCreator.CreateAnim());
+        }
     }
 
     private void Update()

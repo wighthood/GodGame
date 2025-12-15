@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Wandering", menuName = "Tasks/Wandering")]
@@ -24,7 +25,7 @@ public class TaskWandering : TaskBase
 
     public override float GetPriority()
     {
-        return 0.5f;
+        return 0.35f;
     }
 
     public override void OnFinish()
@@ -46,6 +47,8 @@ public class TaskWandering : TaskBase
 
     public override void DrawActionsGizmo()
     {
+        base.DrawActionsGizmo();
+
         if (pathDebug == null || pathDebug.Count == 0)
             return;
 

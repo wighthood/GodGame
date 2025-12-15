@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
@@ -8,6 +9,8 @@ public class TaskEat : TaskBase
     private bool isArrive;
     public List<Cell> pathDebug = new();
     Transform transform;
+    private bool isArrivedToRessource;
+    private Transform storageTransform;
 
     public override void Init(TaskManager _manager, AgentActions _actions)
     {
@@ -17,20 +20,13 @@ public class TaskEat : TaskBase
 
     private void GetNearestFoodIfExiste()
     {
-        Transform target = actions.GetNearestFoodRessource(RessourceType.food);
+        Transform target = actions.GetNearestRessource(RessourceType.food);
 
         if (target == null)
         {
-            Cancel();
             return;
         }
         targetFoodSource = target;
-    }
-
-    public override void Cancel()
-    {
-        base.Cancel();
-        Debug.Log("Ya pas � manger");
     }
 
     public override bool Do()
@@ -38,6 +34,24 @@ public class TaskEat : TaskBase
         if (FinishCondition())
         {
             return true;
+        }
+        else if (manager.colonieBlackboard != null && actions.GetStorage() != null && actions.HasRessourceInColony(RessourceType.food))
+        {
+            if (storageTransform == null)
+            {
+                storageTransform = actions.GetStorage().transform;
+            }
+
+            if (isArrivedToRessource)
+            {
+                actions.TakeRessourcesFromStorage(RessourceType.food, 1);
+                return FinishCondition();
+            }
+            else
+            {
+                isArrivedToRessource = actions.MoveTo(storageTransform);
+                return false;
+            }
         }
         else
         {
@@ -53,7 +67,7 @@ public class TaskEat : TaskBase
             Vector3 selfPosition = transform.position;
             if (isArrive)
             {
-                actions.HarvrestRessources(RessourceType.food);
+                actions.Harvrest(RessourceType.food);
             }
             else
             {
@@ -72,10 +86,7 @@ public class TaskEat : TaskBase
 
     public override void OnFinish()
     {
-        if (targetFoodSource != null && isArrive)
-        {
-            actions.Eat();
-        }
+        actions.Eat();
     }
 
     public override void OnStart()
@@ -90,6 +101,8 @@ public class TaskEat : TaskBase
 
     public override void DrawActionsGizmo()
     {
+        base.DrawActionsGizmo();
+
         if (pathDebug == null || pathDebug.Count == 0)
             return;
 
