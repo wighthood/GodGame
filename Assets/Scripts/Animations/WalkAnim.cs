@@ -13,7 +13,7 @@ class WalkAnim : SO_AnimBase
             agentActions = _entity.GetComponent<AgentActions>();
         }
 
-        return agentActions.Velocity.magnitude > 0.0f;
+        return agentActions.Velocity.magnitude > 0.1f;
     }
 
     public override void OnStartPlaying(GameObject _entity)

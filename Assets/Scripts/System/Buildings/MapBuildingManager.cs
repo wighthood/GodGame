@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MapBuildingManager : MonoBehaviour
 {
     private List<Building> buildings = new List<Building>();
     public List<Building> GetAllBuildings() => new List<Building>(buildings);
+
+    [SerializeField] private List<GameObject> building = new List<GameObject>();
 
     // Spatial Hashing
     private Dictionary<long, List<Building>> _spatialBuckets = new Dictionary<long, List<Building>>();
@@ -24,40 +25,37 @@ public class MapBuildingManager : MonoBehaviour
             BuildingEvents.GetNearestBuilding = null;
     }
 
-    private void SpawnRequested(GameObject prefab, Vector3 position, Quaternion rotation, Colony owner, string type)
+    private void SpawnRequested(BuildType _type, Vector3 _position, Colony _owner)
     {
-        SpawnBuilding(prefab, position, rotation, owner, type);
+        SpawnBuilding(building[(int)_type], _position, _owner, _type);
     }
 
-    public Building SpawnBuilding(GameObject prefab, Vector3 position, Quaternion rotation, Colony owner, string type)
+    public void SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
     {
-        if (prefab == null) return null;
+        if (prefab == null) return;
         
-        GameObject go = Instantiate(prefab, position, rotation);
+        GameObject BuildGameObject = Instantiate(prefab, position, Quaternion.identity, owner.GetBuildingParent());
         
-        Building b = go.GetComponent<Building>();
-        
-        if (b == null)
+        Building building = BuildGameObject.GetComponent<Building>();
+
+        building.Initialize(type, owner, BuildGameObject);
+
+        if (!buildings.Contains(building))
         {
-            b = go.AddComponent<Building>();
+            buildings.Add(building);
+            AddToBucket(building);
+            //BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
-        b.Initialize(type, owner, go);
-
-        if (!buildings.Contains(b))
+        if(building.TryGetComponent(out Storage storage))
         {
-            buildings.Add(b);
-            AddToBucket(b);
-            BuildingEvents.OnBuildingSpawned?.Invoke(b);
-            BuildingEvents.OnBuildingsChanged?.Invoke();
+            owner.DefineStorage(storage);
         }
-
-        return b;
     }
 
-    public Building FindNearestBuilding(Vector3 pos, string typeFilter)
+    public Building FindNearestBuilding(Vector3 pos)
     {
-        return HandleGetNearestBuilding(pos, typeFilter);
+        return HandleGetNearestBuilding(pos);
     }
 
     public void DestroyBuilding(Building b)
@@ -69,7 +67,7 @@ public class MapBuildingManager : MonoBehaviour
             RemoveFromBucket(b);
         }
         BuildingEvents.OnBuildingDestroyed?.Invoke(b);
-        BuildingEvents.OnBuildingsChanged?.Invoke();
+        //BuildingEvents.OnBuildingsChanged?.Invoke();
         if (b.gameObject != null) Destroy(b.gameObject);
     }
 
@@ -103,13 +101,13 @@ public class MapBuildingManager : MonoBehaviour
         }
     }
 
-    private Building HandleGetNearestBuilding(Vector3 pos, string typeFilter)
+    private Building HandleGetNearestBuilding(Vector3 _pos)
     {
         Building best = null;
         float bestDist = float.MaxValue;
         
-        int cx = Mathf.FloorToInt(pos.x / _cellSize);
-        int cz = Mathf.FloorToInt(pos.z / _cellSize);
+        int cx = Mathf.FloorToInt(_pos.x / _cellSize);
+        int cz = Mathf.FloorToInt(_pos.z / _cellSize);
 
         for (int dx = -1; dx <= 1; dx++)
         {
@@ -124,9 +122,8 @@ public class MapBuildingManager : MonoBehaviour
                     foreach (Building b in list)
                     {
                         if (b == null) continue;
-                        if (!string.IsNullOrEmpty(typeFilter) && !string.Equals(b.Type, typeFilter, StringComparison.OrdinalIgnoreCase)) continue;
 
-                        float d = Vector3.Distance(b.transform.position, pos);
+                        float d = Vector3.Distance(b.transform.position, _pos);
                         if (d < bestDist)
                         {
                             bestDist = d;

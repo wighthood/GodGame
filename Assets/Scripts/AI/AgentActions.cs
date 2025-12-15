@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,44 +20,43 @@ public class AgentActions : MonoBehaviour
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
-    [Header("Building Prefabs")]
-    public GameObject storagePrefab;
+    ColonyAgent colonyAgent;
 
-    private Building _nearestBuilding;
     public Action<Building> OnNearestBuildingChanged;
 
-    private Vector3 lastPos;
+    private Coroutine harvrestingCoroutine;
+
+    #region values for animations
+
+    private Vector3 lastPos = Vector3.zero;
     public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
+
+    public bool isBuilding { get; private set; }
+    public bool isHarvesting { get; private set; }
+    #endregion
 
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
+        colonyAgent = GetComponent<ColonyAgent>();
         pathFinding = new PathFinding();
 
-
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
+        lastPos = transform.position;
     }
 
     private void RebuildPathIfNeeded(Cell _modifiedCell)
     {
-        if(currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
+        if (currentPath == null || currentPath.Count == 0 || !currentPath.Contains(_modifiedCell))
         { return; }
 
         CalculPath();
     }
 
-    private void Start()
-    {
-        BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
-        BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
-    }
-
     private void OnDestroy()
     {
-        BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
         MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
-        BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
     }
 
     public List<Cell> GetPath()
@@ -77,12 +77,6 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Vector2 _targetWorld)
     {
-        if (pathFinding == null)
-        {
-            Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
-            return true;
-        }
-        
         if (currentPath == null)
         {
             currentTargetWorld = _targetWorld;
@@ -102,24 +96,7 @@ public class AgentActions : MonoBehaviour
         }
 
         Vector3 nextWorld;
-        if (CellToWorld != null)
-        {
-            nextWorld = CellToWorld.Invoke(nextCell.position);
-        }
-        else
-        {
-            Graph graph = UnityEngine.Object.FindObjectOfType<Graph>();
-            if (graph != null)
-            {
-                nextWorld = graph.CellToWorld(nextCell.position);
-            }
-            else
-            {
-                Debug.LogError("AgentActions: No CellToWorld delegate and no Graph found in scene. Using agent position as fallback.");
-                nextWorld = transform.position;
-            }
-        }
-
+        nextWorld = CellToWorld.Invoke(nextCell.position);
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
@@ -135,11 +112,6 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Transform _target)
     {
-        if (_target == null)
-        {
-            Debug.LogWarning("AgentActions.MoveTo called with null target; aborting move.");
-            return true;
-        }
         return MoveTo(_target.position);
     }
 
@@ -149,30 +121,71 @@ public class AgentActions : MonoBehaviour
         newPimus.name = "Pimus";
     }
 
-    public void HarvrestRessources(RessourceType _ressource)
+    public void Harvrest(RessourceType _ressource)
+    {
+        if (harvrestingCoroutine != null) { return; }
+
+        isHarvesting = true;
+        harvrestingCoroutine = StartCoroutine(WaitAndHarvrest(0.5f, _ressource));
+    }
+
+    private IEnumerator WaitAndHarvrest(float _buildTime, RessourceType _ressource)
+    {
+        Ressource targetRessource = GetHarvrestRessources(_ressource);
+        if (targetRessource == null)
+        {
+            isHarvesting = false;
+            harvrestingCoroutine = null;
+            yield break;
+        }
+
+        while (isHarvesting)
+        {
+            _buildTime -= Time.deltaTime;
+
+            if (_buildTime <= 0)
+            {
+                isHarvesting = false;
+            }
+
+            yield return null;
+        }
+
+        Harvrest(targetRessource);
+
+        if (targetRessource != null)
+        {
+            targetRessource.isBeeingHarversted = false;
+        }
+
+        isHarvesting = false;
+        harvrestingCoroutine = null;
+    }
+
+    private Ressource GetHarvrestRessources(RessourceType _ressource)
     {
         switch (_ressource)
         {
             case RessourceType.food:
-                HarvrestRessource(0, _ressource);
-                break;
+                return GetHarvrestRessource(_ressource);
 
             case RessourceType.wood:
-                HarvrestRessource(1, _ressource);
-                break;
-        }
+                return GetHarvrestRessource(_ressource);
 
-        TryAutoCreateStorage();
+        }
+        return null;
     }
 
-    private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
+    private Ressource GetHarvrestRessource(RessourceType _ressource)
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 5, Vector2.zero, ressourcesMask[_ressourceIndex]);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 1, Vector2.zero, ressourcesMask[(int)_ressource - 1]);
 
         if (hits.Length == 0)
         {
-            return;
+            return null;
         }
+
+        Ressource ressourceToHarverest = null;
 
         foreach (RaycastHit2D hit in hits)
         {
@@ -180,32 +193,28 @@ public class AgentActions : MonoBehaviour
 
             if (ressource.GetRessourceType() == _ressource)
             {
-                if (inventory.AddRessources(1, ressource.GetRessourceType()))
+                if (ressourceToHarverest == null)
                 {
-                    ressource.OnHarvrestingRessource();
-                    return;
+                    ressourceToHarverest = ressource;
+                    continue;
+                }
+
+                if (Vector3.Distance(ressourceToHarverest.transform.position, transform.position) > Vector3.Distance(ressource.transform.position, transform.position) && !ressource.isBeeingHarversted)
+                {
+                    ressourceToHarverest = ressource;
                 }
             }
         }
+
+        ressourceToHarverest.isBeeingHarversted = true;
+        return ressourceToHarverest;
     }
 
-    private void TryAutoCreateStorage()
+    private void Harvrest(Ressource _ressourceToHarverest)
     {
-        if (storagePrefab == null) return;
-        if (inventory == null) return;
-
-        RessourceStockedData data = inventory.GetRessources();
-        if (data.ressource == RessourceType.wood && data.amount >= 5)
+        if (inventory.AddRessources(1, _ressourceToHarverest.GetRessourceType()))
         {
-            inventory.ResetRessource();
-            Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
-            Colony owner = null;
-            ColonyAgent ca = GetComponent<ColonyAgent>();
-            if (ca != null)
-            {
-                owner = ca.GetCurrentColony() as Colony;
-            }
-            BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
+            _ressourceToHarverest.OnHarvrestingRessource();
         }
     }
 
@@ -215,42 +224,129 @@ public class AgentActions : MonoBehaviour
         stats.SetHungerFull();
     }
 
-    public bool HasRessource(RessourceType ressource)
+    public Storage GetStorage()
     {
-        return inventory.GetRessourceType() == ressource;
+        return ((Colony)colonyAgent.GetCurrentColony()).storage;
     }
 
-    public Transform GetNearestFoodRessource(RessourceType _ressourceType)
+    public bool HasRessourceInColony(RessourceType _ressource)
+    {
+        return ((Colony)colonyAgent.GetCurrentColony()).storage.HasThisRessource(_ressource);
+    }
+
+    public void TakeRessourcesFromStorage(RessourceType _ressourceType, uint _number)
+    {
+        if (inventory.HasRessource() && inventory.GetRessourceType() != _ressourceType)
+        {
+            DropRessourcesOnStorage();
+        }
+
+        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType), 
+            _ressourceType);
+    }
+
+    public void DropRessourcesOnStorage()
+    {
+        ((Colony)colonyAgent.GetCurrentColony()).storage.AddRessources(inventory.GetRessourceType(), inventory.GetRessources().amount);
+        inventory.ResetRessource();
+    }
+
+    public RessourceType GetRessourceTransported()
+    {
+        return inventory.GetRessourceType();
+    }
+
+    public uint GetRessourceTransportedNumber()
+    {
+        return inventory.GetRessourceTransportedNumber();
+    }
+
+    public uint GetStoredRessource(RessourceType _ressourceType)
+    {
+        if (((Colony)colonyAgent.GetCurrentColony()).storage)
+        {
+            return 0;
+        }
+
+        return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType);
+    }
+
+    public bool HasRessource(RessourceType _ressource)
+    {
+        return inventory.GetRessourceType() == _ressource;
+    }
+
+    public Transform GetNearestRessource(RessourceType _ressourceType)
     {
         return GetRessources.Invoke(_ressourceType, transform);
     }
-    
-    private void OnBuildingSpawned(Building b)
+
+    public Transform GetNearestHouse()
     {
-        UpdateNearestBuilding();
+        GameObject currentNearestHouse = null;
+
+        foreach (GameObject building in ((Colony)colonyAgent.GetCurrentColony()).Buildings)
+        {
+            if (building.GetComponent<Building>().Type == BuildType.House)
+            {
+                if (currentNearestHouse == null)
+                {
+                    currentNearestHouse = building;
+                }
+
+                if (Vector3.Distance(transform.position, currentNearestHouse.transform.position) > Vector3.Distance(transform.position, building.transform.position))
+                {
+                    currentNearestHouse = building;
+                }
+            }
+        }
+
+        if(currentNearestHouse == null)
+        {
+            return null; 
+        }
+
+        return currentNearestHouse.transform;
     }
 
-    private void OnBuildingsChanged()
+    public Vector3? GetValidBuildPosition()
     {
-        UpdateNearestBuilding();
-    }
+        if (colonyAgent.GetCurrentColony() != null)
+        {
+            return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
+        }
 
-    private void UpdateNearestBuilding()
-    {
-        Building found = FindNearestBuilding(null);
-        if (found != _nearestBuilding)
-        {
-            _nearestBuilding = found;
-            OnNearestBuildingChanged?.Invoke(_nearestBuilding);
-        }
-    }
-    
-    public Building FindNearestBuilding(string typeFilter = null)
-    {
-        if (BuildingEvents.GetNearestBuilding != null)
-        {
-            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
-        }
         return null;
+    }
+
+    private void Build(BuildType _buildType)
+    {
+        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+
+        BuildingEvents.OnBuildingSpawned?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
+    }
+
+    public void StartBuild(float _buildTime, BuildType _buildType)
+    {
+        isBuilding = true;
+
+        StartCoroutine(WaitAndBuild(_buildTime, _buildType));
+    }
+
+    private IEnumerator WaitAndBuild(float _buildTime, BuildType _buildType)
+    {
+        while (isBuilding)
+        {
+            _buildTime -= Time.deltaTime;
+
+            if (_buildTime <= 0)
+            {
+                isBuilding = false;
+            }
+
+            yield return null;
+        }
+
+        Build(_buildType);
     }
 }

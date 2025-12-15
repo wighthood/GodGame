@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public BlackBoard agentBlackboard {  get; private set; }
-    public BlackBoard colonieBlackboard { get; private set; } 
+    public BlackBoard agentBlackboard { get; private set; }
+    public BlackBoard colonieBlackboard { get; private set; }
 
     private List<TaskBase> tasks = new List<TaskBase>();
     [SerializeField]
@@ -13,6 +14,10 @@ public class TaskManager : MonoBehaviour
 
     private bool isTaskFinished = true;
     private TaskBase currentTask;
+
+    private AgentActions actions;
+
+    private float idleTime;
 
     private void Awake()
     {
@@ -23,18 +28,30 @@ public class TaskManager : MonoBehaviour
 
     private void Start()
     {
-        if(!isInitialized)
+        if (!isInitialized)
         {
             InitTasks();
             isInitialized = true;
         }
+
+        GetRandomIdleTime();
+    }
+
+    private void GetRandomIdleTime()
+    {
+        idleTime = Random.Range(0, 2);
+    }
+
+    private void DecreasseIdleTime()
+    {
+        idleTime -= Time.deltaTime;
     }
 
     private void InitTasks()
     {
-        AgentActions actions = GetComponent<AgentActions>();
+        actions = GetComponent<AgentActions>();
 
-        foreach(TaskCreator tc in taskCreators)
+        foreach (TaskCreator tc in taskCreators)
         {
             tasks.Add(tc.CreateTask(this, actions));
         }
@@ -61,30 +78,20 @@ public class TaskManager : MonoBehaviour
         if (currentTask == null) return;
 
         isTaskFinished = currentTask.Do();
-        
+
         if (isTaskFinished && currentTask != null)
         {
             currentTask.OnFinish();
             currentTask = null;
+            if(!IsOccupied())
+            {
+                GetRandomIdleTime();
+            }
         }
-    }
-
-    private bool IsTooHungry()
-    {
-        float hunger = agentBlackboard.GetValue<float>("hunger");
-        float hungerPriority = Mathf.Sqrt(hunger);
-        return (hungerPriority > 0.75f && GetHigherPriorityTask() is TaskEat);
-    }
-
-    public void ResetTask()
-    {
-        isTaskFinished = true;
-        currentTask = null;
     }
 
     private void Update()
     {
-        //the colony blackboard linked
         if (colonieBlackboard == null)
         {
             ColonyAgent agent = GetComponent<ColonyAgent>();
@@ -98,26 +105,71 @@ public class TaskManager : MonoBehaviour
             }
         }
 
+        if (IsOccupied()) 
+        { 
+            if(idleTime > 0)
+            {
+                DecreasseIdleTime();
+            }
+
+            return;
+        }
+
         if (isTaskFinished)
         {
             currentTask = GetHigherPriorityTask();
         }
         else
         {
-            if (IsTooHungry() && currentTask is not TaskEat)
-            {
-                currentTask.Cancel();
-                isTaskFinished = true;
-                return;
-            }
-
             ExecuteTask();
         }
     }
 
+    private bool IsOccupied()
+    {
+        return actions.isBuilding || actions.isHarvesting || idleTime > 0;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        if (!currentTask) return;
+        GUIStyle style = new();
+        float labelPosY = 0.5f;
+
+        foreach(TaskBase task in tasks)
+        {
+            style.normal.textColor = Color.cyan;
+            Handles.Label(transform.position + Vector3.right * -2.5f + Vector3.up * labelPosY, $"{task.name} : {task.GetPriority()}", style);
+            labelPosY -= 0.2f;
+        }
+
+        if (!currentTask)
+        {
+            if (!IsOccupied())
+            {
+                style.normal.textColor = Color.red;
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
+                return;
+            }
+
+            style.normal.textColor = Color.green;
+
+            if (actions.isBuilding)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Building", style);
+            }
+
+            if (actions.isHarvesting)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Harvesting, remaining {idleTime}", style);
+            }
+
+            if (idleTime > 0)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
+            }
+
+            return;
+        }
 
         currentTask.DrawActionsGizmo();
     }
