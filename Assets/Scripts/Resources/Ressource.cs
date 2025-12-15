@@ -41,7 +41,7 @@ public class Ressource : MonoBehaviour
         {
             if (GetTile.Invoke(transform.position) == tiles[1])
             {
-                GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(1, Sprites.Length - 1)];
+                GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(1, Sprites.Length)];
             }
             else
             {
@@ -50,7 +50,7 @@ public class Ressource : MonoBehaviour
         }
         else
         {
-            GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(0, Sprites.Length - 1)];
+            GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(0, Sprites.Length)];
         }
     }
 }

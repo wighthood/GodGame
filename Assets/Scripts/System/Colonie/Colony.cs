@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Colony : MonoBehaviour, IColony
 {
@@ -98,7 +99,7 @@ public class Colony : MonoBehaviour, IColony
         for (int i = 0; i < 100; i++)
         {
             // Pick a random point
-            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * InfluenceRadius;
+            Vector2 randomPoint = Random.insideUnitCircle * InfluenceRadius;
             Vector3 candidatePos = GetColonyCenter() + (Vector3)randomPoint;
 
             // Align to grid
@@ -131,11 +132,13 @@ public class Colony : MonoBehaviour, IColony
 
     private void OnDrawGizmosSelected()
     {
+        #if unity_editor
         Gizmos.color = Color.darkRed;
         Gizmos.DrawWireSphere(transform.position, InfluenceRadius);
 
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.darkRed;
         Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
+        #endif
     }
 }

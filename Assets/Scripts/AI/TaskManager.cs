@@ -132,22 +132,27 @@ public class TaskManager : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        #if unityeditor
         GUIStyle style = new();
         float labelPosY = 0.5f;
 
         foreach(TaskBase task in tasks)
         {
+
             style.normal.textColor = Color.cyan;
             Handles.Label(transform.position + Vector3.right * -2.5f + Vector3.up * labelPosY, $"{task.name} : {task.GetPriority()}", style);
             labelPosY -= 0.2f;
+
         }
 
         if (!currentTask)
         {
             if (!IsOccupied())
             {
+
                 style.normal.textColor = Color.red;
                 Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
+
                 return;
             }
 
@@ -172,5 +177,6 @@ public class TaskManager : MonoBehaviour
         }
 
         currentTask.DrawActionsGizmo();
+        #endif
     }
 }
