@@ -98,14 +98,12 @@ public abstract class TaskHarverestBase : TaskBase
         return Vector3.Distance(transform.position, storage.transform.position) < 0.5f;
     }
 
+	
     public override void DrawActionsGizmo()
     {
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
-        #if unityeditor
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Eat task", style);
-        #endif
-        
+		#if unityeditor
+        base.DrawActionsGizmo();
+
         if (pathDebug == null || pathDebug.Count == 0)
             return;
 
@@ -119,5 +117,6 @@ public abstract class TaskHarverestBase : TaskBase
             secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
+		#endif
     }
 }

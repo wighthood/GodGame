@@ -8,7 +8,6 @@ public class TaskBuildHouse : TaskBase
 
     Vector3? batimentPosition;
     public List<Cell> pathDebug = new();
-    bool isArrived;
     AIInventory inventory;
 
     Transform targetRessource;
@@ -27,9 +26,8 @@ public class TaskBuildHouse : TaskBase
 
         if (actions.GetRessourceTransported() == buildingTable.ressourcesNeeded[0].RessourceType && actions.GetRessourceTransportedNumber() >= buildingTable.ressourcesNeeded[0].number)
         {
-            Debug.Log($"build position {(Vector2)batimentPosition}");
             pathDebug = actions.GetPath();
-            isArrived = actions.MoveTo((Vector2)batimentPosition);
+            actions.MoveTo((Vector2)batimentPosition);
             return FinishCondition();
         }
         else
@@ -115,7 +113,6 @@ public class TaskBuildHouse : TaskBase
         }
 
         targetRessource = null;
-        isArrived = false;
 
         batimentPosition = actions.GetValidBuildPosition();
 
@@ -124,7 +121,7 @@ public class TaskBuildHouse : TaskBase
 
     protected override bool FinishCondition()
     {
-        return isArrived;
+        return Vector3.Distance(transform.position, (Vector2)batimentPosition) < 0.25f && CanBuild();
     }
 
     public override void DrawActionsGizmo()

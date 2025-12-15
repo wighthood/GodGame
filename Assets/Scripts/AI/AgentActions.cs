@@ -79,7 +79,6 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Vector2 _targetWorld)
     {
-        print($"moving to {_targetWorld}");
         if (currentPath == null)
         {
             currentTargetWorld = _targetWorld;
