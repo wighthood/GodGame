@@ -1344,6 +1344,17 @@ MonoBehaviour:
   - {fileID: 2453019938693668466, guid: 522c685db9590c24daa354c7b146f1d7, type: 3}
   - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
   - {fileID: 5218013249053032955, guid: 101bb3f08730bae41bd68dbc4a5ee8e6, type: 3}
+--- !u!114 &1241893162 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+  m_PrefabInstance: {fileID: 2048272658}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1337844820
 GameObject:
   m_ObjectHideFlags: 0
@@ -1799,6 +1810,10 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8307017329690881927, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: buttonLoad
+      value: 
+      objectReference: {fileID: 1241893162}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

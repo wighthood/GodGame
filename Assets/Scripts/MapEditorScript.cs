@@ -18,7 +18,6 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
-    [SerializeField] private GameObject pimus;
 
     [SerializeField] private List<TileBase> notWalkableSprites = new();
 
@@ -142,19 +141,10 @@ public class MapEditorScript : MonoBehaviour
         {
             RaycastHit2D result;
             _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
-            
-            Vector2 posPimus = new Vector2(pimus.transform.position.x, pimus.transform.position.y);
 
             if (IsObject(_cellposForRaycast, out result))
             {
                 Destroy(result.collider.gameObject);
-            }
-
-            if (IsObject(posPimus, out result))
-            {
-                Debug.Log("caca");
-                AIStats aiStats = GetComponent<AIStats>();
-                aiStats.DestroyPimus();
             }
         }
     }
