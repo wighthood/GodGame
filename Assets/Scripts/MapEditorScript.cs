@@ -14,13 +14,16 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Transform selectionBar;
     [SerializeField] private GameObject buttonPrefab;
     [SerializeField] private List<GameObject> Prefabs;
-    [SerializeField] private List<GameObject> Weather;
     [SerializeField] private List<GameObject> Entity;
+    [SerializeField] private List<WeatherState> weatherState; 
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
+    [SerializeField] private MeteoManager meteoManager;
+
+    [SerializeField] private Sprite[] WeatherImages;
 
     [SerializeField] private List<TileBase> notWalkableSprites = new();
 
@@ -41,8 +44,19 @@ public class MapEditorScript : MonoBehaviour
         Ressourcebutton();
         Ressource.GetTile += GetTile;
 
-
+        int i = 0;
+        foreach (WeatherState state in weatherState)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            Image buttonImage = newButton.GetComponent<Image>();
+            Button button = newButton.GetComponent<Button>();
+            buttonImage.sprite = WeatherImages[i];
+            button.onClick.AddListener(() => SetMeteo(state));
+            i++;
+        } 
     }
+
+
     public void Tilebutton ()
     {
         foreach (TileBase tile in tiles)
@@ -54,8 +68,8 @@ public class MapEditorScript : MonoBehaviour
             {
                 buttonImage.sprite = T.m_DefaultSprite;
             }
-            button.onClick.AddListener((() =>
-               SetSelector(null, tile)));
+            button.onClick.AddListener(() => 
+               SetSelector(null,tile));
         }
     }
 
@@ -67,8 +81,8 @@ public class MapEditorScript : MonoBehaviour
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-            button.onClick.AddListener((() =>
-                SetSelector(prefab)));
+            button.onClick.AddListener (() => 
+                SetSelector(prefab));
         }
     }
 
@@ -89,6 +103,12 @@ public class MapEditorScript : MonoBehaviour
                 SetSelector(prefab)));
         }
     }
+
+    private void SetMeteo(WeatherState state)
+    {
+        meteoManager.MeteoChange(state);
+    }
+
 
     private TileBase GetTile(Vector3 position)
     {
