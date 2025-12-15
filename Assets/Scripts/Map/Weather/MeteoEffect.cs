@@ -176,7 +176,7 @@ public class MeteoEffect : MonoBehaviour
             mainLight.intensity = 1.2f;
             yield return new WaitForSeconds(0.03f);
 
-            mainLight.intensity = baseIntensity;
+            mainLight.intensity = .5f;
         }
     }
 }
