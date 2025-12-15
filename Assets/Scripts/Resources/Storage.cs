@@ -29,6 +29,8 @@ public class Storage : MonoBehaviour
 
     public bool HasThisRessource(RessourceType _type)
     {
+        if(ressourcesStocked.Count == 0) { return false; }
+
         foreach (RessourceCollection ressourceCol in ressourcesStocked)
         {
             if (ressourceCol.RessourceType == _type)

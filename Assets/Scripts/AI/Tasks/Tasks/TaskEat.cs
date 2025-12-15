@@ -64,7 +64,6 @@ public class TaskEat : TaskBase
                 }
             }
 
-            Vector3 selfPosition = transform.position;
             if (isArrive)
             {
                 actions.Harvrest(RessourceType.food);
