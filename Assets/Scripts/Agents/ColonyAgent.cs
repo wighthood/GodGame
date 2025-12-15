@@ -1,98 +1,99 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 [DisallowMultipleComponent]
-public class ColonyAgent : MonoBehaviour, IColonyAgent
+public class ColonyAgent : MonoBehaviour, I_ColonyAgent
 {
+    [Header("Settings")]
     public bool autoRegister = true;
     public bool canFormColony = true;
     public string species = "Pimu";
 
+    [Header("Optimization Settings")]
     public float positionUpdateInterval = 0.5f;
     public float movementThreshold = 0.25f;
+    
+    private Vector3 lastPosition;
+    private bool registered;
+    private float sqrMovementThreshold;
+    private WaitForSeconds waitObj;
+    private Coroutine checkRoutine;
 
-    private Vector3 _lastPosition;
-    private float _timer;
-    private bool _registered;
-
-    void Start()
+    void Awake()
     {
-        _lastPosition = transform.position;
-        if (autoRegister && ColonieSystem.Instance != null)
+        sqrMovementThreshold = movementThreshold * movementThreshold;
+        
+        waitObj = new WaitForSeconds(positionUpdateInterval);
+    }
+
+    void OnEnable()
+    {
+        lastPosition = transform.position;
+        checkRoutine = StartCoroutine(CheckingPosition());
+    }
+
+    void OnDisable()
+    {
+        if (registered)
         {
-            ColonieSystem.Instance.RegisterAgent(this);
-            _registered = true;
+            ColonyEvents.OnUnregisterAgentEvent?.Invoke(this);
+            registered = false;
+        }
+        if (checkRoutine != null) StopCoroutine(checkRoutine);
+    }
+    
+    IEnumerator CheckingPosition()
+    {
+        yield return null;
+
+        if (autoRegister && !registered)
+        {
+            RegisterAgent();
+        }
+
+        while (true)
+        {
+            yield return waitObj;
+            
+            CheckMovement();
         }
     }
 
-    void Update()
+    private void CheckMovement()
     {
-        if (!_registered && autoRegister && ColonieSystem.Instance != null)
+        if ((transform.position - lastPosition).sqrMagnitude >= sqrMovementThreshold)
         {
-            ColonieSystem.Instance.RegisterAgent(this);
-            _registered = true;
-        }
-
-        _timer += Time.deltaTime;
-        if (_timer >= positionUpdateInterval)
-        {
-            _timer = 0f;
-            Vector3 current = transform.position;
-            float dist = Vector3.Distance(current, _lastPosition);
-            if (dist >= movementThreshold)
+            if (registered)
             {
-                if (_registered && ColonieSystem.Instance != null)
-                {
-                    ColonieSystem.Instance.UpdateAgentCell(this, _lastPosition);
-                }
-                _lastPosition = current;
+                ColonyEvents.OnUpdateAgentPositionEvent?.Invoke(this, lastPosition);
             }
+            lastPosition = transform.position;
         }
     }
 
-    void OnDestroy()
+    private void RegisterAgent()
     {
-        if (_registered && ColonieSystem.Instance != null)
-        {
-            ColonieSystem.Instance.UnregisterAgent(this);
-            _registered = false;
-        }
+        if (registered) return;
+        ColonyEvents.OnRegisterAgentEvent?.Invoke(this);
+        registered = true;
+        lastPosition = transform.position;
     }
 
     public void ForceRegister()
     {
-        if (ColonieSystem.Instance != null)
-        {
-            ColonieSystem.Instance.RegisterAgent(this);
-            _registered = true;
-            _lastPosition = transform.position;
-        }
+        RegisterAgent();
     }
 
-    public string GetSpecies()
-    {
-        return species != null ? species : string.Empty;
-    }
-
+    public string GetSpecies() => species ?? string.Empty;
     public bool CanFormColony() => canFormColony;
 
-    private IColony _currentColony;
-
-    public void SetCurrentColony(IColony colony)
-    {
-        _currentColony = colony;
-    }
-
-    public IColony GetCurrentColony()
-    {
-        return _currentColony;
-    }
-
-    public Transform GetTransform() => transform;
-    public GameObject GetGameObject() => gameObject;
+    private I_Colony _currentColony;
+    public void SetCurrentColony(I_Colony _colony) => _currentColony = _colony;
+    public I_Colony GetCurrentColony() => _currentColony;
 
 #if UNITY_EDITOR
     void OnDrawGizmos()
@@ -100,7 +101,7 @@ public class ColonyAgent : MonoBehaviour, IColonyAgent
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, 0.12f);
 
-        IColony col = GetCurrentColony();
+        I_Colony col = GetCurrentColony();
         string label = "No colony";
         if (col != null)
         {

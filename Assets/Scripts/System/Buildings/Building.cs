@@ -6,29 +6,29 @@ public class Building : MonoBehaviour
     public Colony Owner { get; private set; }
     public GameObject Root { get; private set; }
 
-    private bool _initialized = false;
+    private bool initialized = false;
 
     public BuildingTable BuildingTable;
 
-    public void Initialize(BuildType type, Colony owner, GameObject root)
+    public void Initialize(BuildType _type, Colony _owner, GameObject _root)
     {
-        Type = type;
-        Root = root != null ? root : gameObject;
+        Type = _type;
+        Root = _root != null ? _root : gameObject;
 
-        if (_initialized)
+        if (initialized)
         {
-            if (Owner != owner)
+            if (Owner != _owner)
             {
                 if (Owner != null) Owner.RemoveBuilding(Root);
-                Owner = owner;
+                Owner = _owner;
                 if (Owner != null) Owner.AddBuilding(Root);
             }
             return;
         }
 
-        Owner = owner;
+        Owner = _owner;
         if (Owner != null) Owner.AddBuilding(Root);
-        _initialized = true;
+        initialized = true;
     }
 
     void OnDestroy()

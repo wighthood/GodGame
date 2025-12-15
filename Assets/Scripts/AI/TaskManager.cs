@@ -81,7 +81,7 @@ public class TaskManager : MonoBehaviour
             ColonyAgent agent = GetComponent<ColonyAgent>();
             if (agent != null)
             {
-                IColony col = agent.GetCurrentColony();
+                I_Colony col = agent.GetCurrentColony();
                 if (col != null && col is Colony concreteColony)
                 {
                     colonieBlackboard = concreteColony.BlackBoard;

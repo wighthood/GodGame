@@ -265,7 +265,12 @@ public class AgentActions : MonoBehaviour
     {
         if (colonyAgent.GetCurrentColony() != null)
         {
-            return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
+            // return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
+            
+            if(BuildingEvents.OnGetBuildPositionEvent != null)
+            {
+               return BuildingEvents.OnGetBuildPositionEvent.Invoke(transform.position, colonyAgent.GetCurrentColony());
+            }
         }
 
         return null;
@@ -273,9 +278,9 @@ public class AgentActions : MonoBehaviour
 
     private void Build(BuildType _buildType)
     {
-        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+        BuildingEvents.OnSpawnRequestedEvent?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
 
-        BuildingEvents.OnBuildingSpawned?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
+        BuildingEvents.OnBuildingSpawnedEvent?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
     }
 
     public void StartBuild(float _buildTime, BuildType _buildType)

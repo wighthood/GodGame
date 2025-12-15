@@ -3,101 +3,145 @@ using UnityEngine;
 
 public class MapBuildingManager : MonoBehaviour
 {
-    private List<Building> buildings = new List<Building>();
-    public List<Building> GetAllBuildings() => new List<Building>(buildings);
+    private List<Building> buildings = new ();
+    public List<Building> GetAllBuildings() => new(buildings);
 
-    [SerializeField] private List<GameObject> building = new List<GameObject>();
+    [SerializeField] private List<GameObject> building = new();
 
     // Spatial Hashing
-    private Dictionary<long, List<Building>> _spatialBuckets = new Dictionary<long, List<Building>>();
+    private Dictionary<long, List<Building>> spatialBuckets = new();
     private float _cellSize = 20f;
 
     void Awake()
     {
-        BuildingEvents.OnSpawnRequested += SpawnRequested;
-        BuildingEvents.GetNearestBuilding = HandleGetNearestBuilding;
+        BuildingEvents.OnSpawnRequestedEvent += SpawnRequested;
+        BuildingEvents.OnGetNearestBuildingEvent = HandleGetNearestBuilding;
+        BuildingEvents.OnGetBuildPositionEvent += GetValidBuildingPosition;
     }
 
     void OnDestroy()
     {
-        BuildingEvents.OnSpawnRequested -= SpawnRequested;
-        if (BuildingEvents.GetNearestBuilding == HandleGetNearestBuilding)
-            BuildingEvents.GetNearestBuilding = null;
+        BuildingEvents.OnSpawnRequestedEvent -= SpawnRequested;
+        if (BuildingEvents.OnGetNearestBuildingEvent == HandleGetNearestBuilding)
+            BuildingEvents.OnGetNearestBuildingEvent = null;
+        BuildingEvents.OnGetBuildPositionEvent -= GetValidBuildingPosition;
+    }
+
+    private Vector3? GetValidBuildingPosition(Vector3 _searchCenter, I_Colony _colony)
+    {
+        if (_colony == null) return null;
+
+        for (int i = 0; i < 100; i++)
+        {
+            // Pick a random point
+            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * _colony.GetInfluenceRadius();
+            
+            Vector3 offset = new Vector3(randomPoint.x, 0f, randomPoint.y);
+            
+            Vector3 candidatePos = _colony.GetColonyCenter() + offset;
+
+            // Align to grid (Assuming we have access to these static events or utils)
+            Vector2Int cellPos = Colony.WorldToCellPos.Invoke(candidatePos);
+            Vector3 alignedPos = Colony.CellToWorld.Invoke(cellPos);
+
+            // Check if walkable
+            Cell cell = Colony.GetCell.Invoke(cellPos);
+            if (cell == null || !cell.isWalkable) continue;
+
+            // Check if occupied by another building using internal spatial methods
+            Building nearest = HandleGetNearestBuilding(alignedPos);
+            if (nearest != null)
+            {
+               if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
+               {
+                   continue;
+               }
+            }
+
+            return alignedPos;
+        }
+        return null;
     }
 
     private void SpawnRequested(BuildType _type, Vector3 _position, Colony _owner)
     {
-        SpawnBuilding(building[(int)_type], _position, _owner, _type);
+        int index = (int)_type;
+        if (building == null || index < 0 || index >= building.Count)
+        {
+            Debug.LogError($"MapBuildingManager: Missing prefab for BuildType {_type} (index {index}). Check 'Building' list in Inspector.");
+            return;
+        }
+        SpawnBuilding(building[index], _position, _owner, _type);
     }
 
-    public void SpawnBuilding(GameObject prefab, Vector3 position, Colony owner, BuildType type)
+    public void SpawnBuilding(GameObject _prefab, Vector3 _position, Colony _owner, BuildType _type)
     {
-        if (prefab == null) return;
+        if (_prefab == null) return;
         
-        GameObject BuildGameObject = Instantiate(prefab, position, Quaternion.identity, owner.GetBuildingParent());
+        GameObject BuildGameObject = Instantiate(_prefab, _position, Quaternion.identity, _owner.GetBuildingParent());
         
         Building building = BuildGameObject.GetComponent<Building>();
 
-        building.Initialize(type, owner, BuildGameObject);
+        building.Initialize(_type, _owner, BuildGameObject);
 
         if (!buildings.Contains(building))
         {
             buildings.Add(building);
             AddToBucket(building);
-            BuildingEvents.OnBuildingsChanged?.Invoke();
+            BuildingEvents.OnBuildingsChangedEvent?.Invoke();
         }
 
         if(building.TryGetComponent(out Storage storage))
         {
-            owner.DefineStorage(storage);
+            _owner.DefineStorage(storage);
         }
     }
 
-    public Building FindNearestBuilding(Vector3 pos)
+    public Building FindNearestBuilding(Vector3 _pos)
     {
-        return HandleGetNearestBuilding(pos);
+        return HandleGetNearestBuilding(_pos);
     }
 
-    public void DestroyBuilding(Building b)
+    public void DestroyBuilding(Building _b)
     {
-        if (b == null) return;
-        if (buildings.Contains(b))
+        if (_b == null) return;
+        if (buildings.Contains(_b))
         {
-            buildings.Remove(b);
-            RemoveFromBucket(b);
+            buildings.Remove(_b);
+            RemoveFromBucket(_b);
         }
-        BuildingEvents.OnBuildingDestroyed?.Invoke(b);
-        BuildingEvents.OnBuildingsChanged?.Invoke();
-        if (b.gameObject != null) Destroy(b.gameObject);
+        BuildingEvents.OnBuildingDestroyedEvent?.Invoke(_b);
+        BuildingEvents.OnBuildingsChangedEvent?.Invoke();
+        if (_b.gameObject != null) Destroy(_b.gameObject);
     }
 
     // Spatial Hashing Logic
 
-    private long GetCellKey(Vector3 pos)
+    private long GetCellKey(Vector3 _pos)
     {
-        int x = Mathf.FloorToInt(pos.x / _cellSize);
-        int z = Mathf.FloorToInt(pos.z / _cellSize);
+        int x = Mathf.FloorToInt(_pos.x / _cellSize);
+        int z = Mathf.FloorToInt(_pos.z / _cellSize);
         return ((long)x << 32) ^ (uint)z;
     }
 
-    private void AddToBucket(Building b)
+    private void AddToBucket(Building _b)
     {
-        long key = GetCellKey(b.transform.position);
-        if (!_spatialBuckets.TryGetValue(key, out List<Building> list))
+        long key = GetCellKey(_b.transform.position);
+        if (!spatialBuckets.TryGetValue(key, out List<Building> list))
         {
             list = new List<Building>();
-            _spatialBuckets[key] = list;
+            spatialBuckets[key] = list;
         }
-        if (!list.Contains(b)) list.Add(b);
+        if (!list.Contains(_b)) list.Add(_b);
     }
 
-    private void RemoveFromBucket(Building b)
+    private void RemoveFromBucket(Building _b)
     {
-        long key = GetCellKey(b.transform.position);
-        if (_spatialBuckets.TryGetValue(key, out List<Building> list))
+        long key = GetCellKey(_b.transform.position);
+        if (spatialBuckets.TryGetValue(key, out List<Building> list))
         {
-            list.Remove(b);
-            if (list.Count == 0) _spatialBuckets.Remove(key);
+            list.Remove(_b);
+            if (list.Count == 0) spatialBuckets.Remove(key);
         }
     }
 
@@ -117,7 +161,7 @@ public class MapBuildingManager : MonoBehaviour
                 int nz = cz + dz;
                 long key = ((long)nx << 32) ^ (uint)nz;
 
-                if (_spatialBuckets.TryGetValue(key, out List<Building> list))
+                if (spatialBuckets.TryGetValue(key, out List<Building> list))
                 {
                     foreach (Building b in list)
                     {
