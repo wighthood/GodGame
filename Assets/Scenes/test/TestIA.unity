@@ -1364,16 +1364,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f22dd97471f45ab9fd1571056cefad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebugSpawnStorage
-  storagePrefab: {fileID: 2453019938693668466, guid: 4a3e0480c05fde540ba6b2c4fc968392, type: 3}
-  spawnPoint: {fileID: 1962365967}
-  spawnKey: 98
-  attachToNearestColony: 1
-  searchRadius: 10
-  addWoodKey: 49
-  removeWoodKey: 50
-  addFoodKey: 51
-  removeFoodKey: 52
-  _mbm: {fileID: 1962365965}
 --- !u!114 &1962365965
 MonoBehaviour:
   m_ObjectHideFlags: 0

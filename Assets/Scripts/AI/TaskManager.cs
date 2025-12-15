@@ -18,6 +18,8 @@ public class TaskManager : MonoBehaviour
 
     private AgentActions actions;
 
+    private float idleTime;
+
     private void Awake()
     {
         agentBlackboard = new();
@@ -32,6 +34,18 @@ public class TaskManager : MonoBehaviour
             InitTasks();
             isInitialized = true;
         }
+
+        GetRandomIdleTime();
+    }
+
+    private void GetRandomIdleTime()
+    {
+        idleTime = Random.Range(0, 2);
+    }
+
+    private void DecreasseIdleTime()
+    {
+        idleTime -= Time.deltaTime;
     }
 
     private void InitTasks()
@@ -70,12 +84,15 @@ public class TaskManager : MonoBehaviour
         {
             currentTask.OnFinish();
             currentTask = null;
+            if(!IsOccupied())
+            {
+                GetRandomIdleTime();
+            }
         }
     }
 
     private void Update()
     {
-        //the colony blackboard linked
         if (colonieBlackboard == null)
         {
             ColonyAgent agent = GetComponent<ColonyAgent>();
@@ -89,7 +106,15 @@ public class TaskManager : MonoBehaviour
             }
         }
 
-        if (IsOccupied()) { return; }
+        if (IsOccupied()) 
+        { 
+            if(idleTime > 0)
+            {
+                DecreasseIdleTime();
+            }
+
+            return;
+        }
 
         if (isTaskFinished)
         {
@@ -103,7 +128,7 @@ public class TaskManager : MonoBehaviour
 
     private bool IsOccupied()
     {
-        return actions.isBuilding;
+        return actions.isBuilding || actions.isHarvesting || idleTime > 0;
     }
 
     private void OnDrawGizmosSelected()
@@ -132,6 +157,16 @@ public class TaskManager : MonoBehaviour
             if (actions.isBuilding)
             {
                 Handles.Label(transform.position + Vector3.up * 0.5f + Vector3.left, $"Building", style);
+            }
+
+            if (actions.isHarvesting)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.5f + Vector3.left, $"Harvesting, remaining {idleTime}", style);
+            }
+
+            if (idleTime > 0)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.5f + Vector3.left, $"Idle", style);
             }
 
             return;

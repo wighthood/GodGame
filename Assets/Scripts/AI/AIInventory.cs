@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AIInventory : MonoBehaviour
@@ -14,6 +15,11 @@ public class AIInventory : MonoBehaviour
     public RessourceType GetRessourceType()
     {
         return ressourceStockedData.ressource;
+    }
+
+    public uint GetRessourceTransportedNumber()
+    {
+        return ressourceStockedData.amount;
     }
 
     public bool HasRessource()

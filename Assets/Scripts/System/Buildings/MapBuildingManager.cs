@@ -44,7 +44,7 @@ public class MapBuildingManager : MonoBehaviour
         {
             buildings.Add(building);
             AddToBucket(building);
-            BuildingEvents.OnBuildingsChanged?.Invoke();
+            //BuildingEvents.OnBuildingsChanged?.Invoke();
         }
 
         if(building.TryGetComponent(out Storage storage))
@@ -67,7 +67,7 @@ public class MapBuildingManager : MonoBehaviour
             RemoveFromBucket(b);
         }
         BuildingEvents.OnBuildingDestroyed?.Invoke(b);
-        BuildingEvents.OnBuildingsChanged?.Invoke();
+        //BuildingEvents.OnBuildingsChanged?.Invoke();
         if (b.gameObject != null) Destroy(b.gameObject);
     }
 

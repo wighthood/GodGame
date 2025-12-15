@@ -21,7 +21,7 @@ public class TaskReproduct : TaskBase
         int maxPopulation = colonyBlackboard.GetValue<int>("MaxHabitant");
         float populationFactor = 0.8f * (1 - (actualPopulation / maxPopulation));
 
-        int foodStored = (int)actions.GetStoredfood();
+        int foodStored = (int)actions.GetStoredRessource(RessourceType.food);
         float foodSurplusFactor = 0.2f * (foodStored - actualPopulation);
 
         return actions.GetNearestHouse() != null ? populationFactor + foodSurplusFactor : 0;

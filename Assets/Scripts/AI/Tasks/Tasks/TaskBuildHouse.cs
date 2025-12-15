@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -49,13 +50,13 @@ public class TaskBuildHouse : TaskBase
             {
                 if (!targetRessource)
                 {
-                    targetRessource = actions.GetNearestFoodRessource(ressourceCollection.RessourceType);
+                    targetRessource = actions.GetNearestRessource(ressourceCollection.RessourceType);
                     return false;
                 }
 
                 if (isArrivedToRessource)
                 {
-                    actions.HarvrestRessources(ressourceCollection.RessourceType);
+                    actions.Harvrest(ressourceCollection.RessourceType);
                 }
                 else
                 {
@@ -86,7 +87,7 @@ public class TaskBuildHouse : TaskBase
 
     public override void OnFinish()
     {
-        inventory.RemoveRessources(5);
+        inventory.RemoveRessources(buildingTable.ressourcesNeeded[0].number);
         actions.StartBuild(2f, buildingTable.buildType);
     }
 
