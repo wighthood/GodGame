@@ -16,6 +16,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
+    [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
 
     [SerializeField] private List<TileBase> notWalkableSprites = new();
@@ -29,7 +30,6 @@ public class MapEditorScript : MonoBehaviour
     private GameObject _selectedObject;
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
-
 
     void Start()
     {
@@ -56,6 +56,15 @@ public class MapEditorScript : MonoBehaviour
             button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
+        Ressource.GetTile += GetTile;
+
+
+    }
+
+    private TileBase GetTile(Vector3 position)
+    {
+        Vector3Int Position = Vector3Int.FloorToInt(position);
+        return tilemap.GetTile(Position);
     }
 
     private void SetSelector(GameObject test = null, TileBase test2 = null)
@@ -90,7 +99,7 @@ public class MapEditorScript : MonoBehaviour
         return notWalkableSprites.Contains(_tile);
     }
 
-    private bool IsObject(Vector2 _mousePosition)
+    public bool IsObject(Vector2 _mousePosition)
     {
         return Physics2D.Raycast(_mousePosition, Camera.main.transform.forward, layermask);
     }
@@ -128,7 +137,7 @@ public class MapEditorScript : MonoBehaviour
         cellToChange.SetIsWalakble(!IsWater(_selectedTile));
         OnGraphChange?.Invoke(cellToChange);
 
-        if (IsWater(tile))
+        if (IsWater(_selectedTile))
         {
             RaycastHit2D result;
             _cellposForRaycast.Set(cellpos.x + tileOffset, cellpos.y + tileOffset);
@@ -156,9 +165,13 @@ public class MapEditorScript : MonoBehaviour
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
             }
-            else
+            else if (ressource.GetRessourceType() == RessourceType.food )
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
+            }
+            else
+            {
+                AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + stoneOffset);
             }
         }
         else
@@ -166,5 +179,10 @@ public class MapEditorScript : MonoBehaviour
             GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
             _isPainting = false;
         }
+    }
+
+    private void OnDestroy()
+    {
+        Ressource.GetTile -= GetTile;
     }
 }

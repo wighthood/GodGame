@@ -61,8 +61,8 @@ public class TaskManager : MonoBehaviour
         if (currentTask == null) return;
 
         isTaskFinished = currentTask.Do();
-
-        if (isTaskFinished)
+        
+        if (isTaskFinished && currentTask != null)
         {
             currentTask.OnFinish();
             currentTask = null;
@@ -84,6 +84,20 @@ public class TaskManager : MonoBehaviour
 
     private void Update()
     {
+        //the colony blackboard linked
+        if (colonieBlackboard == null)
+        {
+            ColonyAgent agent = GetComponent<ColonyAgent>();
+            if (agent != null)
+            {
+                IColony col = agent.GetCurrentColony();
+                if (col != null && col is Colony concreteColony)
+                {
+                    colonieBlackboard = concreteColony.BlackBoard;
+                }
+            }
+        }
+
         if (isTaskFinished)
         {
             currentTask = GetHigherPriorityTask();
@@ -93,6 +107,7 @@ public class TaskManager : MonoBehaviour
             if (IsTooHungry() && currentTask is not TaskEat)
             {
                 currentTask.Cancel();
+                isTaskFinished = true;
                 return;
             }
 

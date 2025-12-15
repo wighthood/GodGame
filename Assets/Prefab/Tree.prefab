@@ -104,8 +104,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a49f934c6fc46ba4a95be04dda7c825f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ressource
-  ressource: {fileID: 11400000, guid: 0cefb2730fac8d94cabb3dcf637af7da, type: 2}
+  ressourceType: 1
   ressourceRemaining: 5
+  Sprites:
+  - {fileID: 21300000, guid: 86c1a98b77d9880438c6092cf097169c, type: 3}
+  - {fileID: 21300000, guid: 7192c218359abbf478c7841772a4d9ec, type: 3}
+  - {fileID: 21300000, guid: 3a6a91c39f7ba114393f77a16112c891, type: 3}
+  tiles:
+  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
 --- !u!61 &4053120603025221297
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -140,7 +148,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.5}
+  m_Offset: {x: 0, y: -0.28}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}

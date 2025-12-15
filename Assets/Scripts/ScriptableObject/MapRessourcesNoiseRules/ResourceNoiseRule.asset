@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_RessourcesNoiseRule
   ressourceRules:
   - type: 1
-    minNoise: 0
-    maxNoise: 0.15
+    minNoise: 0.4
+    maxNoise: 0.5
   - type: 2
     minNoise: 0.85
     maxNoise: 1
+  - type: 3
+    minNoise: 0
+    maxNoise: 0.15

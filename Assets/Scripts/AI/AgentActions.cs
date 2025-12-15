@@ -15,17 +15,25 @@ public class AgentActions : MonoBehaviour
 
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
-    private Animator myAnimator;
 
     public static event Func<RessourceType, Transform, Transform> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
+
+    [Header("Building Prefabs")]
+    public GameObject storagePrefab;
+
+    private Building _nearestBuilding;
+    public Action<Building> OnNearestBuildingChanged;
+
+    private Vector3 lastPos;
+    public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
 
     private void Awake()
     {
         inventory = GetComponent<AIInventory>();
         stats = GetComponent<AIStats>();
-        pathFinding = new();
-        myAnimator = GetComponent<Animator>();
+        pathFinding = new PathFinding();
+
 
         MapEditorScript.OnGraphChange += RebuildPathIfNeeded;
     }
@@ -38,6 +46,19 @@ public class AgentActions : MonoBehaviour
         CalculPath();
     }
 
+    private void Start()
+    {
+        BuildingEvents.OnBuildingSpawned += OnBuildingSpawned;
+        BuildingEvents.OnBuildingsChanged += OnBuildingsChanged;
+    }
+
+    private void OnDestroy()
+    {
+        BuildingEvents.OnBuildingSpawned -= OnBuildingSpawned;
+        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
+        BuildingEvents.OnBuildingsChanged -= OnBuildingsChanged;
+    }
+
     public List<Cell> GetPath()
     {
         return currentPath;
@@ -45,6 +66,7 @@ public class AgentActions : MonoBehaviour
 
     private void MoveAgent(Vector2 _dir)
     {
+        lastPos = transform.position;
         transform.position = transform.position + (Vector3)(moveFactor * Time.deltaTime * _dir);
     }
 
@@ -55,31 +77,52 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Vector2 _targetWorld)
     {
+        if (pathFinding == null)
+        {
+            Debug.LogError("AgentActions.MoveTo: pathFinding is null. Aborting MoveTo.");
+            return true;
+        }
+        
         if (currentPath == null)
         {
-            myAnimator.SetBool("isWalking", false);
             currentTargetWorld = _targetWorld;
             CalculPath();
 
             if (currentPath == null || currentPath.Count == 0)
-            { 
+            {
                 return true;
             }
         }
 
         Cell nextCell = pathFinding.PeekNextPoint();
-        if(nextCell == null) 
+        if (nextCell == null)
         {
-            myAnimator.SetBool("isWalking", false);
             currentPath = null;
             return true;
         }
 
-        Vector3 nextWorld = CellToWorld.Invoke(nextCell.position);
+        Vector3 nextWorld;
+        if (CellToWorld != null)
+        {
+            nextWorld = CellToWorld.Invoke(nextCell.position);
+        }
+        else
+        {
+            Graph graph = UnityEngine.Object.FindObjectOfType<Graph>();
+            if (graph != null)
+            {
+                nextWorld = graph.CellToWorld(nextCell.position);
+            }
+            else
+            {
+                Debug.LogError("AgentActions: No CellToWorld delegate and no Graph found in scene. Using agent position as fallback.");
+                nextWorld = transform.position;
+            }
+        }
+
         Vector2 dir = ((Vector2)nextWorld - (Vector2)transform.position).normalized;
 
         MoveAgent(dir);
-        myAnimator.SetBool("isWalking", true);
 
         if (Vector2.Distance(transform.position, nextWorld) < 0.2f)
         {
@@ -92,6 +135,11 @@ public class AgentActions : MonoBehaviour
 
     public bool MoveTo(Transform _target)
     {
+        if (_target == null)
+        {
+            Debug.LogWarning("AgentActions.MoveTo called with null target; aborting move.");
+            return true;
+        }
         return MoveTo(_target.position);
     }
 
@@ -105,9 +153,6 @@ public class AgentActions : MonoBehaviour
     {
         switch (_ressource)
         {
-            default:
-                break;
-
             case RessourceType.food:
                 HarvrestRessource(0, _ressource);
                 break;
@@ -116,6 +161,8 @@ public class AgentActions : MonoBehaviour
                 HarvrestRessource(1, _ressource);
                 break;
         }
+
+        TryAutoCreateStorage();
     }
 
     private void HarvrestRessource(int _ressourceIndex, RessourceType _ressource)
@@ -142,6 +189,26 @@ public class AgentActions : MonoBehaviour
         }
     }
 
+    private void TryAutoCreateStorage()
+    {
+        if (storagePrefab == null) return;
+        if (inventory == null) return;
+
+        RessourceStockedData data = inventory.GetRessources();
+        if (data.ressource == RessourceType.wood && data.amount >= 5)
+        {
+            inventory.ResetRessource();
+            Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
+            Colony owner = null;
+            ColonyAgent ca = GetComponent<ColonyAgent>();
+            if (ca != null)
+            {
+                owner = ca.GetCurrentColony() as Colony;
+            }
+            BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
+        }
+    }
+
     public void Eat()
     {
         inventory.RemoveOne();
@@ -157,9 +224,33 @@ public class AgentActions : MonoBehaviour
     {
         return GetRessources.Invoke(_ressourceType, transform);
     }
-
-    private void OnDestroy()
+    
+    private void OnBuildingSpawned(Building b)
     {
-        MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
+        UpdateNearestBuilding();
+    }
+
+    private void OnBuildingsChanged()
+    {
+        UpdateNearestBuilding();
+    }
+
+    private void UpdateNearestBuilding()
+    {
+        Building found = FindNearestBuilding(null);
+        if (found != _nearestBuilding)
+        {
+            _nearestBuilding = found;
+            OnNearestBuildingChanged?.Invoke(_nearestBuilding);
+        }
+    }
+    
+    public Building FindNearestBuilding(string typeFilter = null)
+    {
+        if (BuildingEvents.GetNearestBuilding != null)
+        {
+            return BuildingEvents.GetNearestBuilding.Invoke(transform.position, typeFilter);
+        }
+        return null;
     }
 }

@@ -43,11 +43,24 @@ public class ColonieSystem : MonoBehaviour
         }
         Instance = this;
         _cellSize = Mathf.Max(0.1f, groupingRadius);
+
+        BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
     }
 
     void OnDestroy()
     {
+        BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
         if (Instance == this) Instance = null;
+    }
+
+    private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
+    {
+        if (colony == null || !(colony is Colony concreteColony)) return null;
+        
+        Graph graph = Graph.OnGetGraph?.Invoke();
+        if (graph == null) return null;
+
+        return concreteColony.GetValidBuildingPosition(agentPos, graph);
     }
 
     void Start()
@@ -98,6 +111,7 @@ public class ColonieSystem : MonoBehaviour
         if (agent == null) return;
         RemoveFromBucket(agent, previousPosition);
         AddToBucket(agent);
+        TryJoinNearestColony(agent);
     }
 
     private long GetCellKey(Vector3 pos)
@@ -184,6 +198,12 @@ public class ColonieSystem : MonoBehaviour
         return false;
     }
 
+    public bool TryForceJoinNearestColony(IColonyAgent agent)
+    {
+        if (agent == null) return false;
+        return TryJoinNearestColony(agent);
+    }
+
     private void CheckNearbyForColony(IColonyAgent candidate)
     {
         if (candidate == null) return;
@@ -252,8 +272,7 @@ public class ColonieSystem : MonoBehaviour
         }
 
         colony.Inhabitants = colony.Members.Count;
-        int computedMax = colony.Inhabitants * defaultMaxPerPimu;
-        colony.MaxInhabitants = computedMax > colony.Inhabitants ? computedMax : colony.Inhabitants;
+        colony.SetBaseMaxInhabitants(colony.Inhabitants * defaultMaxPerPimu);
 
         colony.Buildings = new List<GameObject>();
         colony.Resources = new Dictionary<string, int>();
@@ -272,67 +291,25 @@ public class ColonieSystem : MonoBehaviour
     public IColony GetColonyForAgent(IColonyAgent agent)
     {
         if (agent == null) return null;
-        _assignment.TryGetValue(agent, out Colony colony);
-        return colony;
+        if (_assignment.TryGetValue(agent, out Colony col)) return col;
+        return null;
     }
 
-    private void DissolveColony(Colony colony)
+    public List<IColony> GetAllColonies()
     {
-        if (colony == null) return;
-
-        List<IColonyAgent> members = colony.Members != null ? colony.Members.ToList() : new List<IColonyAgent>();
-        foreach (IColonyAgent m in members)
-        {
-            if (m == null) continue;
-            _assignment.Remove(m);
-            try { m.SetCurrentColony(null); } catch (Exception ex) { Debug.LogError($"Error while unassigning member from colony: {ex}"); }
-            OnMemberLeft?.Invoke(colony, m);
-        }
-
-        _colonies.Remove(colony);
-        Debug.Log($"Colony dissolved (Id={colony.Id}) species={colony.Species}");
-        OnColonyDissolved?.Invoke(colony);
+        return _colonies.Cast<IColony>().ToList();
     }
 
     private void RemoveAgentFromColony(IColonyAgent agent, Colony colony)
     {
         if (agent == null || colony == null) return;
 
-        if (colony.Members != null && colony.Members.Contains(agent)) colony.Members.Remove(agent);
+        colony.Members.Remove(agent);
+        colony.Inhabitants = colony.Members.Count;
 
-        colony.Inhabitants = colony.Members != null ? colony.Members.Count : Math.Max(0, colony.Inhabitants - 1);
-
+        agent.SetCurrentColony(null);
         OnMemberLeft?.Invoke(colony, agent);
 
-        if (colony.Inhabitants < requiredPimusToCreate)
-            DissolveColony(colony);
-    }
-
-    public List<IColony> GetAllColonies() => _colonies.Cast<IColony>().ToList();
-
-    public void DebugDrawColonies()
-    {
-        foreach (Colony colony in _colonies)
-        {
-            if (colony == null) continue;
-            Gizmos.color = new Color(0f, 0.6f, 1f, 0.5f);
-            Gizmos.DrawWireSphere(colony.Center, colony.InfluenceRadius);
-            Gizmos.color = new Color(1f, 0.85f, 0f, 0.06f);
-            Gizmos.DrawSphere(colony.Center, 0.12f);
-
-#if UNITY_EDITOR
-            UnityEditor.Handles.Label(colony.Center + Vector3.up * 1.5f, $"Id={colony.Id} {colony.Species} {colony.Inhabitants}/{colony.MaxInhabitants}");
-#endif
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!Application.isPlaying) DebugDrawColonies();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        DebugDrawColonies();
+        Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} left Colony Id={colony.Id} (now {colony.Inhabitants}/{colony.MaxInhabitants})");
     }
 }

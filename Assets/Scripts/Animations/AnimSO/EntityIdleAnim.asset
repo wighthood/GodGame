@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa85e8620d50b554bac0ae84f3989814, type: 3}
-  m_Name: Berry
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableObjectScript
-  name: Berry
-  dropValue: 5
-  ressourceType: 1
+  m_Script: {fileID: 11500000, guid: 61bc9a983602248449858aa61eb39301, type: 3}
+  m_Name: EntityIdleAnim
+  m_EditorClassIdentifier: Assembly-CSharp::IdleAnim
+  animationName: Idle

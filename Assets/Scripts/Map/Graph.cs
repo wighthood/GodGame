@@ -11,6 +11,8 @@ public class Graph : MonoBehaviour
     public List<Cell> graph { get; private set; }
     public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
 
+    public static System.Func<Graph> OnGetGraph;
+
     private Tilemap tilemap;
 
     private void Awake()
@@ -21,10 +23,11 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
+        GameSceneController.InitGraph += InitGraph;
 
         tilemap = GetComponent<Tilemap>();
     }
-
+    
     public List<Cell> GetCellsFromDict()
     {
         return graphDict.Values.ToList();
@@ -110,5 +113,6 @@ public class Graph : MonoBehaviour
         PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
+        GameSceneController.InitGraph -= InitGraph;
     }
 }

@@ -1,6 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RessourceType
+{
+    none = 0,
+    wood = 1,
+    food = 2,
+    stone = 3,
+}
+
 public class MapRessourceManager : MonoBehaviour
 {
     private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
@@ -14,23 +22,14 @@ public class MapRessourceManager : MonoBehaviour
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.AddNewRessource += AddNewRessource;
+        GameSceneController.AddNewRessource += AddNewRessource;
     }
 
     public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
     {
         GameObject newRessource = null;
-        switch (ressourceType)
-        {
-            case RessourceType.wood:
-                newRessource = Instantiate(ressourcePrefab[0], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
-                break;
-            case RessourceType.food:
-                newRessource = Instantiate(ressourcePrefab[1], _position, Quaternion.identity, transform);
-                AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
-                break;
-        }
-
+        newRessource = Instantiate(ressourcePrefab[(int)ressourceType], _position, Quaternion.identity, transform);
+        AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
         return newRessource;
     }
 
@@ -75,6 +74,7 @@ public class MapRessourceManager : MonoBehaviour
 
     private void RemoveFromListForDestroy(Ressource ressource)
     {
+        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
         ressources[ressource.GetRessourceType()].Remove(ressource);
         Destroy(ressource.gameObject);
     }
@@ -85,5 +85,6 @@ public class MapRessourceManager : MonoBehaviour
         AgentActions.GetRessources -= GetNearestRessource;
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.AddNewRessource -= AddNewRessource;
+        GameSceneController.AddNewRessource -= AddNewRessource;
     }
 }
