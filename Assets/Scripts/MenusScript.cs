@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -70,5 +71,19 @@ public class MenusScript : MonoBehaviour
     public void OpenURL(string url)
     {
         Application.OpenURL(url);
+    }
+
+    public void DestroyShroom(GameObject shroom)
+    {
+        StartCoroutine(DestroyShroomMainMenu(shroom));
+    }
+
+    public IEnumerator DestroyShroomMainMenu(GameObject shroomMainMenu)
+    {
+        Image image = shroomMainMenu.GetComponent<Image>();
+        
+        image.enabled = false;
+        yield return new WaitForSecondsRealtime(2f);
+        image.enabled = true;
     }
 }
