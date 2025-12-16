@@ -18,6 +18,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
     [SerializeField] private GameObject colonyPrefab;
     [SerializeField] private GameObject pimuPrefab;
+    [SerializeField] private Transform agentParent;
 
     public Action<I_Colony> OnColonyCreatedEvent;
     public Action<I_Colony> OnColonyDissolvedEvent;
@@ -391,7 +392,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
                     continue;
                 }
 
-                GameObject agentObj = Instantiate(pimuPrefab, agentData.position, Quaternion.identity); 
+                GameObject agentObj = Instantiate(pimuPrefab, agentData.position, Quaternion.identity, agentParent); 
                 var agent = agentObj.GetComponent<I_ColonyAgent>();
                 
                 if (agent != null)

@@ -977,6 +977,7 @@ MonoBehaviour:
   scanInterval: 1
   colonyPrefab: {fileID: 4631027790472223001, guid: 98d6ec0594a698845b32035d8bfc2367, type: 3}
   pimuPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
+  agentParent: {fileID: 188331454}
 --- !u!4 &668700269
 Transform:
   m_ObjectHideFlags: 0
