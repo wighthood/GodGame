@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -967303532074319149, guid: 52eeca343121b644393673472b45025b, type: 3}
+  m_Sprite: {fileID: -4668751639425140567, guid: 4873d234ae0c9664eb24da0a0976e9dc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,10 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d2e8363bf7ed44b8d60e64a9c88bb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stockage
-  capaciteMax: 100
-  pvMax: 10
-  pvActuels: 10
-  coutCreation: 10
 --- !u!114 &-3855971957837498365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,4 +116,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ac688770444b2094000342c596e3e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Building
-  Health: 10
+  BuildingTable: {fileID: 0}
