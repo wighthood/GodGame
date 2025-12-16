@@ -16,10 +16,10 @@ public class MeteoEffect : MonoBehaviour
     [SerializeField] private float lightningMinDelay = 3f; 
     [SerializeField] private float lightningMaxDelay = 8f;
 
-    
-
     private void Awake()
     {
+        MeteoManager.OnWeatherChanged += OnMeteoChange;
+        GameSceneController.GetWeather += GetState;
         if (!particuleSystem)
             particuleSystem = fog.GetComponent<ParticleSystem>();
     }
@@ -115,8 +115,6 @@ public class MeteoEffect : MonoBehaviour
   
     private void Start()
     {
-        MeteoManager.OnWeatherChanged += OnMeteoChange;
-        GameSceneController.GetWeather += GetState;
         fog.SetActive(false);
         rain.SetActive(false);
     }
