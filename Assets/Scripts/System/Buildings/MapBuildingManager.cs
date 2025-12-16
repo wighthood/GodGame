@@ -129,9 +129,16 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
 
     private long GetCellKey(Vector3 _pos)
     {
-        int x = Mathf.FloorToInt(_pos.x / _cellSize);
-        int z = Mathf.FloorToInt(_pos.z / _cellSize);
-        return ((long)x << 32) ^ (uint)z;
+
+        // int x = Mathf.FloorToInt(_pos.x / _cellSize);
+        // int z = Mathf.FloorToInt(_pos.z / _cellSize);
+        // return ((long)x << 32) ^ (uint)z;
+
+        int x = Mathf.FloorToInt(pos.x / _cellSize);
+        // CORRECTION : On utilise .y au lieu de .z
+        int y = Mathf.FloorToInt(pos.y / _cellSize); 
+    
+        return ((long)x << 32) ^ (uint)y;
     }
 
     private void AddToBucket(Building _b)
@@ -159,25 +166,27 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
     {
         Building best = null;
         float bestDist = float.MaxValue;
-        
+    
         int cx = Mathf.FloorToInt(_pos.x / _cellSize);
-        int cz = Mathf.FloorToInt(_pos.z / _cellSize);
+        int cy = Mathf.FloorToInt(_pos.y / _cellSize);
 
         for (int dx = -1; dx <= 1; dx++)
         {
-            for (int dz = -1; dz <= 1; dz++)
+            
+            for (int dy = -1; dy <= 1; dy++)
             {
                 int nx = cx + dx;
-                int nz = cz + dz;
-                long key = ((long)nx << 32) ^ (uint)nz;
+                int ny = cy + dy;
+                
+                long key = ((long)nx << 32) ^ (uint)ny;
 
                 if (spatialBuckets.TryGetValue(key, out List<Building> list))
                 {
                     foreach (Building b in list)
                     {
                         if (b == null) continue;
-
-                        float d = Vector3.Distance(b.transform.position, _pos);
+                        
+                        float d = Vector2.Distance(b.transform.position, _pos);
                         if (d < bestDist)
                         {
                             bestDist = d;
