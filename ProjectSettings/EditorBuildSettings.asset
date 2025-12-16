@@ -11,12 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
-    path: Assets/Scenes/Save-Col/SaveTestMain.unity
-    guid: 3fe9635dcfbe3384fa7407d3d60e961c
-  - enabled: 1
-    path: Assets/Scenes/Save-Col/GameSceneCOL.unity
-    guid: 6ed7735c3ce51544b8de9152d6477bff
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

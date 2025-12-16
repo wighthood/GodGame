@@ -109,11 +109,13 @@ public class Colony : MonoBehaviour, I_Colony
 
     private void OnDrawGizmosSelected()
     {
+        #if unity_editor
         Gizmos.color = Color.darkRed;
         Gizmos.DrawWireSphere(transform.position, InfluenceRadius);
 
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.darkRed;
         Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
+        #endif
     }
 }
