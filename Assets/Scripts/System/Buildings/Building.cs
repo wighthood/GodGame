@@ -2,6 +2,9 @@
 
 public class Building : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite[] Sprites;
+
     public BuildType Type { get; private set; }
     public Colony Owner { get; private set; }
     public GameObject Root { get; private set; }
@@ -29,6 +32,16 @@ public class Building : MonoBehaviour
         Owner = owner;
         if (Owner != null) Owner.AddBuilding(Root);
         _initialized = true;
+        RandomSprite();
+    }
+
+    private void RandomSprite()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (!spriteRenderer) { return; }
+
+        spriteRenderer.sprite = Sprites[Random.Range(1, Sprites.Length)];
     }
 
     void OnDestroy()
