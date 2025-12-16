@@ -7064,6 +7064,7 @@ MonoBehaviour:
   ressourceBar: {fileID: 790512037}
   weatherBar: {fileID: 134833322}
   entityBar: {fileID: 205632666}
+  AgentParent: {fileID: 0}
 --- !u!1 &1454747964
 GameObject:
   m_ObjectHideFlags: 0
@@ -7731,6 +7732,14 @@ PrefabInstance:
     - target: {fileID: 7604742160871075052, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8058141926635886649, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8230170280455386733, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
