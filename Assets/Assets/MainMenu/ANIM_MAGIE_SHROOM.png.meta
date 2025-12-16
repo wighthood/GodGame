@@ -1,0 +1,559 @@
+fileFormatVersion: 2
+guid: 88cb9f2f7a836c34aabdd34478c5d16a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7953089737595078159
+    second: ANIM_MAGIE_SHROOM_0
+  - first:
+      213: -2789488086493899040
+    second: ANIM_MAGIE_SHROOM_1
+  - first:
+      213: 6447335956922898341
+    second: ANIM_MAGIE_SHROOM_2
+  - first:
+      213: -8524142697363030328
+    second: ANIM_MAGIE_SHROOM_3
+  - first:
+      213: 3552160126281235926
+    second: ANIM_MAGIE_SHROOM_4
+  - first:
+      213: 2830037080130362458
+    second: ANIM_MAGIE_SHROOM_5
+  - first:
+      213: -3020142857949005161
+    second: ANIM_MAGIE_SHROOM_6
+  - first:
+      213: 4886199263412644284
+    second: ANIM_MAGIE_SHROOM_7
+  - first:
+      213: 7361044661548502628
+    second: ANIM_MAGIE_SHROOM_8
+  - first:
+      213: 6366008358118958676
+    second: ANIM_MAGIE_SHROOM_9
+  - first:
+      213: -7037049391123312550
+    second: ANIM_MAGIE_SHROOM_10
+  - first:
+      213: 5696857001392581275
+    second: ANIM_MAGIE_SHROOM_11
+  - first:
+      213: 7888386038554805302
+    second: ANIM_MAGIE_SHROOM_12
+  - first:
+      213: 7223741877547197471
+    second: ANIM_MAGIE_SHROOM_13
+  - first:
+      213: 4705752354181898629
+    second: ANIM_MAGIE_SHROOM_14
+  - first:
+      213: -2641666212718463301
+    second: ANIM_MAGIE_SHROOM_15
+  - first:
+      213: 149644291795511278
+    second: ANIM_MAGIE_SHROOM_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_0
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 0
+        width: 2824
+        height: 2160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f937db5503f0a190800000000000000
+      internalID: -7953089737595078159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_1
+      rect:
+        serializedVersion: 2
+        x: 3317
+        y: 1164
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e6d85b5d5fb949d0800000000000000
+      internalID: -2789488086493899040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_2
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 1149
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a71ef3b4e9897950800000000000000
+      internalID: 6447335956922898341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_3
+      rect:
+        serializedVersion: 2
+        x: 3310
+        y: 1145
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cebfec216924b980800000000000000
+      internalID: -8524142697363030328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_4
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 1122
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ddbc4090decb4130800000000000000
+      internalID: 3552160126281235926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_5
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 1105
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5c9a5eeabf464720800000000000000
+      internalID: 2830037080130362458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_6
+      rect:
+        serializedVersion: 2
+        x: 3314
+        y: 1102
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79a3405721c4616d0800000000000000
+      internalID: -3020142857949005161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_7
+      rect:
+        serializedVersion: 2
+        x: 3318
+        y: 1085
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb96c7587544fc340800000000000000
+      internalID: 4886199263412644284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_8
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 1073
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46e42638e1fa72660800000000000000
+      internalID: 7361044661548502628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_9
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 1032
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45629d68fda985850800000000000000
+      internalID: 6366008358118958676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_10
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 1030
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a505737dcd0675e90800000000000000
+      internalID: -7037049391123312550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_11
+      rect:
+        serializedVersion: 2
+        x: 3307
+        y: 1025
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9aa330724d4f0f40800000000000000
+      internalID: 5696857001392581275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_12
+      rect:
+        serializedVersion: 2
+        x: 3320
+        y: 1027
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 634c53fbe4d297d60800000000000000
+      internalID: 7888386038554805302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_13
+      rect:
+        serializedVersion: 2
+        x: 3323
+        y: 1031
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f146050f6f2ef3460800000000000000
+      internalID: 7223741877547197471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_14
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 998
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58168ff75d03e4140800000000000000
+      internalID: 4705752354181898629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_15
+      rect:
+        serializedVersion: 2
+        x: 3319
+        y: 980
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb6b3cf539ae65bd0800000000000000
+      internalID: -2641666212718463301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_MAGIE_SHROOM_16
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 960
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee7e227c0b4a31200800000000000000
+      internalID: 149644291795511278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ANIM_MAGIE_SHROOM_0: -7953089737595078159
+      ANIM_MAGIE_SHROOM_1: -2789488086493899040
+      ANIM_MAGIE_SHROOM_10: -7037049391123312550
+      ANIM_MAGIE_SHROOM_11: 5696857001392581275
+      ANIM_MAGIE_SHROOM_12: 7888386038554805302
+      ANIM_MAGIE_SHROOM_13: 7223741877547197471
+      ANIM_MAGIE_SHROOM_14: 4705752354181898629
+      ANIM_MAGIE_SHROOM_15: -2641666212718463301
+      ANIM_MAGIE_SHROOM_16: 149644291795511278
+      ANIM_MAGIE_SHROOM_2: 6447335956922898341
+      ANIM_MAGIE_SHROOM_3: -8524142697363030328
+      ANIM_MAGIE_SHROOM_4: 3552160126281235926
+      ANIM_MAGIE_SHROOM_5: 2830037080130362458
+      ANIM_MAGIE_SHROOM_6: -3020142857949005161
+      ANIM_MAGIE_SHROOM_7: 4886199263412644284
+      ANIM_MAGIE_SHROOM_8: 7361044661548502628
+      ANIM_MAGIE_SHROOM_9: 6366008358118958676
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

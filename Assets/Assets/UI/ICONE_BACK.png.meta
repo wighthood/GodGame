@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6a866a0c6be54c84b9fe4b762604db7d
+guid: f9932e16b8df36a4580d5e909fdff514
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7337515200998065023
-    second: UI_ONGLET_0
+      213: 2527070656787631421
+    second: ICONE_BACK_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UI_ONGLET_0
+      name: ICONE_BACK_0
       rect:
         serializedVersion: 2
-        x: 103
-        y: 91
-        width: 257
-        height: 315
+        x: 106
+        y: 100
+        width: 149
+        height: 196
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f73c481133714d560800000000000000
-      internalID: 7337515200998065023
+      spriteID: d3dc3249f55f11320800000000000000
+      internalID: 2527070656787631421
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      UI_ONGLET_0: 7337515200998065023
+      ICONE_BACK_0: 2527070656787631421
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

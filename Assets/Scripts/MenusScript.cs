@@ -1,4 +1,5 @@
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
+    public TextMeshProUGUI text;
     
     string StatsPath => Application.persistentDataPath + "/AllData.json";
     string TilemapPath => Application.persistentDataPath + "/tilemap.json";
@@ -15,10 +17,13 @@ public class MenusScript : MonoBehaviour
     public void Start()
     {
         if (buttonLoad == null) return;
+        if (text == null) return;
         if (File.Exists(StatsPath) || File.Exists(TilemapPath) || File.Exists(RessourcePath) ||
             File.Exists(BlackBoardPath))
         {
+            float color = 1f;
             buttonLoad.interactable = true;
+            text.alpha = color;
         }
     }
 
@@ -60,5 +65,10 @@ public class MenusScript : MonoBehaviour
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
         GameModeManager.Instance.saveManager.LoadAll();
+    }
+
+    public void OpenURL(string url)
+    {
+        Application.OpenURL(url);
     }
 }
