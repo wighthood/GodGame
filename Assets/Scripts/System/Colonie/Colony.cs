@@ -9,14 +9,14 @@ public class Colony : MonoBehaviour, IColony
     public int Id;
     public int Inhabitants;
     public int MaxInhabitants;
-    public int BaseMaxInhabitants; 
+    public int BaseMaxInhabitants;
     public List<GameObject> Buildings;
     [SerializeField] private GameObject buildParent;
     public Dictionary<RessourceType, int> Resources;
     public float InfluenceRadius;
     private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
 
-    public Storage storage {  get; private set; }
+    public Storage storage { get; private set; }
 
     public BlackBoard BlackBoard { get; private set; }
 
@@ -48,7 +48,7 @@ public class Colony : MonoBehaviour, IColony
 
     public void DefineStorage(Storage _storage)
     {
-        if(storage != null) { return; }
+        if (storage != null) { return; }
 
         storage = _storage;
         BlackBoard.AddValueOrModify("StorageTransform", _storage.transform);
@@ -82,7 +82,19 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
 
+    public int GetAllBuildingOfType(BuildType _buildType)
+    {
+        int count = 0;
+        foreach(GameObject building in Buildings)
+        {
+            if(building.GetComponent<Building>().Type == _buildType)
+            {
+                count++;
+            }
+        }
 
+        return count;
+    }
 
     public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
     {
@@ -130,15 +142,15 @@ public class Colony : MonoBehaviour, IColony
         return null;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        #if unity_editor
         Gizmos.color = Color.darkRed;
         Gizmos.DrawWireSphere(transform.position, InfluenceRadius);
 
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.darkRed;
         Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
-        #endif
     }
+#endif
 }
