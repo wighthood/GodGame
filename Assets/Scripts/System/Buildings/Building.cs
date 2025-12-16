@@ -41,7 +41,7 @@ public class Building : MonoBehaviour
 
         if (!spriteRenderer) { return; }
 
-        spriteRenderer.sprite = Sprites[Random.Range(1, Sprites.Length)];
+        spriteRenderer.sprite = Sprites[Random.Range(0, Sprites.Length)];
     }
 
     void OnDestroy()

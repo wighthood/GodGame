@@ -116,4 +116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ac688770444b2094000342c596e3e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Building
+  Sprites:
+  - {fileID: -967303532074319149, guid: 52eeca343121b644393673472b45025b, type: 3}
   BuildingTable: {fileID: 11400000, guid: 28ec234062c536e428cd04bcd3a24a0e, type: 2}
