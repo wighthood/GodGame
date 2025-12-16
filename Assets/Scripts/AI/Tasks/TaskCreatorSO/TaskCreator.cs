@@ -7,7 +7,14 @@ public class TaskCreator : ScriptableObject
 
      public TaskBase CreateTask(TaskManager _manager, AgentActions _action)
      {
-         TaskBase instance = Instantiate(task);
+        if (task is TaskHarverestBase)
+        {
+            TaskHarverestBase harvrestInstance = Instantiate((TaskHarverestBase)task);
+            harvrestInstance.Init(_manager, _action, 10);
+            return harvrestInstance;
+        }
+
+        TaskBase instance = Instantiate(task);
         instance.Init(_manager, _action);
         return instance;
      }

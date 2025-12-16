@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -8,18 +9,39 @@ using UnityEngine.UI;
 
 public class MapEditorScript : MonoBehaviour
 {
+    [Header("map edition")]
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private List<TileBase> tiles;
+
+    [Header("Tool Bar")]
     [SerializeField] private Transform selectionBar;
     [SerializeField] private GameObject buttonPrefab;
+
+    [Header("object to spawn")]
     [SerializeField] private List<GameObject> Prefabs;
+    [SerializeField] private List<GameObject> Entity;
+    [SerializeField] private List<WeatherState> weatherState;
+
+    [Header("objects offset")]
     [SerializeField] private LayerMask layermask;
     [SerializeField] private Vector3 treeOffset;
     [SerializeField] private Vector3 berryBushOffset;
     [SerializeField] private Vector3 stoneOffset;
     [SerializeField] private float tileOffset;
 
+    [Header("meteo edition")]
+    [SerializeField] private MeteoManager meteoManager;
+    [SerializeField] private Sprite[] WeatherImages;
+
+    [Header("setup not walkable tiles")]
     [SerializeField] private List<TileBase> notWalkableSprites = new();
+
+    [Header("setup the different references")]
+    [SerializeField] private GameObject tileBar;
+    [SerializeField] private GameObject ressourceBar;
+    [SerializeField] private GameObject weatherBar;
+    [SerializeField] private GameObject entityBar;
+    [SerializeField] private Transform AgentParent;
 
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Func<Vector3, Cell> GetCell;
@@ -31,35 +53,95 @@ public class MapEditorScript : MonoBehaviour
     private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
 
+
     void Start()
     {
+        Ressource.GetTile += GetTile;
+
         _camera = Camera.main;
+        Tilebutton();
+        Ressourcebutton();
+
         foreach (TileBase tile in tiles)
         {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, tileBar.transform);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             if (tile is RuleTile T)
             {
                 buttonImage.sprite = T.m_DefaultSprite;
             }
-            button.onClick.AddListener((() =>
-               SetSelector(null, tile)));
+            button.onClick.AddListener(() =>
+               SetSelector(null, tile));
         }
-
         foreach (GameObject prefab in Prefabs)
         {
-            GameObject newButton = Instantiate(buttonPrefab, selectionBar);
+            GameObject newButton = Instantiate(buttonPrefab, ressourceBar.transform);
+            Image buttonImage = newButton.GetComponent<Image>();
+            Button button = newButton.GetComponent<Button>();
+            buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
+            button.onClick.AddListener(() =>
+                SetSelector(prefab));
+        }
+        // entity and WeatherState are inverted it still works
+        foreach (GameObject prefab in Entity)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, weatherBar.transform);
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
             button.onClick.AddListener((() =>
                 SetSelector(prefab)));
         }
-        Ressource.GetTile += GetTile;
-
-
+        int i = 0;
+        foreach (WeatherState state in weatherState)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, entityBar.transform);
+            Image buttonImage = newButton.GetComponent<Image>();
+            Button button = newButton.GetComponent<Button>();
+            buttonImage.sprite = WeatherImages[i];
+            button.onClick.AddListener(() => SetMeteo(state));
+            i++;
+        }
     }
+
+    public void HideButtons()
+    {
+        tileBar.SetActive(false);
+        entityBar.SetActive(false);
+        ressourceBar.SetActive(false);
+        weatherBar.SetActive(false);
+    }
+
+    public void Tilebutton ()
+    {
+        HideButtons();
+        tileBar.SetActive(true);
+    }
+    
+    public void Ressourcebutton()
+    {
+        HideButtons();
+        ressourceBar.SetActive(true);
+    }
+
+    public void Weatherbutton()
+    {
+        HideButtons();
+        weatherBar.SetActive(true);
+    }
+
+    public void Entitybutton()
+    {
+        HideButtons();
+        entityBar.SetActive(true);
+    }
+
+    private void SetMeteo(WeatherState state)
+    {
+        meteoManager.MeteoChange(state);
+    }
+
 
     private TileBase GetTile(Vector3 position)
     {
@@ -176,7 +258,7 @@ public class MapEditorScript : MonoBehaviour
         }
         else
         {
-            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity);
+            GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity, AgentParent);
             _isPainting = false;
         }
     }

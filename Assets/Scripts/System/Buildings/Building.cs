@@ -2,33 +2,46 @@
 
 public class Building : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite[] Sprites;
+
     public BuildType Type { get; private set; }
     public Colony Owner { get; private set; }
     public GameObject Root { get; private set; }
 
-    private bool initialized = false;
+    private bool _initialized = false;
 
     public BuildingTable BuildingTable;
 
-    public void Initialize(BuildType _type, Colony _owner, GameObject _root)
+    public void Initialize(BuildType type, Colony owner, GameObject root)
     {
-        Type = _type;
-        Root = _root != null ? _root : gameObject;
+        Type = type;
+        Root = root != null ? root : gameObject;
 
-        if (initialized)
+        if (_initialized)
         {
-            if (Owner != _owner)
+            if (Owner != owner)
             {
                 if (Owner != null) Owner.RemoveBuilding(Root);
-                Owner = _owner;
+                Owner = owner;
                 if (Owner != null) Owner.AddBuilding(Root);
             }
             return;
         }
 
-        Owner = _owner;
+        Owner = owner;
         if (Owner != null) Owner.AddBuilding(Root);
-        initialized = true;
+        _initialized = true;
+        RandomSprite();
+    }
+
+    private void RandomSprite()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (!spriteRenderer) { return; }
+
+        spriteRenderer.sprite = Sprites[Random.Range(0, Sprites.Length)];
     }
 
     void OnDestroy()

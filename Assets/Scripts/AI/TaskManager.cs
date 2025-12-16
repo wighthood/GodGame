@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI.MessageBox;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class TaskManager : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class TaskManager : MonoBehaviour
 
     private AgentActions actions;
 
+    private float idleTime;
+
     private void Awake()
     {
         agentBlackboard = new();
@@ -32,6 +35,18 @@ public class TaskManager : MonoBehaviour
             InitTasks();
             isInitialized = true;
         }
+
+        GetRandomIdleTime();
+    }
+
+    private void GetRandomIdleTime()
+    {
+        idleTime = Random.Range(0, 2);
+    }
+
+    private void DecreasseIdleTime()
+    {
+        idleTime -= Time.deltaTime;
     }
 
     private void InitTasks()
@@ -70,18 +85,21 @@ public class TaskManager : MonoBehaviour
         {
             currentTask.OnFinish();
             currentTask = null;
+            if (!IsOccupied())
+            {
+                GetRandomIdleTime();
+            }
         }
     }
 
     private void Update()
     {
-        //the colony blackboard linked
         if (colonieBlackboard == null)
         {
             ColonyAgent agent = GetComponent<ColonyAgent>();
             if (agent != null)
             {
-                I_Colony col = agent.GetCurrentColony();
+                IColony col = agent.GetCurrentColony();
                 if (col != null && col is Colony concreteColony)
                 {
                     colonieBlackboard = concreteColony.BlackBoard;
@@ -89,7 +107,15 @@ public class TaskManager : MonoBehaviour
             }
         }
 
-        if (IsOccupied()) { return; }
+        if (IsOccupied())
+        {
+            if (idleTime > 0)
+            {
+                DecreasseIdleTime();
+            }
+
+            return;
+        }
 
         if (isTaskFinished)
         {
@@ -103,27 +129,32 @@ public class TaskManager : MonoBehaviour
 
     private bool IsOccupied()
     {
-        return actions.isBuilding;
+        return actions.isBuilding || actions.isHarvesting || idleTime > 0;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         GUIStyle style = new();
-        float labelPosY = 0;
+        float labelPosY = 0.5f;
 
-        foreach(TaskBase task in tasks)
+        foreach (TaskBase task in tasks)
         {
+
             style.normal.textColor = Color.cyan;
-            Handles.Label(transform.position + Vector3.right * 0.75f + Vector3.up * labelPosY, $"{task.name} : {task.GetPriority()}", style);
-            labelPosY += 0.2f;
+            Handles.Label(transform.position + Vector3.right * -2.5f + Vector3.up * labelPosY, $"{task.name} : {task.GetPriority()}", style);
+            labelPosY -= 0.2f;
+
         }
 
         if (!currentTask)
         {
             if (!IsOccupied())
             {
+
                 style.normal.textColor = Color.red;
-                Handles.Label(transform.position + Vector3.up * 0.5f + Vector3.left, $"Idle", style);
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
+
                 return;
             }
 
@@ -131,7 +162,17 @@ public class TaskManager : MonoBehaviour
 
             if (actions.isBuilding)
             {
-                Handles.Label(transform.position + Vector3.up * 0.5f + Vector3.left, $"Building", style);
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Building", style);
+            }
+
+            if (actions.isHarvesting)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Harvesting, remaining {idleTime}", style);
+            }
+
+            if (idleTime > 0)
+            {
+                Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
             }
 
             return;
@@ -139,4 +180,5 @@ public class TaskManager : MonoBehaviour
 
         currentTask.DrawActionsGizmo();
     }
+#endif
 }

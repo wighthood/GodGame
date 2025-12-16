@@ -20,7 +20,7 @@ public class TaskEat : TaskBase
 
     private void GetNearestFoodIfExiste()
     {
-        Transform target = actions.GetNearestFoodRessource(RessourceType.food);
+        Transform target = actions.GetNearestRessource(RessourceType.food);
 
         if (target == null)
         {
@@ -35,7 +35,7 @@ public class TaskEat : TaskBase
         {
             return true;
         }
-        else if (manager.colonieBlackboard != null && actions.GetStorage() != null)
+        else if (manager.colonieBlackboard != null && actions.GetStorage() != null && actions.HasRessourceInColony(RessourceType.food))
         {
             if (storageTransform == null)
             {
@@ -64,10 +64,9 @@ public class TaskEat : TaskBase
                 }
             }
 
-            Vector3 selfPosition = transform.position;
             if (isArrive)
             {
-                actions.HarvrestRessources(RessourceType.food);
+                actions.Harvrest(RessourceType.food);
             }
             else
             {
@@ -99,11 +98,10 @@ public class TaskEat : TaskBase
         return actions.HasRessource(RessourceType.food);
     }
 
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Eat task", style);
+        base.DrawActionsGizmo();
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;
@@ -119,4 +117,5 @@ public class TaskEat : TaskBase
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
+#endif
 }
