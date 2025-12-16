@@ -6978,7 +6978,7 @@ MonoBehaviour:
   weatherState: 00000000010000000200000003000000
   layermask:
     serializedVersion: 2
-    m_Bits: 960
+    m_Bits: 8128
   treeOffset: {x: 0.5, y: 0.7, z: 0}
   berryBushOffset: {x: 0.5, y: 0.5, z: 0}
   stoneOffset: {x: 0.5, y: 0.2, z: 0}
