@@ -30,9 +30,9 @@ public class MenusScript : MonoBehaviour
 
     public static void MainMenu()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("Main Menu");
         AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
-        Time.timeScale = 1;
     }
 
     public static void Quit()

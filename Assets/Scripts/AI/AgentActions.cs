@@ -57,6 +57,8 @@ public class AgentActions : MonoBehaviour
     private void OnDestroy()
     {
         MapEditorScript.OnGraphChange -= RebuildPathIfNeeded;
+        StopAllCoroutines();
+        harvrestingCoroutine = null;
     }
 
     public List<Cell> GetPath()
@@ -164,21 +166,12 @@ public class AgentActions : MonoBehaviour
 
     private Ressource GetHarvrestRessources(RessourceType _ressource)
     {
-        switch (_ressource)
-        {
-            case RessourceType.food:
-                return GetHarvrestRessource(_ressource);
-
-            case RessourceType.wood:
-                return GetHarvrestRessource(_ressource);
-
-        }
-        return null;
+        return GetHarvrestRessource(_ressource);
     }
 
     private Ressource GetHarvrestRessource(RessourceType _ressource)
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 1, Vector2.zero, ressourcesMask[(int)_ressource - 1]);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.zero, 0.5f, ressourcesMask[(int)_ressource - 1]);
 
         if (hits.Length == 0)
         {
@@ -241,7 +234,7 @@ public class AgentActions : MonoBehaviour
             DropRessourcesOnStorage();
         }
 
-        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType), 
+        inventory.AddRessources(((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType),
             _ressourceType);
     }
 
@@ -301,9 +294,9 @@ public class AgentActions : MonoBehaviour
             }
         }
 
-        if(currentNearestHouse == null)
+        if (currentNearestHouse == null)
         {
-            return null; 
+            return null;
         }
 
         return currentNearestHouse.transform;
@@ -348,5 +341,14 @@ public class AgentActions : MonoBehaviour
         }
 
         Build(_buildType);
+    }
+
+    public int GetBuildingNumberOfType(BuildType _type)
+    {
+        Colony colony = (Colony)colonyAgent.GetCurrentColony();
+
+        if(colony == null) { return 0; }
+
+        return colony.GetAllBuildingOfType(_type);
     }
 }

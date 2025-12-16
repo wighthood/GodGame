@@ -45,6 +45,7 @@ public class TaskWandering : TaskBase
         return cond;
     }
 
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -63,4 +64,5 @@ public class TaskWandering : TaskBase
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
+#endif
 }

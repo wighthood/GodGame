@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public abstract class TaskHarverestBase : TaskBase
@@ -42,7 +41,7 @@ public abstract class TaskHarverestBase : TaskBase
 
     public override bool Do()
     {
-        if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() < 5)
+        if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() >= 5)
         {
             pathDebug = actions.GetPath();
             actions.MoveTo(storage.transform);
@@ -60,7 +59,7 @@ public abstract class TaskHarverestBase : TaskBase
             }
             else
             {
-                if (Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
                 {
                     actions.Harvrest(ressource);
                     if (actions.GetRessourceTransportedNumber() < 5)
@@ -97,11 +96,11 @@ public abstract class TaskHarverestBase : TaskBase
         return Vector3.Distance(transform.position, storage.transform.position) < 0.5f;
     }
 
+
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
-        Handles.Label(manager.transform.position + Vector3.up * 0.5f + Vector3.left, $"doing Eat task", style);
+        base.DrawActionsGizmo();
 
         if (pathDebug == null || pathDebug.Count == 0)
             return;
@@ -117,4 +116,5 @@ public abstract class TaskHarverestBase : TaskBase
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
+#endif
 }

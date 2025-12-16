@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class TaskManager : MonoBehaviour
 {
@@ -83,7 +85,7 @@ public class TaskManager : MonoBehaviour
         {
             currentTask.OnFinish();
             currentTask = null;
-            if(!IsOccupied())
+            if (!IsOccupied())
             {
                 GetRandomIdleTime();
             }
@@ -105,9 +107,9 @@ public class TaskManager : MonoBehaviour
             }
         }
 
-        if (IsOccupied()) 
-        { 
-            if(idleTime > 0)
+        if (IsOccupied())
+        {
+            if (idleTime > 0)
             {
                 DecreasseIdleTime();
             }
@@ -130,24 +132,29 @@ public class TaskManager : MonoBehaviour
         return actions.isBuilding || actions.isHarvesting || idleTime > 0;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         GUIStyle style = new();
         float labelPosY = 0.5f;
 
-        foreach(TaskBase task in tasks)
+        foreach (TaskBase task in tasks)
         {
+
             style.normal.textColor = Color.cyan;
             Handles.Label(transform.position + Vector3.right * -2.5f + Vector3.up * labelPosY, $"{task.name} : {task.GetPriority()}", style);
             labelPosY -= 0.2f;
+
         }
 
         if (!currentTask)
         {
             if (!IsOccupied())
             {
+
                 style.normal.textColor = Color.red;
                 Handles.Label(transform.position + Vector3.up * 0.75f + Vector3.left, $"Idle", style);
+
                 return;
             }
 
@@ -173,4 +180,5 @@ public class TaskManager : MonoBehaviour
 
         currentTask.DrawActionsGizmo();
     }
+#endif
 }

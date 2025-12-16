@@ -23,14 +23,23 @@ public class MapRessourceManager : MonoBehaviour
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.AddNewRessource += AddNewRessource;
         GameSceneController.AddNewRessource += AddNewRessource;
+        Farm.spawnFood += SpawnFoodOnFarm;
     }
 
-    public GameObject AddNewRessource(RessourceType ressourceType, Vector2 _position)
+    public GameObject AddNewRessource(RessourceType _ressourceType, Vector2 _position)
     {
         GameObject newRessource = null;
-        newRessource = Instantiate(ressourcePrefab[(int)ressourceType], _position, Quaternion.identity, transform);
+        newRessource = Instantiate(ressourcePrefab[(int)_ressourceType], _position, Quaternion.identity, transform);
         AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
         return newRessource;
+    }
+
+    private GameObject SpawnFoodOnFarm(Vector3 _position)
+    {
+        GameObject spawnFood = null;
+        spawnFood = Instantiate(ressourcePrefab[^1], _position, Quaternion.identity, transform);
+        AddRessourceInDictionary(spawnFood.GetComponent<Ressource>());
+        return spawnFood;
     }
 
     private void AddRessourceInDictionary(Ressource ressource)
@@ -74,8 +83,12 @@ public class MapRessourceManager : MonoBehaviour
 
     private void RemoveFromListForDestroy(Ressource ressource)
     {
-        if (!ressources.ContainsKey(ressource.GetRessourceType())) return;
+        if (ressource == null || !ressources.ContainsKey(ressource.GetRessourceType())) return;
+
         ressources[ressource.GetRessourceType()].Remove(ressource);
+
+        if(ressource == null) { return; }
+
         Destroy(ressource.gameObject);
     }
 
@@ -86,5 +99,6 @@ public class MapRessourceManager : MonoBehaviour
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.AddNewRessource -= AddNewRessource;
         GameSceneController.AddNewRessource -= AddNewRessource;
+        Farm.spawnFood -= SpawnFoodOnFarm;
     }
 }

@@ -5234,7 +5234,7 @@ MonoBehaviour:
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
   resourceParent: {fileID: 1187677961}
-  agentCount: 10
+  agentCount: 1
   _spawnedAgent: []
 --- !u!114 &130282018
 MonoBehaviour:
@@ -5470,7 +5470,7 @@ Transform:
   m_GameObject: {fileID: 188331453}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 28.94965, y: 34.19057, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6388,7 +6388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 823d26a6dfad86f4cb23211b3ee86eec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::System.Colonie.ColonieSystem
-  requiredPimusToCreate: 5
+  requiredPimusToCreate: 1
   groupingRadius: 5
   defaultInfluenceRadius: 15
   defaultMaxPerPimu: 2
@@ -6403,7 +6403,7 @@ Transform:
   m_GameObject: {fileID: 668700267}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.17051, y: 7.86928, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6507,7 +6507,7 @@ Transform:
   m_GameObject: {fileID: 741698162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.31411, y: -3.36361, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6995,6 +6995,7 @@ MonoBehaviour:
   ressourceBar: {fileID: 790512037}
   weatherBar: {fileID: 134833322}
   entityBar: {fileID: 205632666}
+  AgentParent: {fileID: 188331454}
 --- !u!1 &1454747964
 GameObject:
   m_ObjectHideFlags: 0
@@ -7348,7 +7349,7 @@ Transform:
   m_GameObject: {fileID: 1679044410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.31023, y: 2.57894, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -18,7 +18,7 @@ public class Ressource : MonoBehaviour
     public static event Action<Ressource> OnEmptyRessource;
     public static event Func<Vector3, TileBase> GetTile;
 
-    public bool isBeeingHarversted;
+    public bool isBeeingHarversted { get; set; }
 
     public RessourceType GetRessourceType()
     {
@@ -37,20 +37,24 @@ public class Ressource : MonoBehaviour
 
     private void Start()
     {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if(!spriteRenderer) { return; }
+
         if (ressourceType == RessourceType.wood)
         {
             if (GetTile.Invoke(transform.position) == tiles[1])
             {
-                GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(1, Sprites.Length)];
+                spriteRenderer.sprite = Sprites[Random.Range(1, Sprites.Length)];
             }
             else
             {
-                GetComponent<SpriteRenderer>().sprite = Sprites[0];
+                spriteRenderer.sprite = Sprites[0];
             }
         }
         else
         {
-            GetComponent<SpriteRenderer>().sprite = Sprites[Random.Range(0, Sprites.Length)];
+            spriteRenderer.sprite = Sprites[Random.Range(0, Sprites.Length)];
         }
     }
 }

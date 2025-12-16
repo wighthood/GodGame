@@ -1,7 +1,10 @@
-using UnityEditor;
+using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-[System.Serializable]
+[Serializable]
 public abstract class TaskBase : ScriptableObject
 {
     protected TaskManager manager;
@@ -9,7 +12,7 @@ public abstract class TaskBase : ScriptableObject
 
     public virtual void Init(TaskManager _manager, AgentActions _actions)
     {
-        manager = _manager; 
+        manager = _manager;
         actions = _actions;
     }
 
@@ -23,10 +26,12 @@ public abstract class TaskBase : ScriptableObject
 
     public abstract float GetPriority();
 
+#if UNITY_EDITOR
     public virtual void DrawActionsGizmo()
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
         Handles.Label(manager.transform.position + Vector3.up * 0.75f + Vector3.left, $"doing {name}", style);
     }
+#endif
 }
