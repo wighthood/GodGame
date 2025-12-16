@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MeteoManager : MonoBehaviour
@@ -8,11 +7,21 @@ public class MeteoManager : MonoBehaviour
     [SerializeField] private WeatherState currentWeatherState;
     private float timerWeather;
 
-    public static event Action <WeatherState> OnWeatherChanged; 
-  
+    public static event Action <WeatherState> OnWeatherChanged;
+
+    private void Awake()
+    {
+        GameSceneController.SetWeather += MeteoChange;
+    }
+
     void Start()
     {
         currentWeatherState = 0;
+    }
+
+    private void OnDestroy()
+    {
+        GameSceneController.SetWeather -= MeteoChange;
     }
 
     private void Update()

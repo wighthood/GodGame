@@ -7,16 +7,12 @@ public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
     
-    string StatsPath => Application.persistentDataPath + "/AllData.json";
-    string TilemapPath => Application.persistentDataPath + "/tilemap.json";
-    string RessourcePath => Application.persistentDataPath + "/ressource.json";
-    string BlackBoardPath => Application.persistentDataPath + "/blackboard.json";
+    string savePath => Application.persistentDataPath + "/Save.json";
     
     public void Start()
     {
         if (buttonLoad == null) return;
-        if (File.Exists(StatsPath) || File.Exists(TilemapPath) || File.Exists(RessourcePath) ||
-            File.Exists(BlackBoardPath))
+        if (File.Exists(savePath))
         {
             buttonLoad.interactable = true;
         }

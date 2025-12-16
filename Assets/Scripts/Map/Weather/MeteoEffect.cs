@@ -16,7 +16,7 @@ public class MeteoEffect : MonoBehaviour
     [SerializeField] private float lightningMinDelay = 3f; 
     [SerializeField] private float lightningMaxDelay = 8f;
 
-
+    
 
     private void Awake()
     {
@@ -115,7 +115,8 @@ public class MeteoEffect : MonoBehaviour
   
     private void Start()
     {
-        MeteoManager.OnWeatherChanged += OnMeteoChange;  
+        MeteoManager.OnWeatherChanged += OnMeteoChange;
+        GameSceneController.GetWeather += GetState;
         fog.SetActive(false);
         rain.SetActive(false);
     }
@@ -123,7 +124,8 @@ public class MeteoEffect : MonoBehaviour
     private void OnDestroy()
     {
         StopAllCoroutines();
-        MeteoManager.OnWeatherChanged -= OnMeteoChange;  
+        MeteoManager.OnWeatherChanged -= OnMeteoChange;
+        GameSceneController.GetWeather -= GetState;
     }
 
     private IEnumerator WeatherFade()
@@ -178,5 +180,10 @@ public class MeteoEffect : MonoBehaviour
 
             mainLight.intensity = .5f;
         }
+    }
+
+    private WeatherState GetState()
+    {
+        return oldState;
     }
 }

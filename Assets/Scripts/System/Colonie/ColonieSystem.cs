@@ -28,8 +28,8 @@ public class ColonieSystem : MonoBehaviour
     private List<Colony> _colonies = new List<Colony>();
     private Dictionary<IColonyAgent, Colony> _assignment = new Dictionary<IColonyAgent, Colony>();
 
-    private HashSet<IColonyAgent> _registeredAgents = new HashSet<IColonyAgent>();
-    private Dictionary<long, List<IColonyAgent>> _spatialBuckets = new Dictionary<long, List<IColonyAgent>>();
+    private HashSet<ColonyAgent> _registeredAgents = new HashSet<ColonyAgent>();
+    private Dictionary<long, List<ColonyAgent>> _spatialBuckets = new Dictionary<long, List<ColonyAgent>>();
     private float _cellSize = 5f;
 
     private int _nextColonyId = 1;
@@ -48,13 +48,22 @@ public class ColonieSystem : MonoBehaviour
 
         BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
         BuildingEvents.OnBuildingSpawned += BuildingSpawned;
+        GameSceneController.spawnColony += CreateColony;
+        GameSceneController.getColony += GetColony;
     }
 
     void OnDestroy()
     {
         BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
         BuildingEvents.OnBuildingSpawned -= BuildingSpawned;
+        GameSceneController.spawnColony -= CreateColony;
+        GameSceneController.getColony -= GetColony;
         if (Instance == this) Instance = null;
+    }
+
+    private Colony GetColony(int _colonyIndex)
+    {
+        return _colonies[_colonyIndex];
     }
 
     private void BuildingSpawned(BuildType _type, Colony _colony)
@@ -93,7 +102,7 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    public void RegisterAgent(IColonyAgent agent)
+    public void RegisterAgent(ColonyAgent agent)
     {
         if (agent == null) return;
         if (_registeredAgents.Contains(agent)) return;
@@ -105,7 +114,7 @@ public class ColonieSystem : MonoBehaviour
         CheckNearbyForColony(agent);
     }
 
-    public void UnregisterAgent(IColonyAgent agent)
+    public void UnregisterAgent(ColonyAgent agent)
     {
         if (agent == null) return;
         if (!_registeredAgents.Contains(agent)) return;
@@ -121,7 +130,7 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    public void UpdateAgentCell(IColonyAgent agent, Vector3 previousPosition)
+    public void UpdateAgentCell(ColonyAgent agent, Vector3 previousPosition)
     {
         if (agent == null) return;
         RemoveFromBucket(agent, previousPosition);
@@ -136,26 +145,26 @@ public class ColonieSystem : MonoBehaviour
         return ((long)x << 32) ^ (uint)z;
     }
 
-    private void AddToBucket(IColonyAgent a)
+    private void AddToBucket(ColonyAgent a)
     {
         long key = GetCellKey(a.GetTransform().position);
-        if (!_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
+        if (!_spatialBuckets.TryGetValue(key, out List<ColonyAgent> list))
         {
-            list = new List<IColonyAgent>();
+            list = new List<ColonyAgent>();
             _spatialBuckets[key] = list;
         }
         if (!list.Contains(a)) list.Add(a);
     }
 
-    private void RemoveFromBucket(IColonyAgent a)
+    private void RemoveFromBucket(ColonyAgent a)
     {
         RemoveFromBucket(a, a.GetTransform().position);
     }
 
-    private void RemoveFromBucket(IColonyAgent a, Vector3 fromPosition)
+    private void RemoveFromBucket(ColonyAgent a, Vector3 fromPosition)
     {
         long key = GetCellKey(fromPosition);
-        if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
+        if (_spatialBuckets.TryGetValue(key, out List<ColonyAgent> list))
         {
             list.Remove(a);
             if (list.Count == 0) _spatialBuckets.Remove(key);
@@ -164,7 +173,7 @@ public class ColonieSystem : MonoBehaviour
 
     private void ScanForColonies()
     {
-        foreach (IColonyAgent agent in _registeredAgents.ToList())
+        foreach (ColonyAgent agent in _registeredAgents.ToList())
         {
             if (agent == null) continue;
             if (_assignment.ContainsKey(agent)) continue;
@@ -175,7 +184,7 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    private bool TryJoinNearestColony(IColonyAgent agent)
+    private bool TryJoinNearestColony(ColonyAgent agent)
     {
         if (agent == null) return false;
         if (_assignment.ContainsKey(agent)) return false;
@@ -210,18 +219,18 @@ public class ColonieSystem : MonoBehaviour
         return false;
     }
 
-    public bool TryForceJoinNearestColony(IColonyAgent agent)
+    public bool TryForceJoinNearestColony(ColonyAgent agent)
     {
         if (agent == null) return false;
         return TryJoinNearestColony(agent);
     }
 
-    private void CheckNearbyForColony(IColonyAgent candidate)
+    private void CheckNearbyForColony(ColonyAgent candidate)
     {
         if (candidate == null) return;
         if (!candidate.CanFormColony()) return;
 
-        List<IColonyAgent> neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
+        List<ColonyAgent> neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
             .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
             .ToList();
 
@@ -233,7 +242,7 @@ public class ColonieSystem : MonoBehaviour
             foreach (IColonyAgent n in neighbors) centroid += n.GetTransform().position;
             centroid /= neighbors.Count;
 
-            List<IColonyAgent> group = GetNeighborsFromBuckets(centroid)
+            List<ColonyAgent> group = GetNeighborsFromBuckets(centroid)
                 .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase) && Vector3.Distance(g.GetTransform().position, centroid) <= groupingRadius)
                 .ToList();
 
@@ -244,9 +253,9 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    private List<IColonyAgent> GetNeighborsFromBuckets(Vector3 position)
+    private List<ColonyAgent> GetNeighborsFromBuckets(Vector3 position)
     {
-        List<IColonyAgent> results = new List<IColonyAgent>();
+        List<ColonyAgent> results = new List<ColonyAgent>();
         int cx = Mathf.FloorToInt(position.x / _cellSize);
         int cz = Mathf.FloorToInt(position.z / _cellSize);
 
@@ -256,9 +265,9 @@ public class ColonieSystem : MonoBehaviour
                 int nx = cx + dx;
                 int nz = cz + dz;
                 long key = ((long)nx << 32) ^ (uint)nz;
-                if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
+                if (_spatialBuckets.TryGetValue(key, out List<ColonyAgent> list))
                 {
-                    foreach (IColonyAgent go in list)
+                    foreach (ColonyAgent go in list)
                         if (go != null && !results.Contains(go)) results.Add(go);
                 }
             }
@@ -267,7 +276,7 @@ public class ColonieSystem : MonoBehaviour
         return results;
     }
 
-    private void CreateColony(Vector3 _colonySpawnPoint, List<IColonyAgent> _members)
+    private void CreateColony(Vector3 _colonySpawnPoint, List<ColonyAgent> _members)
     {
         _members = _members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
 
@@ -277,7 +286,7 @@ public class ColonieSystem : MonoBehaviour
 
         colony.name = $"Colony {colony.Id}";
 
-        foreach (IColonyAgent m in _members)
+        foreach (ColonyAgent m in _members)
         {
             _assignment[m] = colony;
             colony.Members.Add(m);
@@ -297,7 +306,7 @@ public class ColonieSystem : MonoBehaviour
         OnColonyCreated?.Invoke(colony);
     }
 
-    public IColony GetColonyForAgent(IColonyAgent agent)
+    public IColony GetColonyForAgent(ColonyAgent agent)
     {
         if (agent == null) return null;
         if (_assignment.TryGetValue(agent, out Colony col)) return col;
@@ -309,7 +318,7 @@ public class ColonieSystem : MonoBehaviour
         return _colonies.Cast<IColony>().ToList();
     }
 
-    private void RemoveAgentFromColony(IColonyAgent agent, Colony colony)
+    private void RemoveAgentFromColony(ColonyAgent agent, Colony colony)
     {
         if (agent == null || colony == null) return;
 

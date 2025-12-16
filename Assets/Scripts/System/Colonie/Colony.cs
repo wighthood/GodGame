@@ -14,7 +14,7 @@ public class Colony : MonoBehaviour, IColony
     [SerializeField] private GameObject buildParent;
     public Dictionary<RessourceType, int> Resources;
     public float InfluenceRadius;
-    private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
+    private readonly List<ColonyAgent> _members = new List<ColonyAgent>();
 
     public Storage storage { get; private set; }
 
@@ -24,9 +24,8 @@ public class Colony : MonoBehaviour, IColony
     public Vector3 GetColonyCenter() => transform.position;
     public int GetInhabitants() => Inhabitants;
     public int GetMaxInhabitants() => MaxInhabitants;
-    public IReadOnlyList<IColonyAgent> GetMembers() => _members.AsReadOnly();
-
-    public List<IColonyAgent> Members => _members;
+    public IReadOnlyList<IColonyAgent> GetMembers() => _members;
+    public List<ColonyAgent> Members => _members;
 
     public Transform GetBuildingParent() => buildParent.transform;
 
@@ -60,7 +59,7 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
     }
 
-    public void AddAgentToColony(IColonyAgent _newAgent)
+    public void AddAgentToColony(ColonyAgent _newAgent)
     {
         _members.Add(_newAgent);
         _newAgent.SetCurrentColony(this);
@@ -152,5 +151,6 @@ public class Colony : MonoBehaviour, IColony
         style.normal.textColor = Color.darkRed;
         Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
     }
+
 #endif
 }

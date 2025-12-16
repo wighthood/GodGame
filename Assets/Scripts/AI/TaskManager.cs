@@ -39,6 +39,16 @@ public class TaskManager : MonoBehaviour
         GetRandomIdleTime();
     }
 
+    public void LoadBlackboard(BlackBoard _loadedBlackboard)
+    {
+        agentBlackboard = _loadedBlackboard;
+    }
+
+    public void LoadColonyBlackboard(BlackBoard _loadedBlackboard)
+    {
+        colonieBlackboard = _loadedBlackboard;
+    }
+
     private void GetRandomIdleTime()
     {
         idleTime = Random.Range(0, 2);

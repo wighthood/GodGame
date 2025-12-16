@@ -6,25 +6,33 @@ using UnityEngine.Tilemaps;
 public class GameSceneController : MonoBehaviour
 {
     [Header("Réfs scène de jeu")]
-    public WorldGeneration worldGen;
-    public SaveManager saveManager;
-    public Tilemap tilemap;
-    public GameObject agentPrefab;
-    [SerializeField] private GameObject agentParent;
+    [SerializeField] private WorldGeneration worldGen;
+    [SerializeField] private SaveManager saveManager;
+    [SerializeField] private Tilemap tilemap;
+    [SerializeField] private TileBase[] tilePalette;
+    [SerializeField] private GameObject agentPrefab;
     public GameObject saveButton;
     public GameObject panelPauseMenu;
-    
+
+    [Header("Parents")]
+    [SerializeField] private Transform colonyParent;
+    [SerializeField] private Transform agentParent;
+
     [Header("Réfs ressources")]
     [SerializeField] private GameObject ressourceParent;
     [SerializeField] private List<GameObject> ressourcePrefab;
-    
+
     [Header("Réfs IA / Blackboard")]
     public BlackBoard existingBlackboard;
-    
-    
-    
+
+    public static event Action<GameData> SaveGame;
+
     public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
     public static event Action InitGraph;
+    public static event Action<Vector3, List<ColonyAgent>> spawnColony;
+    public static event Func<int, Colony> getColony;
+    public static event Func<WeatherState> GetWeather;
+    public static event Action<WeatherState> SetWeather;
 
     void Start()
     {
@@ -36,56 +44,197 @@ public class GameSceneController : MonoBehaviour
         else
         {
             worldGen.enabled = false;
-            LoadStatsAndAgents();
-            LoadTilemap();
-            LoadRessource();
-            LoadBlackBoard();
+            LoadGame(SaveManager.loadedGameData);
         }
     }
 
     public void OnClickSave()
     {
-        GameData stats = BuildStatsData();
-        TilemapSave tData = BuildTilemapData();
-        RessourceSave rData = BuildRessourceData();
-        BlackboardSave bbData = BuildBlackBoard();
-
-        SaveManager.SaveAll(stats, tData, rData, bbData);
+        SaveGame.Invoke(SaveGameData());
     }
 
-    GameData BuildStatsData()
+    GameData SaveGameData()
     {
-        GameData data = new GameData();
-        data.cam = Camera.main.transform.position;
-        data.agentData = new List<AgentData>();
-
-        for (int i = 0; i < agentParent.transform.childCount; i++)
+        return new GameData
         {
-            Transform child = agentParent.transform.GetChild(i);
-            AIStats aiStats = child.GetComponent<AIStats>();
-
-            AgentData a = new AgentData();
-            a.hunger    = aiStats.hunger;
-            a.health    = aiStats.health;
-            a.maxHealth = aiStats.maxHealth;
-            a.agentsPos = child.position;
-
-            data.agentData.Add(a);
-        }
-        return data;
+            camPos = Camera.main.transform.position,
+            tilemap = SaveTilemapData(),
+            ressources = SaveRessourceData(),
+            colonies = SaveColonies(),
+            noColonyAgents = SaveAgentsWithoutColony(),
+            weatherState = GetCurrentWeather()
+        };
     }
 
-    TilemapSave BuildTilemapData()
+    private void LoadGame(GameData _data)
+    {
+        Camera.main.transform.position = _data.camPos;
+        LoadTilemap(_data.tilemap);
+        LoadRessource(_data.ressources);
+        LoadColonies(_data.colonies);
+        LoadAgentsWithoutColonies(_data.noColonyAgents);
+        LoadWeather(_data.weatherState);
+    }
+
+    #region Colonies
+
+    //save
+    List<ColonySaveData> SaveColonies()
+    {
+        List<ColonySaveData> savedColonies = new List<ColonySaveData>();
+
+        foreach (Transform colonyTransform in colonyParent.transform)
+        {
+            Colony currentColony = colonyTransform.GetComponent<Colony>();
+
+            savedColonies.Add(
+            new ColonySaveData
+            {
+                colonyPos = colonyTransform.position,
+                buildings = SaveColonyBuilding(currentColony),
+                agentData = SaveAgentOfColony(currentColony),
+                colonyBlackBoard = currentColony.BlackBoard
+            });
+        }
+
+        return savedColonies;
+    }
+
+    private List<BuildingSaveData> SaveColonyBuilding(Colony _colony)
+    {
+        List<BuildingSaveData> savedBuildings = new();
+
+        foreach (GameObject building in _colony.Buildings)
+        {
+            savedBuildings.Add(new BuildingSaveData
+            {
+                buildingPos = building.transform.position,
+                type = building.GetComponent<Building>().Type
+            });
+        }
+
+        return savedBuildings;
+    }
+
+    //load
+
+    private void LoadColonies(List<ColonySaveData> _coloniesData)
+    {
+        foreach(ColonySaveData data in _coloniesData)
+        {
+            List<ColonyAgent> agents = LoadAgentsFormColony(data);
+
+            spawnColony.Invoke(data.colonyPos, agents);
+
+            Colony createdColony = getColony.Invoke(_coloniesData.IndexOf(data));
+
+            LoadBuildingsOfColony(createdColony, data);
+        }
+    }
+
+    private void LoadBuildingsOfColony(Colony _createdColony, ColonySaveData _colonyData)
+    {
+        foreach(BuildingSaveData buildingData in _colonyData.buildings)
+        {
+            BuildingEvents.OnSpawnRequested.Invoke(buildingData.type, buildingData.buildingPos, _createdColony);
+        }
+    }
+
+    #endregion
+
+    #region Agents
+
+    //save
+    List<AgentData> SaveAgentOfColony(Colony _colony)
+    {
+        List<AgentData> agents = new List<AgentData>();
+        foreach (ColonyAgent agent in _colony.Members)
+        {
+            AIStats aiStats = agent.GetComponent<AIStats>();
+
+            agents.Add(new AgentData
+            {
+                agentsPos = agent.transform.position,
+                hunger = aiStats.hunger,
+                health = aiStats.health,
+                maxHealth = aiStats.maxHealth,
+                agentBlackBoard = agent.GetComponent<TaskManager>().agentBlackboard,
+            });
+        }
+
+        return agents;
+    }
+
+    private List<AgentData> SaveAgentsWithoutColony()
+    {
+        List<AgentData> agents = new List<AgentData>();
+
+        foreach(Transform agent in agentParent)
+        {
+            AIStats stats = agent.GetComponent<AIStats>();
+            if (!stats) { continue; }
+
+            BlackBoard blackboard = agent.GetComponent<TaskManager>().agentBlackboard;
+
+            agents.Add(new AgentData
+            {
+                agentsPos = agent.position,
+                hunger = stats.hunger,
+                health = stats.health,
+                maxHealth = stats.maxHealth,
+                agentBlackBoard = blackboard
+            });
+        }
+
+        return agents;
+    }
+
+    //Load
+    private void LoadAgentsWithoutColonies(List<AgentData> _agentsToLoad)
+    {
+        foreach (AgentData agentData in _agentsToLoad)
+        {
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent);
+            AIStats aiStats = agent.GetComponent<AIStats>();
+            aiStats.hunger = agentData.hunger;
+            aiStats.health = agentData.health;
+            aiStats.maxHealth = agentData.maxHealth;
+            agent.GetComponent<TaskManager>().LoadBlackboard(agentData.agentBlackBoard);
+        }
+    }
+
+    private List<ColonyAgent> LoadAgentsFormColony(ColonySaveData _colonyData)
+    {
+        List<ColonyAgent> agents = new();
+
+        foreach (AgentData agentData in _colonyData.agentData)
+        {
+            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent);
+            AIStats aiStats = agent.GetComponent<AIStats>();
+            aiStats.hunger = agentData.hunger;
+            aiStats.health = agentData.health;
+            aiStats.maxHealth = agentData.maxHealth;
+            agent.GetComponent<TaskManager>().LoadBlackboard(agentData.agentBlackBoard);
+            agent.GetComponent<TaskManager>().LoadColonyBlackboard(_colonyData.colonyBlackBoard);
+            agents.Add(agent.GetComponent<ColonyAgent>());
+        }
+
+        return agents;
+    }
+
+    #endregion
+
+    #region Tilemap
+
+    //save
+    TilemapSave SaveTilemapData()
     {
         TilemapSave save = new TilemapSave();
 
         int minX = -worldGen.MapWidth() / 2;
-        int maxX =  worldGen.MapWidth() / 2;
+        int maxX = worldGen.MapWidth() / 2;
         int minY = -worldGen.MapHeight() / 2;
-        int maxY =  worldGen.MapHeight() / 2;
-
-        SaveManager menu = FindObjectOfType<SaveManager>();
-        TileBase[] palette = menu.tilePalette;
+        int maxY = worldGen.MapHeight() / 2;
 
         for (int x = minX; x < maxX; x++)
         {
@@ -95,7 +244,7 @@ public class GameSceneController : MonoBehaviour
                 TileBase tile = tilemap.GetTile(pos);
                 if (tile == null) continue;
 
-                int id = Array.IndexOf(palette, tile);
+                int id = Array.IndexOf(tilePalette, tile);
                 if (id < 0) continue;
 
                 TileSaveData data = new TileSaveData
@@ -111,7 +260,28 @@ public class GameSceneController : MonoBehaviour
         return save;
     }
 
-    RessourceSave BuildRessourceData()
+    //load
+    void LoadTilemap(TilemapSave _data)
+    {
+        tilemap.ClearAllTiles();
+
+        foreach (TileSaveData data in _data.tiles)
+        {
+            if (data.tileId < 0 || data.tileId >= tilePalette.Length) continue;
+
+            Vector3Int pos = new Vector3Int(data.x, data.y, 0);
+            TileBase tile = tilePalette[data.tileId];
+            tilemap.SetTile(pos, tile);
+        }
+        InitGraph?.Invoke();
+
+        tilemap.RefreshAllTiles();
+    }
+    #endregion
+
+    #region ressources
+    //save
+    RessourceSave SaveRessourceData()
     {
         RessourceSave save = new RessourceSave();
         save.ress = new List<RessourceSaveData>();
@@ -119,122 +289,50 @@ public class GameSceneController : MonoBehaviour
         for (int i = 0; i < ressourceParent.transform.childCount; i++)
         {
             Transform child = ressourceParent.transform.GetChild(i);
-            
+
             Ressource res = child.GetComponent<Ressource>();
             if (res == null) continue;
-            
+
             RessourceSaveData saveData = new RessourceSaveData();
             saveData.ressourcePos = child.position;
             saveData.ressourceType = res.GetRessourceType();
-            
+
             save.ress.Add(saveData);
         }
         return save;
     }
 
-    BlackboardSave BuildBlackBoard()
+    //load
+    void LoadRessource(RessourceSave _data)
     {
-        BlackboardSave bbSave = new BlackboardSave();
-        
-        bbSave.blackBoard = existingBlackboard;
-        
-        return bbSave;
-    }
-
-    void LoadStatsAndAgents()
-    {
-        GameData data = SaveManager.loadedStats;
-        if (data == null)
-        {
-            Debug.LogWarning("Pas de GameData, nouvelle partie");
-            return;
-        }
-
-        Camera.main.transform.position = data.cam;
-
-        for (int i = agentParent.transform.childCount - 1; i >= 0; i--)
-        {
-            Destroy(agentParent.transform.GetChild(i).gameObject);
-        }
-
-        foreach (AgentData agentData in data.agentData)
-        {
-            GameObject agent = Instantiate(agentPrefab, agentData.agentsPos, Quaternion.identity, agentParent.transform);
-            AIStats aiStats = agent.GetComponent<AIStats>();
-            aiStats.hunger    = agentData.hunger;
-            aiStats.health    = agentData.health;
-            aiStats.maxHealth = agentData.maxHealth;
-        }
-        
-        Debug.Log("Stats et agents bien chargés");
-    }
-
-    void LoadTilemap()
-    {
-        TilemapSave tData = SaveManager.loadedTilemap;
-        if (tData == null)
-        {
-            Debug.LogWarning("Pas de TilemapSave, on garde la tilemap par défaut");
-            return;
-        }
-
-        tilemap.ClearAllTiles();
-
-        SaveManager menu = FindObjectOfType<SaveManager>();
-        TileBase[] palette = menu.tilePalette;
-
-        foreach (TileSaveData data in tData.tiles)
-        {
-            if (data.tileId < 0 || data.tileId >= palette.Length) continue;
-
-            Vector3Int pos = new Vector3Int(data.x, data.y, 0);
-            TileBase tile = palette[data.tileId];
-            tilemap.SetTile(pos, tile);
-        }
-        InitGraph?.Invoke();
-
-        tilemap.RefreshAllTiles();
-        Debug.Log("Tilemap chargée");
-    }
-
-    void LoadRessource()
-    {
-        RessourceSave rData = SaveManager.loadedRessource;
-        
-        if (rData == null)
-        {
-            Debug.LogWarning("Pas de ressources");
-            return;
-        }
-        
         for (int i = ressourceParent.transform.childCount - 1; i >= 0; i--)
         {
             Destroy(ressourceParent.transform.GetChild(i).gameObject);
         }
 
-        foreach (RessourceSaveData save in rData.ress)
+        foreach (RessourceSaveData save in _data.ress)
         {
             AddNewRessource.Invoke(save.ressourceType, save.ressourcePos);
         }
-        
-        Debug.Log("Ressource bien chargée(s)");
     }
+    #endregion
 
-    void LoadBlackBoard()
+    #region Weather
+
+    //save
+    private int GetCurrentWeather()
     {
-        BlackboardSave bbSave = SaveManager.loadedBlackBoard;
-
-        if (bbSave == null || bbSave.blackBoard == null)
-        {
-            Debug.LogWarning("Pas de blackboard");
-            return;
-        }
-
-        existingBlackboard = bbSave.blackBoard;
-
-        Debug.Log("BlackBoard bien chargé");
+        return (int)GetWeather.Invoke();
     }
-    
+
+    //load
+    private void LoadWeather(int _weatherState)
+    {
+        SetWeather.Invoke((WeatherState)_weatherState);
+    }
+
+    #endregion
+
     public void SendAlertSave()
     {
         saveButton.SetActive(true);

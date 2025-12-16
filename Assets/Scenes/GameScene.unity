@@ -6489,10 +6489,15 @@ MonoBehaviour:
   worldGen: {fileID: 130282017}
   saveManager: {fileID: 0}
   tilemap: {fileID: 130282014}
+  tilePalette:
+  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
+  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
+  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
-  agentParent: {fileID: 188331453}
   saveButton: {fileID: 1474736830}
   panelPauseMenu: {fileID: 836012061}
+  colonyParent: {fileID: 668700269}
+  agentParent: {fileID: 188331454}
   ressourceParent: {fileID: 1187677960}
   ressourcePrefab:
   - {fileID: 2453019938693668466, guid: 02550384958f3e242bfd00bcd2c3a664, type: 3}
