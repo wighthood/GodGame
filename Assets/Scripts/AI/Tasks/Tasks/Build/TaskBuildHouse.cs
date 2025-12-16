@@ -115,8 +115,6 @@ public class TaskBuildHouse : TaskBase
         targetRessource = null;
 
         batimentPosition = actions.GetValidBuildPosition();
-
-        Debug.Log($"build position {(Vector2)batimentPosition}");
     }
 
     protected override bool FinishCondition()
@@ -124,6 +122,7 @@ public class TaskBuildHouse : TaskBase
         return Vector3.Distance(transform.position, (Vector2)batimentPosition) < 0.25f && CanBuild();
     }
 
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -142,4 +141,5 @@ public class TaskBuildHouse : TaskBase
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
+#endif
 }

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor;
 using UnityEngine;
 
 public abstract class TaskHarverestBase : TaskBase
@@ -98,10 +96,10 @@ public abstract class TaskHarverestBase : TaskBase
         return Vector3.Distance(transform.position, storage.transform.position) < 0.5f;
     }
 
-	
+
+#if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
-		#if unityeditor
         base.DrawActionsGizmo();
 
         if (pathDebug == null || pathDebug.Count == 0)
@@ -117,6 +115,6 @@ public abstract class TaskHarverestBase : TaskBase
             secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
-		#endif
     }
+#endif
 }

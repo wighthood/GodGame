@@ -342,4 +342,13 @@ public class AgentActions : MonoBehaviour
 
         Build(_buildType);
     }
+
+    public int GetBuildingNumberOfType(BuildType _type)
+    {
+        Colony colony = (Colony)colonyAgent.GetCurrentColony();
+
+        if(colony == null) { return 0; }
+
+        return colony.GetAllBuildingOfType(_type);
+    }
 }
