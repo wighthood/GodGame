@@ -60,5 +60,6 @@ public class MenusScript : MonoBehaviour
     {
         GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
         GameModeManager.Instance.saveManager.LoadAll();
+        AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 }
