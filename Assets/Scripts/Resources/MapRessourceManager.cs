@@ -9,21 +9,29 @@ public enum RessourceType
     stone = 3,
 }
 
-public class MapRessourceManager : MonoBehaviour
+public class MapRessourceManager : MonoBehaviour, ISaveable
 {
-    private Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
+    private Dictionary<RessourceType, List<Ressource>> ressources = new();
 
     [SerializeField]
-    private List<GameObject> ressourcePrefab = new List<GameObject>();
+    private List<GameObject> ressourcePrefab = new();
 
     private void Awake()
     {
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
         AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
-        WorldGeneration.AddNewRessource += AddNewRessource;
-        GameSceneController.AddNewRessource += AddNewRessource;
-        Farm.spawnFood += SpawnFoodOnFarm;
+        WorldGeneration.OnAddNewRessourceEvent += AddNewRessource;
+    }
+
+    private void OnEnable()
+    {
+        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
+    }
+
+    private void OnDisable()
+    {
+        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
     }
 
     public GameObject AddNewRessource(RessourceType _ressourceType, Vector2 _position)
@@ -34,23 +42,15 @@ public class MapRessourceManager : MonoBehaviour
         return newRessource;
     }
 
-    private GameObject SpawnFoodOnFarm(Vector3 _position)
+    private void AddRessourceInDictionary(Ressource _ressource)
     {
-        GameObject spawnFood = null;
-        spawnFood = Instantiate(ressourcePrefab[^1], _position, Quaternion.identity, transform);
-        AddRessourceInDictionary(spawnFood.GetComponent<Ressource>());
-        return spawnFood;
-    }
-
-    private void AddRessourceInDictionary(Ressource ressource)
-    {
-        if (!ressources.ContainsKey(ressource.GetRessourceType()))
+        if (!ressources.ContainsKey(_ressource.GetRessourceType()))
         {
-            ressources[ressource.GetRessourceType()] = new List<Ressource>() { ressource };
+            ressources[_ressource.GetRessourceType()] = new List<Ressource>() { _ressource };
             return;
         }
 
-        ressources[ressource.GetRessourceType()].Add(ressource);
+        ressources[_ressource.GetRessourceType()].Add(_ressource);
     }
 
     public List<Ressource> GetRessources(RessourceType _type)
@@ -65,6 +65,8 @@ public class MapRessourceManager : MonoBehaviour
     public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
     {
         List<Ressource> ressourcesList = GetRessources(_type);
+
+        if (ressourcesList == null || ressourcesList.Count == 0) return null;
 
         float nearestDistance = float.MaxValue;
 
@@ -81,15 +83,11 @@ public class MapRessourceManager : MonoBehaviour
         return nearestRessource;
     }
 
-    private void RemoveFromListForDestroy(Ressource ressource)
+    private void RemoveFromListForDestroy(Ressource _ressource)
     {
-        if (ressource == null || !ressources.ContainsKey(ressource.GetRessourceType())) return;
-
-        ressources[ressource.GetRessourceType()].Remove(ressource);
-
-        if(ressource == null) { return; }
-
-        Destroy(ressource.gameObject);
+        if (!ressources.ContainsKey(_ressource.GetRessourceType())) return;
+        ressources[_ressource.GetRessourceType()].Remove(_ressource);
+        Destroy(_ressource.gameObject);
     }
 
     private void OnDestroy()
@@ -97,8 +95,54 @@ public class MapRessourceManager : MonoBehaviour
         Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
         AgentActions.GetRessources -= GetNearestRessource;
         MapEditorScript.AddNewRessource -= AddNewRessource;
-        WorldGeneration.AddNewRessource -= AddNewRessource;
-        GameSceneController.AddNewRessource -= AddNewRessource;
-        Farm.spawnFood -= SpawnFoodOnFarm;
+        WorldGeneration.OnAddNewRessourceEvent -= AddNewRessource;
+    }
+
+    public string CaptureState()
+    {
+        RessourceSave save = new RessourceSave();
+        foreach (KeyValuePair<RessourceType, List<Ressource>> kvp in ressources)
+        {
+            foreach (Ressource r in kvp.Value)
+            {
+                if (r == null) continue;
+                save.ress.Add(new RessourceSaveData
+                {
+                    ressourceType = r.GetRessourceType(),
+                    ressourcePos = r.transform.position
+                });
+            }
+        }
+        return JsonUtility.ToJson(save);
+    }
+
+    public void RestoreState(string _state)
+    {
+        foreach (KeyValuePair<RessourceType, List<Ressource>> kvp in ressources)
+        {
+            foreach (Ressource r in kvp.Value)
+            {
+                if (r != null) Destroy(r.gameObject);
+            }
+        }
+        ressources.Clear();
+        
+        if (string.IsNullOrEmpty(_state)) return;
+
+        RessourceSave save = JsonUtility.FromJson<RessourceSave>(_state);
+        if (save != null && save.ress != null)
+        {
+            foreach (RessourceSaveData data in save.ress)
+            {
+                AddNewRessource(data.ressourceType, data.ressourcePos);
+            }
+        }
+    }
+
+    public string GetSaveID()
+    {
+        return "Ressources";
     }
 }
+
+

@@ -7,32 +7,29 @@ public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
     
-    string StatsPath => Application.persistentDataPath + "/AllData.json";
-    string TilemapPath => Application.persistentDataPath + "/tilemap.json";
-    string RessourcePath => Application.persistentDataPath + "/ressource.json";
-    string BlackBoardPath => Application.persistentDataPath + "/blackboard.json";
+    string SavePath => Application.persistentDataPath + "/savegame.json";
     
     public void Start()
     {
-        if (buttonLoad == null) return;
-        if (File.Exists(StatsPath) || File.Exists(TilemapPath) || File.Exists(RessourcePath) ||
-            File.Exists(BlackBoardPath))
+        if (File.Exists(SavePath))
         {
-            buttonLoad.interactable = true;
+            if (buttonLoad != null)
+            {
+                buttonLoad.interactable = true;
+            }
+            else
+            {
+                Debug.LogWarning("MenusScript: buttonLoad n'est pas assigné dans l'Inspecteur !");
+            }
         }
-    }
-
-    public static void Begin()
-    {
-        SceneManager.LoadScene("GameScene");
-        AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 
     public static void MainMenu()
     {
+        SceneManager.LoadScene("SaveTestMain");
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
         Time.timeScale = 1;
-        SceneManager.LoadScene("Main Menu");
-        AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
     }
 
     public static void Quit()
@@ -52,14 +49,28 @@ public class MenusScript : MonoBehaviour
     
     public void OnClickPlay()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
-        GameModeManager.Instance.saveManager.OnClickPlay();
+        SaveEvents.ShouldLoadOnStart = false;
+        SceneManager.LoadScene("GameSceneCOL");
+        
+        if (AudioManager.Instance != null) 
+            AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 
     public void OnClickLoad()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
-        GameModeManager.Instance.saveManager.LoadAll();
-        AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
+        if (!File.Exists(SavePath))
+        {
+            Debug.LogWarning("Fichier de sauvegarde introuvable !");
+            if (buttonLoad != null) buttonLoad.interactable = false;
+            return;
+        }
+
+        SaveEvents.ShouldLoadOnStart = true;
+        SceneManager.LoadScene("GameSceneCOL");
+
+        if (AudioManager.Instance != null) 
+            AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
+    
+    public void Save() { SaveEvents.OnRequestSaveEvent?.Invoke(); }
 }

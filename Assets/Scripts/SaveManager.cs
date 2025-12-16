@@ -1,143 +1,161 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System.IO;
 using System;
 using System.Collections;
-using UnityEngine.UI;
 
 [Serializable]
-public class AgentData
+public class SaveFileStructure
 {
-    public float hunger;
-    public int health;
-    public int maxHealth;
-    public Vector3 agentsPos;
+    public List<SystemSaveData> SystemsData = new();
 }
 
 [Serializable]
-public class GameData
+public class SystemSaveData
 {
-    public Vector3 cam;
-    public List<AgentData> agentData = new List<AgentData>();
+    public string ID;
+    public string JsonData;
 }
 
-[Serializable]
-public class TileSaveData
-{
-    public int x;
-    public int y;
-    public int tileId;
-}
-
-[Serializable]
-public class TilemapSave
-{
-    public List<TileSaveData> tiles = new List<TileSaveData>();
-}
-
-[Serializable]
-public class RessourceSave
-{
-    public List<RessourceSaveData> ress = new List<RessourceSaveData>();
-}
-
-[Serializable]
-public class RessourceSaveData
-{
-    public Vector3 ressourcePos;
-    public RessourceType ressourceType;
-}
-
-[Serializable]
-public class BlackboardSave
-{
-    public BlackBoard blackBoard;
-}
-
+[DefaultExecutionOrder(-10)] // Ensure SaveManager initializes early
 public class SaveManager : MonoBehaviour
 {
-    public static GameData loadedStats;
-    public static TilemapSave loadedTilemap;
-    public static RessourceSave loadedRessource;
-    public static BlackboardSave loadedBlackBoard;
+    private string SavePath => Application.persistentDataPath + "/savegame.json";
     
-    [Header("Palette commune pour la tilemap")]
-    public TileBase[] tilePalette;
+    private List<ISaveable> _saveables = new();
 
-    string StatsPath => Application.persistentDataPath + "/AllData.json";
-    string TilemapPath => Application.persistentDataPath + "/tilemap.json";
-    string RessourcePath => Application.persistentDataPath + "/ressource.json";
-    string BlackBoardPath => Application.persistentDataPath + "/blackboard.json";
-
-    public void OnClickPlay()
+    private IEnumerator Start()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Play;
-        SceneManager.LoadScene("GameScene");
+        yield return null;
+
+        if (SaveEvents.ShouldLoadOnStart)
+        {
+            LoadGame();
+            SaveEvents.ShouldLoadOnStart = false;
+        }
+        else
+        {
+            SaveEvents.OnNewGameStartEvent?.Invoke();
+        }
     }
 
-    public void LoadAll()
+    private void OnEnable()
     {
-        GameModeManager.Instance.currentMode = GameModeManager.GameMode.Load;
+        SaveEvents.OnRegisterSaveableEvent += Register;
+        SaveEvents.OnUnregisterSaveableEvent += Unregister;
+        SaveEvents.OnRequestSaveEvent += HandleRequestSave;
+    }
 
-        if (File.Exists(StatsPath))
+    private void OnDisable()
+    {
+        SaveEvents.OnRegisterSaveableEvent -= Register;
+        SaveEvents.OnUnregisterSaveableEvent -= Unregister;
+        SaveEvents.OnRequestSaveEvent -= HandleRequestSave;
+    }
+
+    private void Register(ISaveable saveable)
+    {
+        if (_saveables.Contains(saveable)) return;
+
+        // Ensure no duplicate IDs exist
+        string id = saveable.GetSaveID();
+        // Remove any existing saveable with same ID
+        for (int i = _saveables.Count - 1; i >= 0; i--)
         {
-            string json = File.ReadAllText(StatsPath);
-            loadedStats = JsonUtility.FromJson<GameData>(json);
-        }
-        else
-        {
-            loadedStats = null;
+            if (_saveables[i] == null || _saveables[i].Equals(null))
+            {
+                _saveables.RemoveAt(i);
+                continue;
+            }
+            
+            if (_saveables[i].GetSaveID() == id)
+            {
+                Debug.LogWarning($"SaveManager: Remplacement du système sauvegardable ID: '{id}'");
+                _saveables.RemoveAt(i);
+            }
         }
 
-        if (File.Exists(TilemapPath))
+        _saveables.Add(saveable);
+    }
+
+    private void Unregister(ISaveable saveable)
+    {
+        if (_saveables.Contains(saveable)) _saveables.Remove(saveable);
+    }
+
+    private void HandleRequestSave()
+    {
+        SaveGame();
+    }
+
+    public void SaveGame()
+    {
+        Debug.Log("Début de la sauvegarde...");
+        
+        SaveFileStructure globalSave = new SaveFileStructure();
+        
+        foreach (ISaveable saveable in _saveables)
         {
-            string json = File.ReadAllText(TilemapPath);
-            loadedTilemap = JsonUtility.FromJson<TilemapSave>(json);
-        }
-        else
-        {
-            loadedTilemap = null;
+            string id = saveable.GetSaveID();
+            string data = saveable.CaptureState();
+
+            if (!string.IsNullOrEmpty(data))
+            {
+                globalSave.SystemsData.Add(new SystemSaveData 
+                { 
+                    ID = id, 
+                    JsonData = data 
+                });
+            }
         }
         
-        if (File.Exists(RessourcePath))
-        {
-            string json = File.ReadAllText(RessourcePath);
-            loadedRessource = JsonUtility.FromJson<RessourceSave>(json);
-        }
-        else
-        {
-            loadedRessource = null;
-        }
-
-        if (File.Exists(BlackBoardPath))
-        {
-            string json = File.ReadAllText(BlackBoardPath);
-            loadedBlackBoard = JsonUtility.FromJson<BlackboardSave>(json);
-        }
-        else
-        {
-            loadedBlackBoard = null;
-        }
-
-        SceneManager.LoadScene("GameScene");
+        string finalJson = JsonUtility.ToJson(globalSave, true);
+        File.WriteAllText(SavePath, finalJson);
+        
+        Debug.Log($"Sauvegarde terminée avec succès ! ({globalSave.SystemsData.Count} systèmes sauvegardés)");
+        SaveEvents.OnSaveCompletedEvent?.Invoke();
     }
-
-    public static void SaveAll(GameData stats, TilemapSave tilemap, RessourceSave ressources, BlackboardSave blackboard)
+    
+    public void LoadGame()
     {
-        string statsPath = Application.persistentDataPath + "/AllData.json";
-        string tilePath  = Application.persistentDataPath + "/tilemap.json";
-        string ressourcePath  = Application.persistentDataPath + "/ressource.json";
-        string blackBoardPath  = Application.persistentDataPath + "/blackboard.json";
+        if (!File.Exists(SavePath))
+        {
+            Debug.LogWarning("Aucun fichier de sauvegarde trouvé.");
+            return;
+        }
 
-        File.WriteAllText(statsPath,  JsonUtility.ToJson(stats));
-        File.WriteAllText(tilePath,   JsonUtility.ToJson(tilemap));
-        File.WriteAllText(ressourcePath,   JsonUtility.ToJson(ressources));
-        File.WriteAllText(blackBoardPath,   JsonUtility.ToJson(blackboard));
+        Debug.Log("Chargement de la partie...");
+        
+        string json = File.ReadAllText(SavePath);
+        SaveFileStructure globalSave = JsonUtility.FromJson<SaveFileStructure>(json);
 
-        Debug.Log("Sauvegarde complète effectuée");
+        if (globalSave == null) return;
+        
+        Dictionary<string, string> dataMap = new Dictionary<string, string>();
+        foreach (SystemSaveData data in globalSave.SystemsData)
+        {
+            if (dataMap.ContainsKey(data.ID))
+            {
+                Debug.LogWarning($"SaveManager: ID dupliqué '{data.ID}' dans le fichier de sauvegarde. Ignoré.");
+                continue;
+            }
+            dataMap.Add(data.ID, data.JsonData);
+        }
+        
+        foreach (ISaveable saveable in _saveables)
+        {
+            string id = saveable.GetSaveID();
+            
+            if (dataMap.TryGetValue(id, out string systemJson))
+            {
+                saveable.RestoreState(systemJson);
+            }
+            else
+            {
+                Debug.LogWarning($"SaveManager: Pas de données trouvées pour le système '{id}'.");
+            }
+        }
+        
+        Debug.Log("Chargement terminé !");
     }
-    
-    
 }

@@ -2,42 +2,66 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class Colony : MonoBehaviour, IColony
+public class Colony : MonoBehaviour, I_Colony
 {
+    [Header("Core")]
     public int Id;
+    public float InfluenceRadius;
+
+    [Header("Population")]
     public int Inhabitants;
     public int MaxInhabitants;
-    public int BaseMaxInhabitants;
+    public int BaseMaxInhabitants; 
+    private readonly List<I_ColonyAgent> members = new();
+    public IReadOnlyList<I_ColonyAgent> Members => members;
+    public void AddMember(I_ColonyAgent _agent)
+    {
+        if (!members.Contains(_agent))
+        {
+            members.Add(_agent);
+            Inhabitants = members.Count;
+            if(BlackBoard != null) BlackBoard.AddValueOrModify("Habitant", Inhabitants);
+            _agent.SetCurrentColony(this);
+        }
+    }
+
+    public void RemoveMember(I_ColonyAgent _agent)
+    {
+        if (members.Contains(_agent))
+        {
+            members.Remove(_agent);
+            Inhabitants = members.Count;
+            if(BlackBoard != null) BlackBoard.AddValueOrModify("Habitant", Inhabitants);
+            _agent.SetCurrentColony(null);
+        }
+    }
     public List<GameObject> Buildings;
     [SerializeField] private GameObject buildParent;
-    public Dictionary<RessourceType, int> Resources;
-    public float InfluenceRadius;
-    private readonly List<IColonyAgent> _members = new List<IColonyAgent>();
-
-    public Storage storage { get; private set; }
-
+    public Storage storage {  get; private set; }
+    
     public BlackBoard BlackBoard { get; private set; }
+
+    [Header("Diplomacy")]
+    private Dictionary<int, ColonyRelation> diplomaticRelations = new();
 
     public int GetId() => Id;
     public Vector3 GetColonyCenter() => transform.position;
     public int GetInhabitants() => Inhabitants;
     public int GetMaxInhabitants() => MaxInhabitants;
-    public IReadOnlyList<IColonyAgent> GetMembers() => _members.AsReadOnly();
-
-    public List<IColonyAgent> Members => _members;
+    public IReadOnlyList<I_ColonyAgent> GetMembers() => members.AsReadOnly();
+    public float GetInfluenceRadius() => InfluenceRadius;
 
     public Transform GetBuildingParent() => buildParent.transform;
 
-    public static event Func<Vector3, Vector2Int> WorldToCellPos;
-    public static event Func<Vector2Int, Vector3> CellToWorld;
-    public static event Func<Vector2Int, Cell> GetCell;
+    public static Func<Vector3, Vector2Int> WorldToCellPos;
+    public static Func<Vector2Int, Vector3> CellToWorld;
+    public static Func<Vector2Int, Cell> GetCell;
 
     public void InitColony()
     {
         Buildings = new List<GameObject>();
-        Resources = new Dictionary<RessourceType, int>();
+        diplomaticRelations = new Dictionary<int, ColonyRelation>();
         BlackBoard = new BlackBoard();
         BaseMaxInhabitants = 5;
         MaxInhabitants = BaseMaxInhabitants;
@@ -48,7 +72,7 @@ public class Colony : MonoBehaviour, IColony
 
     public void DefineStorage(Storage _storage)
     {
-        if (storage != null) { return; }
+        if(storage != null) { return; }
 
         storage = _storage;
         BlackBoard.AddValueOrModify("StorageTransform", _storage.transform);
@@ -58,14 +82,6 @@ public class Colony : MonoBehaviour, IColony
     {
         MaxInhabitants += 2;
         BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
-    }
-
-    public void AddAgentToColony(IColonyAgent _newAgent)
-    {
-        _members.Add(_newAgent);
-        _newAgent.SetCurrentColony(this);
-        Inhabitants++;
-        BlackBoard.AddValueOrModify("Habitant", Inhabitants);
     }
 
     public void AddBuilding(GameObject b)
@@ -82,67 +98,15 @@ public class Colony : MonoBehaviour, IColony
         BlackBoard.AddValueOrModify("BuildingCount", Buildings.Count);
     }
 
-    public int GetAllBuildingOfType(BuildType _buildType)
+    public ColonyRelation GetRelationData(int _otherId)
     {
-        int count = 0;
-        foreach(GameObject building in Buildings)
+        if (!diplomaticRelations.ContainsKey(_otherId))
         {
-            if(building.GetComponent<Building>().Type == _buildType)
-            {
-                count++;
-            }
+            diplomaticRelations[_otherId] = new ColonyRelation();
         }
-
-        return count;
+        return diplomaticRelations[_otherId];
     }
 
-    public GameObject GetNearestBuilding(Vector3 position, BuildType typeFilter)
-    {
-        if (BuildingEvents.GetNearestBuilding != null)
-        {
-            Building b = BuildingEvents.GetNearestBuilding.Invoke(position);
-            return b != null ? b.gameObject : null;
-        }
-        return null;
-    }
-
-    public Vector3? GetValidBuildingPosition()
-    {
-        for (int i = 0; i < 100; i++)
-        {
-            // Pick a random point
-            Vector2 randomPoint = Random.insideUnitCircle * InfluenceRadius;
-            Vector3 candidatePos = GetColonyCenter() + (Vector3)randomPoint;
-
-            // Align to grid
-            Vector2Int cellPos = WorldToCellPos.Invoke(candidatePos);
-            Vector3 alignedPos = CellToWorld.Invoke(cellPos);
-
-            // Check if walkable
-            Cell cell = GetCell.Invoke(cellPos);
-            if (cell == null || !cell.isWalkable) continue;
-
-            // Check if occupied by another building
-            if (BuildingEvents.GetNearestBuilding != null)
-            {
-                Building nearest = BuildingEvents.GetNearestBuilding.Invoke(alignedPos);
-                if (nearest != null)
-                {
-                    // If a building is too close consider it occupied
-                    if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            return alignedPos;
-        }
-
-        return null;
-    }
-
-#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.darkRed;
@@ -152,5 +116,4 @@ public class Colony : MonoBehaviour, IColony
         style.normal.textColor = Color.darkRed;
         Handles.Label(transform.position + Vector3.up * (InfluenceRadius + 0.5f), $"Colony {Id}, Pop : {Inhabitants} / {MaxInhabitants}", style);
     }
-#endif
 }
