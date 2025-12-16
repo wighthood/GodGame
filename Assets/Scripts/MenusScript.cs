@@ -26,7 +26,7 @@ public class MenusScript : MonoBehaviour
 
     public static void MainMenu()
     {
-        SceneManager.LoadScene("SaveTestMain");
+        SceneManager.LoadScene("Main Menu");
         if (AudioManager.Instance != null)
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_Menu);
         Time.timeScale = 1;
@@ -50,7 +50,7 @@ public class MenusScript : MonoBehaviour
     public void OnClickPlay()
     {
         SaveEvents.ShouldLoadOnStart = false;
-        SceneManager.LoadScene("GameSceneCOL");
+        SceneManager.LoadScene("GameScene");
         
         if (AudioManager.Instance != null) 
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
@@ -66,7 +66,7 @@ public class MenusScript : MonoBehaviour
         }
 
         SaveEvents.ShouldLoadOnStart = true;
-        SceneManager.LoadScene("GameSceneCOL");
+        SceneManager.LoadScene("GameScene");
 
         if (AudioManager.Instance != null) 
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
