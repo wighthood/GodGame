@@ -11,4 +11,5 @@ public static class BuildingEvents
     public static Action OnBuildingsChangedEvent;
 
     public static Func<Vector3, I_Colony, Vector3?> OnGetBuildPositionEvent;
+    public static Func<BuildType, Colony, int> OnGetBuildingCountOfTypeEvent;
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 public class MapBuildingManager : MonoBehaviour, ISaveable
 {
     private List<Building> buildings = new ();
-    public List<Building> GetAllBuildings() => new(buildings);
 
     [SerializeField] private List<GameObject> building = new();
 
@@ -27,6 +26,7 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
         BuildingEvents.OnSpawnRequestedEvent += SpawnRequested;
         BuildingEvents.OnGetNearestBuildingEvent = HandleGetNearestBuilding;
         BuildingEvents.OnGetBuildPositionEvent += GetValidBuildingPosition;
+        BuildingEvents.OnGetBuildingCountOfTypeEvent += GetBuildingCountOfType;
     }
 
     void OnDestroy()
@@ -35,6 +35,7 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
         if (BuildingEvents.OnGetNearestBuildingEvent == HandleGetNearestBuilding)
             BuildingEvents.OnGetNearestBuildingEvent = null;
         BuildingEvents.OnGetBuildPositionEvent -= GetValidBuildingPosition;
+        BuildingEvents.OnGetBuildingCountOfTypeEvent -= GetBuildingCountOfType;
     }
 
     private Vector3? GetValidBuildingPosition(Vector3 _searchCenter, I_Colony _colony)
@@ -46,11 +47,11 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
             // Pick a random point
             Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * _colony.GetInfluenceRadius();
             
-            Vector3 offset = new Vector3(randomPoint.x, 0f, randomPoint.y);
+            Vector3 offset = new Vector3(randomPoint.x, randomPoint.y, 0f);
             
             Vector3 candidatePos = _colony.GetColonyCenter() + offset;
 
-            // Align to grid (Assuming we have access to these static events or utils)
+            // Align to grid
             Vector2Int cellPos = Colony.WorldToCellPos.Invoke(candidatePos);
             Vector3 alignedPos = Colony.CellToWorld.Invoke(cellPos);
 
@@ -58,19 +59,33 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
             Cell cell = Colony.GetCell.Invoke(cellPos);
             if (cell == null || !cell.isWalkable) continue;
 
-            // Check if occupied by another building using internal spatial methods
+            // Check if occupied by another building
             Building nearest = HandleGetNearestBuilding(alignedPos);
             if (nearest != null)
             {
-               if (Vector3.Distance(nearest.transform.position, alignedPos) < 1.0f)
-               {
-                   continue;
-               }
+                if (Vector2.Distance(nearest.transform.position, alignedPos) < 1.0f)
+                {
+                    continue;
+                }
             }
 
             return alignedPos;
         }
         return null;
+    }
+
+    private int GetBuildingCountOfType(BuildType _type, Colony _colony)
+    {
+        if (_colony == null) return 0;
+        int count = 0;
+        foreach (var b in buildings)
+        {
+            if (b != null && b.Type == _type && b.Owner == _colony)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void SpawnRequested(BuildType _type, Vector3 _position, Colony _owner)
@@ -127,15 +142,9 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
 
     // Spatial Hashing Logic
 
-    private long GetCellKey(Vector3 _pos)
+    private long GetCellKey(Vector3 pos)
     {
-
-        // int x = Mathf.FloorToInt(_pos.x / _cellSize);
-        // int z = Mathf.FloorToInt(_pos.z / _cellSize);
-        // return ((long)x << 32) ^ (uint)z;
-
         int x = Mathf.FloorToInt(pos.x / _cellSize);
-        // CORRECTION : On utilise .y au lieu de .z
         int y = Mathf.FloorToInt(pos.y / _cellSize); 
     
         return ((long)x << 32) ^ (uint)y;
@@ -234,7 +243,7 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
 
     public void RestoreState(string _state)
     {
-        foreach (var b in buildings)
+        foreach (Building b in buildings)
         {
             if (b != null && b.gameObject != null) Destroy(b.gameObject);
         }
@@ -246,7 +255,7 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
         MapBuildingSystemSaveData data = JsonUtility.FromJson<MapBuildingSystemSaveData>(_state);
         if (data == null) return;
         
-        foreach (var bData in data.buildings)
+        foreach (BuildingSaveData bData in data.buildings)
         {
             Colony owner = null;
             if (bData.ownerColonyId != -1)
