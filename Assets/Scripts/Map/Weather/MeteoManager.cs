@@ -11,7 +11,8 @@ public class MeteoManager : MonoBehaviour
 
     private void Awake()
     {
-        GameSceneController.SetWeather += MeteoChange;
+        GameSceneController.SetWeather += LoadWeather;
+        GameSceneController.getRemainingTime += GetRemainingWeatherTime;
     }
 
     void Start()
@@ -21,7 +22,8 @@ public class MeteoManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameSceneController.SetWeather -= MeteoChange;
+        GameSceneController.SetWeather -= LoadWeather;
+        GameSceneController.getRemainingTime -= GetRemainingWeatherTime;
     }
 
     private void Update()
@@ -46,6 +48,17 @@ public class MeteoManager : MonoBehaviour
     public void MeteoChange(WeatherState state)
     {
         OnWeatherChanged.Invoke(state);
+    }
+
+    public void LoadWeather(WeatherState _state, float _remainingTime)
+    {
+        timerWeather = _remainingTime;
+        MeteoChange(_state);
+    }
+
+    private float GetRemainingWeatherTime()
+    {
+        return timerWeather;
     }
 
     private void WeatherTime()

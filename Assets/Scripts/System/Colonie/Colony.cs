@@ -41,7 +41,6 @@ public class Colony : MonoBehaviour, IColony
         BaseMaxInhabitants = 5;
         MaxInhabitants = BaseMaxInhabitants;
         BlackBoard.AddValueOrModify("MaxHabitant", MaxInhabitants);
-        BlackBoard.AddValue("HasStorage", false);
         BlackBoard.AddValue("StorageTransform", null);
     }
 

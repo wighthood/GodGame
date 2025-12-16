@@ -10,7 +10,8 @@ public class TaskBuildStorage : TaskBuildHouse
             return 0;
         }
 
-        bool shouldBuildOne = manager.colonieBlackboard.GetValue<bool>("HasStorage");
+        Colony colony = (Colony)(manager.GetComponent<ColonyAgent>().GetCurrentColony());
+        bool shouldBuildOne = !colony.storage;
 
         return shouldBuildOne == true ? 0 : 1;
     }

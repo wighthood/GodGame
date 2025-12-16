@@ -32,7 +32,8 @@ public class GameSceneController : MonoBehaviour
     public static event Action<Vector3, List<ColonyAgent>> spawnColony;
     public static event Func<int, Colony> getColony;
     public static event Func<WeatherState> GetWeather;
-    public static event Action<WeatherState> SetWeather;
+    public static event Func<float> getRemainingTime;
+    public static event Action<WeatherState, float> SetWeather;
 
     void Start()
     {
@@ -62,7 +63,7 @@ public class GameSceneController : MonoBehaviour
             ressources = SaveRessourceData(),
             colonies = SaveColonies(),
             noColonyAgents = SaveAgentsWithoutColony(),
-            weatherState = GetCurrentWeather()
+            weather = GetCurrentWeather()
         };
     }
 
@@ -73,7 +74,7 @@ public class GameSceneController : MonoBehaviour
         LoadRessource(_data.ressources);
         LoadColonies(_data.colonies);
         LoadAgentsWithoutColonies(_data.noColonyAgents);
-        LoadWeather(_data.weatherState);
+        LoadWeather(_data.weather);
     }
 
     #region Colonies
@@ -93,7 +94,6 @@ public class GameSceneController : MonoBehaviour
                 colonyPos = colonyTransform.position,
                 buildings = SaveColonyBuilding(currentColony),
                 agentData = SaveAgentOfColony(currentColony),
-                colonyBlackBoard = currentColony.BlackBoard
             });
         }
 
@@ -158,7 +158,6 @@ public class GameSceneController : MonoBehaviour
                 hunger = aiStats.hunger,
                 health = aiStats.health,
                 maxHealth = aiStats.maxHealth,
-                agentBlackBoard = agent.GetComponent<TaskManager>().agentBlackboard,
             });
         }
 
@@ -182,7 +181,6 @@ public class GameSceneController : MonoBehaviour
                 hunger = stats.hunger,
                 health = stats.health,
                 maxHealth = stats.maxHealth,
-                agentBlackBoard = blackboard
             });
         }
 
@@ -199,7 +197,6 @@ public class GameSceneController : MonoBehaviour
             aiStats.hunger = agentData.hunger;
             aiStats.health = agentData.health;
             aiStats.maxHealth = agentData.maxHealth;
-            agent.GetComponent<TaskManager>().LoadBlackboard(agentData.agentBlackBoard);
         }
     }
 
@@ -214,8 +211,6 @@ public class GameSceneController : MonoBehaviour
             aiStats.hunger = agentData.hunger;
             aiStats.health = agentData.health;
             aiStats.maxHealth = agentData.maxHealth;
-            agent.GetComponent<TaskManager>().LoadBlackboard(agentData.agentBlackBoard);
-            agent.GetComponent<TaskManager>().LoadColonyBlackboard(_colonyData.colonyBlackBoard);
             agents.Add(agent.GetComponent<ColonyAgent>());
         }
 
@@ -320,15 +315,18 @@ public class GameSceneController : MonoBehaviour
     #region Weather
 
     //save
-    private int GetCurrentWeather()
+    private WeatherData GetCurrentWeather()
     {
-        return (int)GetWeather.Invoke();
+        return new WeatherData{
+            weatherState = (int)GetWeather.Invoke(),
+            weatherTime = getRemainingTime.Invoke(),
+        };
     }
 
     //load
-    private void LoadWeather(int _weatherState)
+    private void LoadWeather(WeatherData _weatherState)
     {
-        SetWeather.Invoke((WeatherState)_weatherState);
+        SetWeather.Invoke((WeatherState)_weatherState.weatherState, _weatherState.weatherTime);
     }
 
     #endregion

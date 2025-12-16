@@ -18,17 +18,22 @@ public class MeteoEffect : MonoBehaviour
 
     private void Awake()
     {
-        MeteoManager.OnWeatherChanged += OnMeteoChange;
+        MeteoManager.OnWeatherChanged += LoadWeather;
         GameSceneController.GetWeather += GetState;
         if (!particuleSystem)
             particuleSystem = fog.GetComponent<ParticleSystem>();
     }
 
-    private void OnMeteoChange(WeatherState currentState)
+    private void LoadWeather(WeatherState _currentState)
+    {
+        OnMeteoChange(_currentState);
+    }
+
+    private void OnMeteoChange(WeatherState _currentState)
     {
         EndWeather();
         
-        switch (currentState)
+        switch (_currentState)
         {
             case WeatherState.Sunny:
                 Debug.Log("Sunny");
@@ -68,7 +73,7 @@ public class MeteoEffect : MonoBehaviour
                 mainLight.intensity = 1f;
                 break;*/
         }
-        oldState = currentState;
+        oldState = _currentState;
     }
 
     private void EndWeather()
@@ -122,7 +127,7 @@ public class MeteoEffect : MonoBehaviour
     private void OnDestroy()
     {
         StopAllCoroutines();
-        MeteoManager.OnWeatherChanged -= OnMeteoChange;
+        MeteoManager.OnWeatherChanged -= LoadWeather;
         GameSceneController.GetWeather -= GetState;
     }
 

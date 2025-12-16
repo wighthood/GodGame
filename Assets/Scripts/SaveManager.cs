@@ -12,7 +12,14 @@ public class GameData
     public RessourceSave ressources;
     public List<ColonySaveData> colonies;
     public List<AgentData> noColonyAgents;
+    public WeatherData weather;
+}
+
+[Serializable]
+public class WeatherData
+{
     public int weatherState;
+    public float weatherTime;
 }
 
 [Serializable]
@@ -22,7 +29,6 @@ public class AgentData
     public float hunger;
     public int health;
     public int maxHealth;
-    public BlackBoard agentBlackBoard;
 }
 
 [Serializable]
@@ -58,7 +64,6 @@ public class ColonySaveData
     public Vector3 colonyPos;
     public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
     public List<AgentData> agentData = new List<AgentData>();
-    public BlackBoard colonyBlackBoard;
 }
 
 [Serializable]
