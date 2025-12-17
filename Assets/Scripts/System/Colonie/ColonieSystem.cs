@@ -158,7 +158,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         foreach (Colony col in colonies)
         {
             if (col == null) continue;
-            if (col.Inhabitants >= col.MaxInhabitants) continue;
+            //if (col.Inhabitants >= col.MaxInhabitants) continue;
             if (col.ColonySpecies != _agent.GetSpecies()) continue;
 
             float d = Vector3.Distance(col.GetColonyCenter(), pos);
