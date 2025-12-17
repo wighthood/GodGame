@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 8ee6e763672f38f419b5c79ee4308490
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2197871538097434040
+    second: TYPO_LOGO_TYPE_0
+  - first:
+      213: 3009278274570532551
+    second: TYPO_LOGO_TYPE_1
+  - first:
+      213: 2334205935549640374
+    second: TYPO_LOGO_TYPE_2
+  - first:
+      213: 8617011167818989267
+    second: TYPO_LOGO_TYPE_3
+  - first:
+      213: 1189774254375914350
+    second: TYPO_LOGO_TYPE_4
+  - first:
+      213: 599202045691296608
+    second: TYPO_LOGO_TYPE_5
+  - first:
+      213: 7135901709341825894
+    second: TYPO_LOGO_TYPE_6
+  - first:
+      213: 2655902454024262985
+    second: TYPO_LOGO_TYPE_7
+  - first:
+      213: -5495440918514799980
+    second: TYPO_LOGO_TYPE_8
+  - first:
+      213: -1399898272835311558
+    second: TYPO_LOGO_TYPE_9
+  - first:
+      213: 1655239060469358509
+    second: TYPO_LOGO_TYPE_10
+  - first:
+      213: -2069138698317841007
+    second: TYPO_LOGO_TYPE_11
+  - first:
+      213: 7908342122815335240
+    second: TYPO_LOGO_TYPE_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 21
+        width: 212
+        height: 373
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bd2d32e488608e10800000000000000
+      internalID: 2197871538097434040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_1
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 64
+        width: 119
+        height: 265
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c6b31a95aa13c920800000000000000
+      internalID: 3009278274570532551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_2
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 93
+        width: 108
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6be6b056ee3c46020800000000000000
+      internalID: 2334205935549640374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_3
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 94
+        width: 102
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3debc639006c59770800000000000000
+      internalID: 8617011167818989267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_4
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 90
+        width: 312
+        height: 161
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6b4bf2716de28010800000000000000
+      internalID: 1189774254375914350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_5
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 77
+        width: 407
+        height: 317
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06bfd1af51bc05800800000000000000
+      internalID: 599202045691296608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_6
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 94
+        width: 86
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66b1c690cc0d70360800000000000000
+      internalID: 7135901709341825894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_7
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 61
+        width: 118
+        height: 265
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 945543ad539abd420800000000000000
+      internalID: 2655902454024262985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_8
+      rect:
+        serializedVersion: 2
+        x: 1393
+        y: 73
+        width: 289
+        height: 347
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49a67c7c9954cb3b0800000000000000
+      internalID: -5495440918514799980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_9
+      rect:
+        serializedVersion: 2
+        x: 1684
+        y: 93
+        width: 222
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a38e7f510ff829ce0800000000000000
+      internalID: -1399898272835311558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_10
+      rect:
+        serializedVersion: 2
+        x: 1902
+        y: 92
+        width: 101
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: daf90a9d72798f610800000000000000
+      internalID: 1655239060469358509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_11
+      rect:
+        serializedVersion: 2
+        x: 2008
+        y: 91
+        width: 110
+        height: 159
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19d30cf0151f843e0800000000000000
+      internalID: -2069138698317841007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TYPO_LOGO_TYPE_12
+      rect:
+        serializedVersion: 2
+        x: 2104
+        y: 90
+        width: 151
+        height: 159
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84baaa0b24310cd60800000000000000
+      internalID: 7908342122815335240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TYPO_LOGO_TYPE_0: 2197871538097434040
+      TYPO_LOGO_TYPE_1: 3009278274570532551
+      TYPO_LOGO_TYPE_10: 1655239060469358509
+      TYPO_LOGO_TYPE_11: -2069138698317841007
+      TYPO_LOGO_TYPE_12: 7908342122815335240
+      TYPO_LOGO_TYPE_2: 2334205935549640374
+      TYPO_LOGO_TYPE_3: 8617011167818989267
+      TYPO_LOGO_TYPE_4: 1189774254375914350
+      TYPO_LOGO_TYPE_5: 599202045691296608
+      TYPO_LOGO_TYPE_6: 7135901709341825894
+      TYPO_LOGO_TYPE_7: 2655902454024262985
+      TYPO_LOGO_TYPE_8: -5495440918514799980
+      TYPO_LOGO_TYPE_9: -1399898272835311558
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

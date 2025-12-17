@@ -9,6 +9,7 @@ public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
     public TextMeshProUGUI text;
+    public TextMeshProUGUI textLoad;
     
     string SavePath => Application.persistentDataPath + "/savegame.json";
     
@@ -19,6 +20,8 @@ public class MenusScript : MonoBehaviour
             if (buttonLoad != null)
             {
                 buttonLoad.interactable = true;
+                buttonLoad.image.color = new Color(1, 1, 1, 1);
+                textLoad.color = new Color(0, 0, 0, 1);
             }
             else
             {
