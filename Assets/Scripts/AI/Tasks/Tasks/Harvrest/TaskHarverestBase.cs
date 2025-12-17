@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public abstract class TaskHarverestBase : TaskBase
 {
@@ -50,7 +49,7 @@ public abstract class TaskHarverestBase : TaskBase
         }
         else
         {
-            if (targetRessource == null || (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f && !IsNextToRessource()))
+            if (targetRessource == null)
             {
                 GetNearestIfExiste();
                 if (targetRessource == null)
@@ -58,16 +57,27 @@ public abstract class TaskHarverestBase : TaskBase
                     return true;
                 }
             }
-            else if (IsNextToRessource())
+            else if (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
             {
-                actions.Harvrest(ressource);
+                if (IsNextToRessource())
+                {
+                    actions.Harvrest(ressource);
+                }
+                else
+                {
+                    GetNearestIfExiste();
+                    if (targetRessource == null)
+                    {
+                        return true;
+                    }
+                }
             }
             else
             {
                 path = actions.GetPath();
                 actions.MoveTo((Vector3)targetRessource);
 
-                if(path ==  null)
+                if (path == null)
                 {
                     GetNearestIfExiste();
                 }
@@ -105,8 +115,11 @@ public abstract class TaskHarverestBase : TaskBase
     {
         base.DrawActionsGizmo();
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+        if(targetRessource != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+        }
 
         if (path == null || path.Count == 0)
             return;

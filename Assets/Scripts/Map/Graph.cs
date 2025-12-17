@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -43,7 +42,10 @@ public class Graph : MonoBehaviour
         Colony.GetCell += GetCell;
         AgentActions.GetRessources += GetNearestRessouceLocation;
         MapRessourceManager.ChangeCellRessourceInfos += SetCellRessource;
+    }
 
+    private void Start()
+    {
         tilemap = GetComponent<Tilemap>();
     }
 
@@ -56,6 +58,7 @@ public class Graph : MonoBehaviour
     {
         graph = new List<Cell>();
         graphDict = new Dictionary<Vector2Int, Cell>();
+        print("reset graph");
 
         foreach (Vector3Int pos in tilemap.cellBounds.allPositionsWithin)
         {
@@ -118,7 +121,7 @@ public class Graph : MonoBehaviour
 
         int security = 0;
 
-        while(open.Count > 0 && security < 1000)
+        while(open.Count > 0 && security < 10000)
         {
             Cell current = open.Dequeue();
             current.inClosedSet = true;
