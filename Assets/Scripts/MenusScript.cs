@@ -17,7 +17,7 @@ public class MenusScript : MonoBehaviour
     {
         if (File.Exists(SavePath))
         {
-            if (buttonLoad != null)
+            if (buttonLoad != null && textLoad != null)
             {
                 buttonLoad.interactable = true;
                 buttonLoad.image.color = new Color(1, 1, 1, 1);
