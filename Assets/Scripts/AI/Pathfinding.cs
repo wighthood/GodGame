@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class PathFinding
@@ -10,17 +9,7 @@ public class PathFinding
 
     private int pathIndex = 0;
 
-    private Vector2Int[] directions =
-    {
-        Vector2Int.up,
-        Vector2Int.right,
-        Vector2Int.left,
-        Vector2Int.down,
-        new(1, 1),
-        new(1, -1),
-        new(-1, 1),
-        new(-1, -1),
-    };
+    
 
     public static event Func<Vector2Int, Cell> GetCell;
     public static event Func<Vector3, Cell> GetCellFromWorldPos;
@@ -30,7 +19,7 @@ public class PathFinding
     {
         tempNeighbors.Clear();
 
-        foreach (Vector2Int d in directions)
+        foreach (Vector2Int d in Graph.directions)
         {
             Cell c = GetCell?.Invoke(cell.position + d);
             if (c != null && c.isWalkable)
@@ -143,6 +132,7 @@ public class Cell
     public bool isWalkable;
     public Cell parent;
     public bool inClosedSet;
+    public byte Ressources;
 
     public Cell(int x, int y, bool walkable)
     {

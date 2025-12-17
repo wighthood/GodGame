@@ -14,22 +14,50 @@ public class PlayerControl : MonoBehaviour, ISaveable
     [SerializeField] private Vector2 cameraLimit;
 
     public WorldGeneration worldGeneration;
-    
+
     private Vector2 _direction;
 
     float oldCameraZoom;
+
+    private Vector3 _origin;
+    private Vector3 _difference;
+    private Camera _maincamera;
+    private bool _isDragging;
+
+    private Vector3 GetMousePosition => _maincamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
+    private void Awake()
+    {
+        _maincamera = Camera.main;
+    }
+
+    public void OnDrag(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started) _origin = GetMousePosition;
+        _isDragging = ctx.started || ctx.performed;
+    }
+
+    private void LateUpdate()
+    {
+        if (!_isDragging) return;
+
+        _difference = GetMousePosition - transform.position;
+        transform.position = _origin - _difference;
+        CameraLimit();
+    }
+
 
     public void Move(InputAction.CallbackContext context)
     {
         _direction = context.ReadValue<Vector2>();
     }
-    
+
     public void Zoom(InputAction.CallbackContext context)
     {
         if (Camera.main != null && Time.timeScale > 0f)
         {
-           Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>()*zoomSpeed, maxZoom, minZoom);
-        }       
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>() * zoomSpeed, maxZoom, minZoom);
+        }
     }
 
     public void Pause(InputAction.CallbackContext context)
@@ -72,25 +100,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private void Update()
     {
         transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
-
-        Vector3 pos = transform.position;
-
-            float halfHeight = Camera.main.orthographicSize;
-            float halfWidth = halfHeight * Camera.main.aspect;
-
-            if (pos.x > cameraLimit.x - halfWidth)
-                pos.x = cameraLimit.x - halfWidth;
-
-            if (pos.x < -cameraLimit.x + halfWidth)
-                pos.x = -cameraLimit.x + halfWidth;
-
-            if (pos.y > cameraLimit.y - halfHeight)
-                pos.y = cameraLimit.y - halfHeight;
-
-            if (pos.y < -cameraLimit.y + halfHeight)
-                pos.y = -cameraLimit.y + halfHeight;
-
-        transform.position = pos;       
+        CameraLimit();
     }
 
     private void OnEnable()
@@ -120,7 +130,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
         {
             data.zoom = 5f; // verification default
         }
-        
+
         return JsonUtility.ToJson(data);
     }
 
@@ -136,5 +146,27 @@ public class PlayerControl : MonoBehaviour, ISaveable
         {
             Camera.main.orthographicSize = data.zoom;
         }
+    }
+
+    private void CameraLimit()
+    {
+        Vector3 pos = transform.position;
+
+        float halfHeight = Camera.main.orthographicSize;
+        float halfWidth = halfHeight * Camera.main.aspect;
+
+        if (pos.x > cameraLimit.x - halfWidth)
+            pos.x = cameraLimit.x - halfWidth;
+
+        if (pos.x < -cameraLimit.x + halfWidth)
+            pos.x = -cameraLimit.x + halfWidth;
+
+        if (pos.y > cameraLimit.y - halfHeight)
+            pos.y = cameraLimit.y - halfHeight;
+
+        if (pos.y < -cameraLimit.y + halfHeight)
+            pos.y = -cameraLimit.y + halfHeight;
+
+        transform.position = pos;
     }
 }

@@ -57,8 +57,8 @@ public class WorldGeneration : MonoBehaviour
     private void GenerateWorld()
     {
         MapGeneration();
-        RessourcesGeneration();
         OnInitGraphEvent?.Invoke();
+        RessourcesGeneration();
         SpawnAgent();
     }
 
