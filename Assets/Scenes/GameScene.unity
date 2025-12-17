@@ -7292,7 +7292,7 @@ MonoBehaviour:
   ressourceBar: {fileID: 1383390402}
   weatherBar: {fileID: 686465776}
   entityBar: {fileID: 792017356}
-  AgentParent: {fileID: 0}
+  AgentParent: {fileID: 188331454}
 --- !u!114 &1444767201
 MonoBehaviour:
   m_ObjectHideFlags: 0
