@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Colony : MonoBehaviour, I_Colony
@@ -8,6 +7,7 @@ public class Colony : MonoBehaviour, I_Colony
     [Header("Core")]
     public int Id;
     public float InfluenceRadius;
+    public SpeciesType ColonySpecies;
 
     [Header("Population")]
     public int Inhabitants;
@@ -44,6 +44,7 @@ public class Colony : MonoBehaviour, I_Colony
 
     [Header("Diplomacy")]
     private Dictionary<int, ColonyRelation> diplomaticRelations = new();
+    public Dictionary<int, ColonyRelation> DiplomaticRelations => diplomaticRelations;
 
     public int GetId() => Id;
     public Vector3 GetColonyCenter() => transform.position;

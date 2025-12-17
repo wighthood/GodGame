@@ -5,13 +5,19 @@ using System.Collections;
 using UnityEditor;
 #endif
 
+public enum SpeciesType
+{
+    Pimu,
+    EvilPimu
+}
+
 [DisallowMultipleComponent]
 public class ColonyAgent : MonoBehaviour, I_ColonyAgent
 {
     [Header("Settings")]
     public bool autoRegister = true;
     public bool canFormColony = true;
-    public string species = "Pimu";
+    public SpeciesType speciesType = SpeciesType.Pimu;
 
     [Header("Optimization Settings")]
     public float positionUpdateInterval = 0.5f;
@@ -88,7 +94,7 @@ public class ColonyAgent : MonoBehaviour, I_ColonyAgent
         RegisterAgent();
     }
 
-    public string GetSpecies() => species ?? string.Empty;
+    public SpeciesType GetSpecies() => speciesType;
     public bool CanFormColony() => canFormColony;
 
     private I_Colony _currentColony;

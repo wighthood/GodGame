@@ -54,4 +54,19 @@ public class Storage : MonoBehaviour
 
         return null;
     }
+    public List<RessourceCollection> GetStockedResources()
+    {
+        return new List<RessourceCollection>(ressourcesStocked);
+    }
+
+    public void ClearAndSetResources(List<InventoryItemData> items)
+    {
+        ressourcesStocked.Clear();
+        if (items == null) return;
+
+        foreach (InventoryItemData item in items)
+        {
+            AddRessources((RessourceType)item.type, (uint)item.amount);
+        }
+    }
 }

@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+
+[System.Serializable]
+public struct AgentTypeEntry
+{
+    public SpeciesType species;
+    public GameObject prefab;
+}
+
 public class ColonieSystem : MonoBehaviour, ISaveable
 {
     [Header("Conditions de création")]
@@ -17,11 +26,11 @@ public class ColonieSystem : MonoBehaviour, ISaveable
     public float scanInterval = 1f;
 
     [SerializeField] private GameObject colonyPrefab;
-    [SerializeField] private GameObject pimuPrefab;
+    [SerializeField] private List<AgentTypeEntry> agentTypes = new();
     [SerializeField] private Transform agentParent;
 
-    public Action<I_Colony> OnColonyCreatedEvent;
-    public Action<I_Colony> OnColonyDissolvedEvent;
+    public static Action<I_Colony> OnColonyCreatedEvent;
+    public static Action<I_Colony> OnColonyDissolvedEvent;
     public Action<I_Colony, I_ColonyAgent> OnMemberJoinedEvent;
     public Action<I_Colony, I_ColonyAgent> OnMemberLeftEvent;
     
@@ -29,6 +38,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
     private List<Colony> colonies = new();
     private Dictionary<I_ColonyAgent, Colony> assignment = new();
+    private Dictionary<SpeciesType, GameObject> agentPrefabs = new();
     
     private HashSet<I_ColonyAgent> knownAgents = new HashSet<I_ColonyAgent>();
 
@@ -37,6 +47,16 @@ public class ColonieSystem : MonoBehaviour, ISaveable
     void Awake()
     {
         BuildingEvents.OnBuildingSpawnedEvent += BuildingSpawned;
+        
+        // Init Dictionary
+        agentPrefabs.Clear();
+        foreach (AgentTypeEntry entry in agentTypes)
+        {
+            if (entry.prefab != null && !agentPrefabs.ContainsKey(entry.species))
+            {
+                agentPrefabs.Add(entry.species, entry.prefab);
+            }
+        }
     }
 
     void OnEnable()
@@ -139,6 +159,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         {
             if (col == null) continue;
             if (col.Inhabitants >= col.MaxInhabitants) continue;
+            if (col.ColonySpecies != _agent.GetSpecies()) continue;
 
             float d = Vector3.Distance(col.GetColonyCenter(), pos);
             if (d <= col.InfluenceRadius && d < bestDist)
@@ -185,7 +206,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         int rawCount = neighbors.Count;
         
         neighbors = neighbors
-            .Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), _candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
+            .Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && g.GetSpecies() == _candidate.GetSpecies())
             .ToList();
 
         if (!neighbors.Contains(_candidate)) neighbors.Add(_candidate);
@@ -202,7 +223,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
              if (group != null)
              {
-                 group = group.Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), _candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase)).ToList();
+                 group = group.Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && g.GetSpecies() == _candidate.GetSpecies()).ToList();
 
                  if (group.Count >= requiredPimusToCreate)
                  {
@@ -221,6 +242,11 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         colony.Id = nextColonyId++;
 
         colony.name = $"Colony {colony.Id}";
+
+        if (_members.Count > 0 && _members[0] != null)
+        {
+            colony.ColonySpecies = _members[0].GetSpecies();
+        }
 
         foreach (I_ColonyAgent m in _members)
         {
@@ -242,19 +268,6 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         OnColonyCreatedEvent?.Invoke(colony);
     }
 
-
-    public I_Colony GetColonyForAgent(I_ColonyAgent _agent)
-    {
-        if (_agent == null) return null;
-        if (assignment.TryGetValue(_agent, out Colony col)) return col;
-        return null;
-    }
-
-    public List<I_Colony> GetAllColonies()
-    {
-        return colonies.Cast<I_Colony>().ToList();
-    }
-
     private void RemoveAgentFromColony(I_ColonyAgent _agent, Colony _colony)
     {
         if (_agent == null || _colony == null) return;
@@ -266,8 +279,6 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         OnMemberLeftEvent?.Invoke(_colony, _agent);
     }
 
-    // --- ISaveable Implementation ---
-
     public string GetSaveID()
     {
         return "ColonieSystem";
@@ -278,7 +289,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
         ColonySystemSaveData systemData = new ColonySystemSaveData();
         systemData.nextColonyId = nextColonyId;
 
-        foreach (var col in colonies)
+        foreach (Colony col in colonies)
         {
             if (col == null) continue;
 
@@ -288,12 +299,13 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             colData.position = col.transform.position;
             colData.influenceRadius = col.InfluenceRadius;
             colData.maxPop = col.MaxInhabitants;
+            colData.species = col.ColonySpecies.ToString();
 
             // Blackboard Export
             if (col.BlackBoard != null)
             {
-                var bbValues = col.BlackBoard.BbValues();
-                foreach (var kvp in bbValues)
+                Dictionary<string, object> bbValues = col.BlackBoard.BbValues();
+                foreach (KeyValuePair<string, object> kvp in bbValues)
                 {
                     BlackboardEntry entry = new BlackboardEntry { key = kvp.Key };
                     if (kvp.Value is int iVal) { entry.type = "int"; entry.intVal = iVal; }
@@ -306,17 +318,17 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             }
 
             // Agents
-            foreach (var member in col.Members)
+            foreach (I_ColonyAgent member in col.Members)
             {
                 if (member == null) continue;
                 MonoBehaviour memberMono = member as MonoBehaviour;
                 if (memberMono == null) continue;
 
                 AgentSaveData agentData = new AgentSaveData();
-                agentData.species = member.GetSpecies();
+                agentData.species = member.GetSpecies().ToString();
                 agentData.position = memberMono.transform.position;
 
-                var stats = memberMono.GetComponent<AIStats>();
+                AIStats stats = memberMono.GetComponent<AIStats>();
                 if (stats != null)
                 {
                     agentData.hunger = stats.GetHunger();
@@ -324,7 +336,32 @@ public class ColonieSystem : MonoBehaviour, ISaveable
                     agentData.maxHealth = stats.maxHealth;
                 }
 
+                // Inventory
+                AIInventory inventory = memberMono.GetComponent<AIInventory>();
+                if (inventory != null && inventory.HasRessource())
+                {
+                    agentData.carriedItem = new InventoryItemData
+                    {
+                        type = (int)inventory.GetRessourceType(),
+                        amount = (int)inventory.GetRessourceTransportedNumber()
+                    };
+                }
+
                 colData.agents.Add(agentData);
+            }
+
+            // Diplomacy
+            if (col.DiplomaticRelations != null)
+            {
+                foreach (KeyValuePair<int, ColonyRelation> relKvp in col.DiplomaticRelations)
+                {
+                    colData.relations.Add(new ColonyRelationData
+                    {
+                        targetId = relKvp.Key,
+                        opinion = relKvp.Value.Opinion,
+                        state = relKvp.Value.State
+                    });
+                }
             }
 
             systemData.colonies.Add(colData);
@@ -335,20 +372,14 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
     public void RestoreState(string _state)
     {
-        // Cleanup existing
-        // We iterate backwards or just clear lists, but we must destroy GameObjects.
-        
-        // 1. Destroy all known agents (both in colonies and potential stragglers if we tracked them)
-        // Since we only track knownAgents, let's destroy them.
-        foreach (var agent in knownAgents)
+        foreach (I_ColonyAgent agent in knownAgents)
         {
              if (agent is MonoBehaviour m && m != null) Destroy(m.gameObject);
         }
         knownAgents.Clear();
         assignment.Clear();
         
-        // 2. Destroy all colonies
-        foreach (var col in colonies)
+        foreach (Colony col in colonies)
         {
             if (col != null) Destroy(col.gameObject);
         }
@@ -361,7 +392,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
         nextColonyId = data.nextColonyId;
 
-        foreach (var colData in data.colonies)
+        foreach (ColonySaveData colData in data.colonies)
         {
             Colony col = Instantiate(colonyPrefab, colData.position, Quaternion.identity, transform).GetComponent<Colony>();
             col.InitColony();
@@ -371,8 +402,17 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             col.MaxInhabitants = colData.maxPop;
             col.BlackBoard.AddValueOrModify("MaxHabitant", col.MaxInhabitants);
 
+            if (Enum.TryParse(colData.species, out SpeciesType cSpec))
+            {
+                col.ColonySpecies = cSpec;
+            }
+            else
+            {
+                col.ColonySpecies = SpeciesType.Pimu; // Fallback
+            }
+
             // Restore Blackboard
-            foreach (var entry in colData.blackboard)
+            foreach (BlackboardEntry entry in colData.blackboard)
             {
                 if (entry.type == "int") col.BlackBoard.AddValueOrModify(entry.key, entry.intVal);
                 else if (entry.type == "float") col.BlackBoard.AddValueOrModify(entry.key, entry.floatVal);
@@ -384,21 +424,35 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             OnColonyCreatedEvent?.Invoke(col);
 
             // Restore Agents
-            foreach (var agentData in colData.agents)
+            foreach (AgentSaveData agentData in colData.agents)
             {
-                if (pimuPrefab == null)
+                // Parse Species
+                if (!Enum.TryParse(agentData.species, out SpeciesType type))
                 {
-                    Debug.LogError("ColonieSystem: Pimu Prefab is missing! Cannot respawn agent.");
+                    Debug.LogWarning($"ColonieSystem: Unknown species '{agentData.species}'. Defaulting to Pimu.");
+                    type = SpeciesType.Pimu;
+                }
+
+                // Get Prefab
+                if (!agentPrefabs.TryGetValue(type, out GameObject prefab) || prefab == null)
+                {
+                    Debug.LogError($"ColonieSystem: Missing prefab for species '{type}'! Cannot respawn agent.");
                     continue;
                 }
 
-                GameObject agentObj = Instantiate(pimuPrefab, agentData.position, Quaternion.identity, agentParent); 
-                var agent = agentObj.GetComponent<I_ColonyAgent>();
+                GameObject agentObj = Instantiate(prefab, agentData.position, Quaternion.identity, agentParent); 
+                I_ColonyAgent agent = agentObj.GetComponent<I_ColonyAgent>();
                 
                 if (agent != null)
                 {
+                    // Update Agent Type
+                    if (agentObj.TryGetComponent(out ColonyAgent colAgent))
+                    {
+                        colAgent.speciesType = type;
+                    }
+
                     // Restore Stats
-                    var stats = agentObj.GetComponent<AIStats>();
+                    AIStats stats = agentObj.GetComponent<AIStats>();
                     if (stats != null)
                     {
                         stats.hunger = agentData.hunger;
@@ -406,16 +460,33 @@ public class ColonieSystem : MonoBehaviour, ISaveable
                         stats.maxHealth = (int)agentData.maxHealth;
                     }
 
+                    // Restore Inventory
+                    if (agentData.carriedItem.amount > 0)
+                    {
+                         AIInventory inventory = agentObj.GetComponent<AIInventory>();
+                         if (inventory != null)
+                         {
+                             inventory.AddRessources((uint)agentData.carriedItem.amount, (RessourceType)agentData.carriedItem.type);
+                         }
+                    }
+
                     // Force Join logic
                     knownAgents.Add(agent);
                     assignment[agent] = col;
                     col.AddMember(agent);
                     
-                    // We manually invoke OnMemberJoinedEvent to enable any side effects (like updating UI or logic listening to this)
                     OnMemberJoinedEvent?.Invoke(col, agent);
                 }
             }
             
+            // Restore Diplomacy
+            foreach (ColonyRelationData relData in colData.relations)
+            {
+                ColonyRelation rel = col.GetRelationData(relData.targetId);
+                rel.Opinion = relData.opinion;
+                rel.State = relData.state;
+            }
+
             // Sync Inhabitants count
             col.Inhabitants = col.Members.Count;
             col.BlackBoard.AddValueOrModify("Habitant", col.Inhabitants);

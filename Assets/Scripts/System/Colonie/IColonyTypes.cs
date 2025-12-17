@@ -11,8 +11,6 @@ public interface I_Colony
 
     int GetMaxInhabitants();
 
-    IReadOnlyList<I_ColonyAgent> GetMembers();
-
     ColonyRelation GetRelationData(int _otherId);
 
     float GetInfluenceRadius();
@@ -21,13 +19,10 @@ public interface I_Colony
 public interface I_ColonyAgent
 {
     Transform transform { get; }
-    GameObject gameObject { get; }
 
     bool CanFormColony();
 
-    string GetSpecies();
+    SpeciesType GetSpecies();
 
     void SetCurrentColony(I_Colony _colony);
-
-    I_Colony GetCurrentColony();
 }

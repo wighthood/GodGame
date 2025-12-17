@@ -11,6 +11,10 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
     private Dictionary<long, List<Building>> spatialBuckets = new();
     private float _cellSize = 20f;
 
+    [Header("Obstacle Detection")]
+    [SerializeField] private LayerMask obstacleLayers;
+    [SerializeField] private Vector2 checkSize = new Vector2(0.9f, 0.9f);
+
     void OnEnable()
     {
         SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
@@ -44,41 +48,47 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
 
         for (int i = 0; i < 100; i++)
         {
-            // Pick a random point
             Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * _colony.GetInfluenceRadius();
-            
             Vector3 offset = new Vector3(randomPoint.x, randomPoint.y, 0f);
-            
             Vector3 candidatePos = _colony.GetColonyCenter() + offset;
-
-            // Align to grid
+            
             Vector2Int cellPos = Colony.WorldToCellPos.Invoke(candidatePos);
             Vector3 alignedPos = Colony.CellToWorld.Invoke(cellPos);
-
-            // Check if walkable
+            
             Cell cell = Colony.GetCell.Invoke(cellPos);
             if (cell == null || !cell.isWalkable) continue;
-
-            // Check if occupied by another building
-            Building nearest = HandleGetNearestBuilding(alignedPos);
-            if (nearest != null)
+            
+            lastDebugPos = alignedPos;
+            Collider2D hit = Physics2D.OverlapBox(alignedPos, checkSize, 0, obstacleLayers);
+            
+            if (hit != null)
             {
-                if (Vector2.Distance(nearest.transform.position, alignedPos) < 1.0f)
-                {
-                    continue;
-                }
+                lastDebugHit = true;
+                continue;
             }
+            lastDebugHit = false;
 
             return alignedPos;
         }
+
+        Debug.LogWarning("Aucune position de construction valide trouvée après 100 essais ! Vérifiez les Layers ou la densité d'obstacles.");
         return null;
+    }
+
+    private Vector3 lastDebugPos;
+    private bool lastDebugHit;
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = lastDebugHit ? Color.red : Color.green;
+        Gizmos.DrawWireCube(lastDebugPos, checkSize);
     }
 
     private int GetBuildingCountOfType(BuildType _type, Colony _colony)
     {
         if (_colony == null) return 0;
         int count = 0;
-        foreach (var b in buildings)
+        foreach (Building b in buildings)
         {
             if (b != null && b.Type == _type && b.Owner == _colony)
             {
@@ -99,12 +109,22 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
         SpawnBuilding(building[index], _position, _owner, _type);
     }
 
-    public void SpawnBuilding(GameObject _prefab, Vector3 _position, Colony _owner, BuildType _type)
+    public Building SpawnBuilding(GameObject _prefab, Vector3 _position, Colony _owner, BuildType _type)
     {
-        if (_prefab == null) return;
+        if (_prefab == null) return null;
         
-        GameObject BuildGameObject = Instantiate(_prefab, _position, Quaternion.identity, _owner.GetBuildingParent());
+        Vector2Int cellPos = Colony.WorldToCellPos.Invoke(_position);
+        Vector3 centeredPos = Colony.CellToWorld.Invoke(cellPos);
+
+        Collider2D obstacle = Physics2D.OverlapBox(centeredPos, checkSize, 0, obstacleLayers);
+        if (obstacle != null)
+        {
+            Debug.LogWarning($"[SPAWN BLOCKED] Construction annulée en {centeredPos}. La place a été prise entre temps par : {obstacle.name}");
+            return null;
+        }
         
+        GameObject BuildGameObject = Instantiate(_prefab, centeredPos, Quaternion.identity, _owner.GetBuildingParent());
+
         Building building = BuildGameObject.GetComponent<Building>();
 
         building.Initialize(_type, _owner, BuildGameObject);
@@ -120,11 +140,8 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
         {
             _owner.DefineStorage(storage);
         }
-    }
 
-    public Building FindNearestBuilding(Vector3 _pos)
-    {
-        return HandleGetNearestBuilding(_pos);
+        return building;
     }
 
     public void DestroyBuilding(Building _b)
@@ -205,7 +222,6 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
                 }
             }
         }
-
         return best;
     }
 
@@ -218,7 +234,7 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
     {
         MapBuildingSystemSaveData data = new MapBuildingSystemSaveData();
 
-        foreach (var b in buildings)
+        foreach (Building b in buildings)
         {
             if (b == null) continue;
             
@@ -233,6 +249,23 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
             else
             {
                 bData.ownerColonyId = -1;
+            }
+
+            // Save Storage
+            if (b.TryGetComponent(out Storage storage))
+            {
+                List<RessourceCollection> stockpiled = storage.GetStockedResources();
+                if (stockpiled != null)
+                {
+                    foreach (RessourceCollection res in stockpiled)
+                    {
+                        bData.storedItems.Add(new InventoryItemData
+                        {
+                            type = (int)res.RessourceType,
+                            amount = (int)res.number
+                        });
+                    }
+                }
             }
             
             data.buildings.Add(bData);
@@ -260,7 +293,6 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
             Colony owner = null;
             if (bData.ownerColonyId != -1)
             {
-               // Helper to find colony by ID without direct reference
                if (ColonieSystem.OnRequestColonyByIDEvent != null)
                {
                    owner = ColonieSystem.OnRequestColonyByIDEvent.Invoke(bData.ownerColonyId);
@@ -273,7 +305,11 @@ public class MapBuildingManager : MonoBehaviour, ISaveable
             
             if (owner != null)
             {
-                 SpawnBuilding(prefab, bData.position, owner, (BuildType)bData.buildTypeId);
+                 Building newBuilding = SpawnBuilding(prefab, bData.position, owner, (BuildType)bData.buildTypeId);
+                 if (newBuilding != null && newBuilding.TryGetComponent(out Storage storage))
+                 {
+                     storage.ClearAndSetResources(bData.storedItems);
+                 }
             }
             else
             {

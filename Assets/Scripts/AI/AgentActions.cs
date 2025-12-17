@@ -118,7 +118,7 @@ public class AgentActions : MonoBehaviour
     public void ReproductSelf()
     {
         GameObject newPimus = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
-        newPimus.name = "Pimus";
+        newPimus.name = colonyAgent.GetSpecies().ToString();
     }
 
     public void Harvrest(RessourceType _ressource)
@@ -132,16 +132,24 @@ public class AgentActions : MonoBehaviour
     private IEnumerator WaitAndHarvrest(float _buildTime, RessourceType _ressource)
     {
         Ressource targetRessource = GetHarvrestRessources(_ressource);
+        
         if (targetRessource == null)
         {
             isHarvesting = false;
             harvrestingCoroutine = null;
             yield break;
         }
-
+        
         while (isHarvesting)
         {
             _buildTime -= Time.deltaTime;
+            
+            if (targetRessource == null)
+            {
+                isHarvesting = false;
+                harvrestingCoroutine = null;
+                yield break; // On arrête pour éviter le crash
+            }
 
             if (_buildTime <= 0)
             {
@@ -150,14 +158,12 @@ public class AgentActions : MonoBehaviour
 
             yield return null;
         }
-
-        Harvrest(targetRessource.GetRessourceType());
-
+        
         if (targetRessource != null)
         {
+            Harvrest(targetRessource.GetRessourceType());
             targetRessource.isBeeingHarversted = false;
         }
-
         isHarvesting = false;
         harvrestingCoroutine = null;
     }
@@ -171,14 +177,14 @@ public class AgentActions : MonoBehaviour
     {
         RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.zero, 0.5f, ressourcesMask[(int)_ressource - 1]);
 
-        if (hits.Length == 0)return null;
+        if (hits.Length == 0) return null;
 
         Ressource ressourceToHarverest = null;
 
         foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
-
+            
             if (ressource.GetRessourceType() == _ressource)
             {
                 if (ressourceToHarverest == null)
@@ -186,40 +192,24 @@ public class AgentActions : MonoBehaviour
                     ressourceToHarverest = ressource;
                     continue;
                 }
-
+                
                 if (Vector3.Distance(ressourceToHarverest.transform.position, transform.position) > Vector3.Distance(ressource.transform.position, transform.position) && !ressource.isBeeingHarversted)
                 {
                     ressourceToHarverest = ressource;
                 }
             }
         }
-
-        if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
+        
+        if (ressourceToHarverest != null)
         {
-            ressourceToHarverest.OnHarvrestingRessource();
+            if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
+            {
+                ressourceToHarverest.OnHarvrestingRessource();
+            }
         }
         
         return ressourceToHarverest;
-    } 
-
-    /*private void TryAutoCreateStorage()
-    {
-        if (storagePrefab == null) return;
-
-        RessourceStockedData data = inventory.GetRessources();
-        if (data.ressource == RessourceType.wood && data.amount >= 5)
-        {
-            inventory.ResetRessource();
-            Vector3 spawnPos = transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * 1.5f;
-            Colony owner = null;
-            ColonyAgent agent = GetComponent<ColonyAgent>();
-            if (agent != null)
-            {
-                owner = agent.GetCurrentColony() as Colony;
-            }
-            BuildingEvents.OnSpawnRequested?.Invoke(storagePrefab, spawnPos, Quaternion.identity, owner, "Storage");
-        }
-    }*/
+    }
 
     public void Eat()
     {

@@ -13,6 +13,7 @@ public class RessourceSaveData
 {
     public Vector3 ressourcePos;
     public RessourceType ressourceType;
+    public int remainingAmount;
 }
 [Serializable]
 public class TilemapSave
@@ -43,8 +44,10 @@ public class ColonySaveData
     public Vector3 position;
     public float influenceRadius;
     public int maxPop;
+    public string species;
     public List<BlackboardEntry> blackboard = new List<BlackboardEntry>();
     public List<AgentSaveData> agents = new List<AgentSaveData>();
+    public List<ColonyRelationData> relations = new List<ColonyRelationData>();
 }
 
 [Serializable]
@@ -55,6 +58,29 @@ public class AgentSaveData
     public float hunger;
     public float health;
     public float maxHealth;
+    public InventoryItemData carriedItem;
+}
+
+[Serializable]
+public struct InventoryItemData
+{
+    public int type;
+    public int amount;
+}
+
+[Serializable]
+public class MeteoSaveData
+{
+    public int weatherState;
+    public float timer;
+}
+
+[Serializable]
+public struct ColonyRelationData
+{
+    public int targetId;
+    public float opinion;
+    public RelationState state;
 }
 
 [Serializable]
@@ -80,6 +106,7 @@ public class BuildingSaveData
     public Vector3 position;
     public int buildTypeId; 
     public int ownerColonyId; // -1 if none
+    public List<InventoryItemData> storedItems = new List<InventoryItemData>();
 }
 
 [Serializable]
