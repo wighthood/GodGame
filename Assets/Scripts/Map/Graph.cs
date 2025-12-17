@@ -188,8 +188,8 @@ public class Graph : MonoBehaviour
                     Gizmos.DrawCube(CellToWorld(cell.position), size);
                 }
             }
-#endif
         }
+#endif
     }
 
 
