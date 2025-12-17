@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     [SerializeField] private float maxZoom = 1f;
     [SerializeField] private float minZoom = 25f;
     [SerializeField] private float edge = 10f;
+    [SerializeField] private float initialDezoom = 60f;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject settings;
     [SerializeField] private Texture2D pressedMouseCursor;
@@ -25,6 +27,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private Vector3 _difference;
     private Camera _maincamera;
     private bool _isDragging;
+    private bool _InitDezoom = false;
 
     private Vector3 GetMousePosition => _maincamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
@@ -124,11 +127,25 @@ public class PlayerControl : MonoBehaviour, ISaveable
         cameraLimit.y = (float)worldGeneration.MapHeight() / 2;
     }
 
+
     private void Update()
     {
         transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
         CameraLimit();
         onEdgeScroll();
+
+        if (!_InitDezoom)
+        {
+            if (Camera.main.orthographicSize < 10 )
+            {
+                Camera.main.orthographicSize += initialDezoom * Time.deltaTime;
+            }
+            else
+            {
+                _InitDezoom = true;
+            }
+        }
+        
     }
 
     private void OnEnable()

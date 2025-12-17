@@ -6190,7 +6190,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 2.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6235,10 +6235,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControl
   speed: 12
+  edgescrollSpeed: 0.1
   zoomSpeed: 0.5
   maxZoom: 1
   minZoom: 25
   edge: 25
+  initialDezoom: 3
   pauseMenu: {fileID: 836012061}
   settings: {fileID: 1633554055}
   pressedMouseCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
