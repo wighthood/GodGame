@@ -21,18 +21,16 @@ public class AgentActions : MonoBehaviour
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
     ColonyAgent colonyAgent;
-
-    public Action<Building> OnNearestBuildingChanged;
-
+    
+    public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
     private Coroutine harvrestingCoroutine;
 
     #region values for animations
 
     private Vector3 lastPos = Vector3.zero;
-    public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
-
     public bool isBuilding { get; private set; }
     public bool isHarvesting { get; private set; }
+
     #endregion
 
     private void Awake()
@@ -120,7 +118,7 @@ public class AgentActions : MonoBehaviour
     public void ReproductSelf()
     {
         GameObject newPimus = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
-        newPimus.name = "Pimus";
+        newPimus.name = colonyAgent.GetSpecies().ToString();
     }
 
     public void Harvrest(RessourceType _ressource)
@@ -134,16 +132,24 @@ public class AgentActions : MonoBehaviour
     private IEnumerator WaitAndHarvrest(float _buildTime, RessourceType _ressource)
     {
         Ressource targetRessource = GetHarvrestRessources(_ressource);
+        
         if (targetRessource == null)
         {
             isHarvesting = false;
             harvrestingCoroutine = null;
             yield break;
         }
-
+        
         while (isHarvesting)
         {
             _buildTime -= Time.deltaTime;
+            
+            if (targetRessource == null)
+            {
+                isHarvesting = false;
+                harvrestingCoroutine = null;
+                yield break; // On arrête pour éviter le crash
+            }
 
             if (_buildTime <= 0)
             {
@@ -152,14 +158,12 @@ public class AgentActions : MonoBehaviour
 
             yield return null;
         }
-
-        Harvrest(targetRessource);
-
+        
         if (targetRessource != null)
         {
+            Harvrest(targetRessource.GetRessourceType());
             targetRessource.isBeeingHarversted = false;
         }
-
         isHarvesting = false;
         harvrestingCoroutine = null;
     }
@@ -173,17 +177,14 @@ public class AgentActions : MonoBehaviour
     {
         RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.zero, 0.5f, ressourcesMask[(int)_ressource - 1]);
 
-        if (hits.Length == 0)
-        {
-            return null;
-        }
+        if (hits.Length == 0) return null;
 
         Ressource ressourceToHarverest = null;
 
         foreach (RaycastHit2D hit in hits)
         {
             Ressource ressource = hit.collider.GetComponent<Ressource>();
-
+            
             if (ressource.GetRessourceType() == _ressource)
             {
                 if (ressourceToHarverest == null)
@@ -191,24 +192,23 @@ public class AgentActions : MonoBehaviour
                     ressourceToHarverest = ressource;
                     continue;
                 }
-
+                
                 if (Vector3.Distance(ressourceToHarverest.transform.position, transform.position) > Vector3.Distance(ressource.transform.position, transform.position) && !ressource.isBeeingHarversted)
                 {
                     ressourceToHarverest = ressource;
                 }
             }
         }
-
-        ressourceToHarverest.isBeeingHarversted = true;
-        return ressourceToHarverest;
-    }
-
-    private void Harvrest(Ressource _ressourceToHarverest)
-    {
-        if (inventory.AddRessources(1, _ressourceToHarverest.GetRessourceType()))
+        
+        if (ressourceToHarverest != null)
         {
-            _ressourceToHarverest.OnHarvrestingRessource();
+            if (inventory.AddRessources(1, ressourceToHarverest.GetRessourceType()))
+            {
+                ressourceToHarverest.OnHarvrestingRessource();
+            }
         }
+        
+        return ressourceToHarverest;
     }
 
     public void Eat()
@@ -220,6 +220,21 @@ public class AgentActions : MonoBehaviour
     public Storage GetStorage()
     {
         return ((Colony)colonyAgent.GetCurrentColony()).storage;
+    }
+
+    public uint GetStoredfood()
+    {
+        if(((Colony)colonyAgent.GetCurrentColony()).storage)
+        {
+            return 0;
+        }
+
+        return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(RessourceType.food);
+    }
+
+    public bool HasRessource(RessourceType _ressource)
+    {
+        return inventory.GetRessourceType() == _ressource;
     }
 
     public bool HasRessourceInColony(RessourceType _ressource)
@@ -264,11 +279,6 @@ public class AgentActions : MonoBehaviour
         return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType);
     }
 
-    public bool HasRessource(RessourceType _ressource)
-    {
-        return inventory.GetRessourceType() == _ressource;
-    }
-
     public Transform GetNearestRessource(RessourceType _ressourceType)
     {
         return GetRessources.Invoke(_ressourceType, transform);
@@ -280,14 +290,14 @@ public class AgentActions : MonoBehaviour
 
         foreach (GameObject building in ((Colony)colonyAgent.GetCurrentColony()).Buildings)
         {
-            if (building.GetComponent<Building>().Type == BuildType.House)
+            if(building.GetComponent<Building>().Type == BuildType.House)
             {
                 if (currentNearestHouse == null)
                 {
                     currentNearestHouse = building;
                 }
 
-                if (Vector3.Distance(transform.position, currentNearestHouse.transform.position) > Vector3.Distance(transform.position, building.transform.position))
+                if(Vector3.Distance(transform.position, currentNearestHouse.transform.position) > Vector3.Distance(transform.position, building.transform.position))
                 {
                     currentNearestHouse = building;
                 }
@@ -306,7 +316,10 @@ public class AgentActions : MonoBehaviour
     {
         if (colonyAgent.GetCurrentColony() != null)
         {
-            return ((Colony)colonyAgent.GetCurrentColony()).GetValidBuildingPosition();
+            if(BuildingEvents.OnGetBuildPositionEvent != null)
+            {
+               return BuildingEvents.OnGetBuildPositionEvent.Invoke(transform.position, colonyAgent.GetCurrentColony());
+            }
         }
 
         return null;
@@ -314,9 +327,9 @@ public class AgentActions : MonoBehaviour
 
     private void Build(BuildType _buildType)
     {
-        BuildingEvents.OnSpawnRequested?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
+        BuildingEvents.OnSpawnRequestedEvent?.Invoke(_buildType, transform.position, (Colony)colonyAgent.GetCurrentColony());
 
-        BuildingEvents.OnBuildingSpawned?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
+        BuildingEvents.OnBuildingSpawnedEvent?.Invoke(_buildType, (Colony)colonyAgent.GetCurrentColony());
     }
 
     public void StartBuild(float _buildTime, BuildType _buildType)
@@ -332,7 +345,7 @@ public class AgentActions : MonoBehaviour
         {
             _buildTime -= Time.deltaTime;
 
-            if (_buildTime <= 0)
+            if( _buildTime <= 0 )
             {
                 isBuilding = false;
             }
@@ -349,6 +362,6 @@ public class AgentActions : MonoBehaviour
 
         if(colony == null) { return 0; }
 
-        return colony.GetAllBuildingOfType(_type);
+        return BuildingEvents.OnGetBuildingCountOfTypeEvent?.Invoke(_type, colony) ?? 0;
     }
 }

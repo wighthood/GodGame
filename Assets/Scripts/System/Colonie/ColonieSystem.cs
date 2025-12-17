@@ -1,9 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ColonieSystem : MonoBehaviour
+
+
+[System.Serializable]
+public struct AgentTypeEntry
+{
+    public SpeciesType species;
+    public GameObject prefab;
+}
+
+public class ColonieSystem : MonoBehaviour, ISaveable
 {
     [Header("Conditions de création")]
     public int requiredPimusToCreate = 5;
@@ -11,50 +21,64 @@ public class ColonieSystem : MonoBehaviour
 
     [Header("Colony defaults")]
     public float defaultInfluenceRadius = 15f;
-    public int defaultMaxPerPimu = 2;
 
     [Header("Scan settings")]
     public float scanInterval = 1f;
 
     [SerializeField] private GameObject colonyPrefab;
+    [SerializeField] private List<AgentTypeEntry> agentTypes = new();
+    [SerializeField] private Transform agentParent;
 
-    public static ColonieSystem Instance { get; private set; }
+    public static Action<I_Colony> OnColonyCreatedEvent;
+    public static Action<I_Colony> OnColonyDissolvedEvent;
+    public Action<I_Colony, I_ColonyAgent> OnMemberJoinedEvent;
+    public Action<I_Colony, I_ColonyAgent> OnMemberLeftEvent;
+    
+    public static Func<int, Colony> OnRequestColonyByIDEvent;
 
-    public Action<IColony> OnColonyCreated;
-    public Action<IColony> OnColonyDissolved;
-    public Action<IColony, IColonyAgent> OnMemberJoined;
-    public Action<IColony, IColonyAgent> OnMemberLeft;
+    private List<Colony> colonies = new();
+    private Dictionary<I_ColonyAgent, Colony> assignment = new();
+    private Dictionary<SpeciesType, GameObject> agentPrefabs = new();
+    
+    private HashSet<I_ColonyAgent> knownAgents = new HashSet<I_ColonyAgent>();
 
-    private List<Colony> _colonies = new List<Colony>();
-    private Dictionary<IColonyAgent, Colony> _assignment = new Dictionary<IColonyAgent, Colony>();
-
-    private HashSet<IColonyAgent> _registeredAgents = new HashSet<IColonyAgent>();
-    private Dictionary<long, List<IColonyAgent>> _spatialBuckets = new Dictionary<long, List<IColonyAgent>>();
-    private float _cellSize = 5f;
-
-    private int _nextColonyId = 1;
-
-    private float _scanTimer;
+    private int nextColonyId = 1;
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
+        BuildingEvents.OnBuildingSpawnedEvent += BuildingSpawned;
+        
+        // Init Dictionary
+        agentPrefabs.Clear();
+        foreach (AgentTypeEntry entry in agentTypes)
         {
-            Destroy(this);
-            return;
+            if (entry.prefab != null && !agentPrefabs.ContainsKey(entry.species))
+            {
+                agentPrefabs.Add(entry.species, entry.prefab);
+            }
         }
-        Instance = this;
-        _cellSize = Mathf.Max(0.1f, groupingRadius);
-
-        BuildingEvents.OnGetBuildPosition += HandleGetBuildPosition;
-        BuildingEvents.OnBuildingSpawned += BuildingSpawned;
     }
 
-    void OnDestroy()
+    void OnEnable()
     {
-        BuildingEvents.OnGetBuildPosition -= HandleGetBuildPosition;
-        BuildingEvents.OnBuildingSpawned -= BuildingSpawned;
-        if (Instance == this) Instance = null;
+        ColonyEvents.OnRegisterAgentEvent += RegisterAgent;
+        ColonyEvents.OnUnregisterAgentEvent += UnregisterAgent;
+        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
+        
+        OnRequestColonyByIDEvent = (id) => 
+        {
+            return colonies.FirstOrDefault(c => c != null && c.Id == id);
+        };
+    }
+
+    void OnDisable()
+    {
+        BuildingEvents.OnBuildingSpawnedEvent -= BuildingSpawned;
+        ColonyEvents.OnRegisterAgentEvent -= RegisterAgent;
+        ColonyEvents.OnUnregisterAgentEvent -= UnregisterAgent;
+        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
+        
+        OnRequestColonyByIDEvent = null;
     }
 
     private void BuildingSpawned(BuildType _type, Colony _colony)
@@ -71,103 +95,50 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    private Vector3? HandleGetBuildPosition(Vector3 agentPos, IColony colony)
-    {
-        if (colony == null || colony is not Colony concreteColony) return null;
-
-        return concreteColony.GetValidBuildingPosition();
-    }
-
     void Start()
     {
-        _scanTimer = scanInterval;
+        StartCoroutine(Scanning());
     }
 
-    void Update()
+    private IEnumerator Scanning()
     {
-        _scanTimer += Time.deltaTime;
-        if (_scanTimer >= scanInterval)
+        WaitForSeconds wait = new WaitForSeconds(scanInterval);
+        while (true)
         {
-            _scanTimer = 0f;
+            yield return wait;
             ScanForColonies();
         }
     }
 
-    public void RegisterAgent(IColonyAgent agent)
+    private void RegisterAgent(I_ColonyAgent _agent)
     {
-        if (agent == null) return;
-        if (_registeredAgents.Contains(agent)) return;
-        _registeredAgents.Add(agent);
-        AddToBucket(agent);
-
-        if (TryJoinNearestColony(agent)) return;
-
-        CheckNearbyForColony(agent);
+        if (_agent == null || knownAgents.Contains(_agent)) return;
+        knownAgents.Add(_agent);
+        
+        if (TryJoinNearestColony(_agent)) return;
+        CheckNearbyForColony(_agent);
     }
 
-    public void UnregisterAgent(IColonyAgent agent)
+    private void UnregisterAgent(I_ColonyAgent _agent)
     {
-        if (agent == null) return;
-        if (!_registeredAgents.Contains(agent)) return;
+        if (_agent == null || !knownAgents.Contains(_agent)) return;
 
-        _registeredAgents.Remove(agent);
-        RemoveFromBucket(agent);
-
-        if (_assignment.TryGetValue(agent, out Colony col))
+        knownAgents.Remove(_agent);
+        
+        if (assignment.TryGetValue(_agent, out Colony col))
         {
-            _assignment.Remove(agent);
-            RemoveAgentFromColony(agent, col);
-            agent.SetCurrentColony(null);
-        }
-    }
-
-    public void UpdateAgentCell(IColonyAgent agent, Vector3 previousPosition)
-    {
-        if (agent == null) return;
-        RemoveFromBucket(agent, previousPosition);
-        AddToBucket(agent);
-        TryJoinNearestColony(agent);
-    }
-
-    private long GetCellKey(Vector3 pos)
-    {
-        int x = Mathf.FloorToInt(pos.x / _cellSize);
-        int z = Mathf.FloorToInt(pos.z / _cellSize);
-        return ((long)x << 32) ^ (uint)z;
-    }
-
-    private void AddToBucket(IColonyAgent a)
-    {
-        long key = GetCellKey(a.GetTransform().position);
-        if (!_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
-        {
-            list = new List<IColonyAgent>();
-            _spatialBuckets[key] = list;
-        }
-        if (!list.Contains(a)) list.Add(a);
-    }
-
-    private void RemoveFromBucket(IColonyAgent a)
-    {
-        RemoveFromBucket(a, a.GetTransform().position);
-    }
-
-    private void RemoveFromBucket(IColonyAgent a, Vector3 fromPosition)
-    {
-        long key = GetCellKey(fromPosition);
-        if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
-        {
-            list.Remove(a);
-            if (list.Count == 0) _spatialBuckets.Remove(key);
+            assignment.Remove(_agent);
+            RemoveAgentFromColony(_agent, col);
+            _agent.SetCurrentColony(null);
         }
     }
 
     private void ScanForColonies()
     {
-        foreach (IColonyAgent agent in _registeredAgents.ToList())
+        foreach (I_ColonyAgent agent in knownAgents.ToList())
         {
             if (agent == null) continue;
-            if (_assignment.ContainsKey(agent)) continue;
+            if (assignment.ContainsKey(agent)) continue;
 
             if (TryJoinNearestColony(agent)) continue;
 
@@ -175,19 +146,20 @@ public class ColonieSystem : MonoBehaviour
         }
     }
 
-    private bool TryJoinNearestColony(IColonyAgent agent)
+    private bool TryJoinNearestColony(I_ColonyAgent _agent)
     {
-        if (agent == null) return false;
-        if (_assignment.ContainsKey(agent)) return false;
+        if (_agent == null) return false;
+        if (assignment.ContainsKey(_agent)) return false;
 
         Colony best = null;
         float bestDist = float.MaxValue;
-        Vector3 pos = agent.GetTransform().position;
+        Vector3 pos = _agent.transform.position;
 
-        foreach (Colony col in _colonies)
+        foreach (Colony col in colonies)
         {
             if (col == null) continue;
             if (col.Inhabitants >= col.MaxInhabitants) continue;
+            if (col.ColonySpecies != _agent.GetSpecies()) continue;
 
             float d = Vector3.Distance(col.GetColonyCenter(), pos);
             if (d <= col.InfluenceRadius && d < bestDist)
@@ -199,88 +171,87 @@ public class ColonieSystem : MonoBehaviour
 
         if (best != null)
         {
-            _assignment[agent] = best;
-            best.AddAgentToColony(agent);
+            assignment[_agent] = best;
+            best.AddMember(_agent);
 
-            OnMemberJoined?.Invoke(best, agent);
-            Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} joined Colony Id={best.Id} (now {best.Inhabitants}/{best.MaxInhabitants})");
+            OnMemberJoinedEvent?.Invoke(best, _agent);
             return true;
         }
 
         return false;
     }
 
-    public bool TryForceJoinNearestColony(IColonyAgent agent)
+    public bool TryForceJoinNearestColony(I_ColonyAgent _agent)
     {
-        if (agent == null) return false;
-        return TryJoinNearestColony(agent);
+        if (_agent == null) return false;
+        return TryJoinNearestColony(_agent);
     }
 
-    private void CheckNearbyForColony(IColonyAgent candidate)
+    private void CheckNearbyForColony(I_ColonyAgent _candidate)
     {
-        if (candidate == null) return;
-        if (!candidate.CanFormColony()) return;
+        if (_candidate == null) return;
+        if (!_candidate.CanFormColony()) return;
 
-        List<IColonyAgent> neighbors = GetNeighborsFromBuckets(candidate.GetTransform().position)
-            .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase))
+        List<I_ColonyAgent> neighbors = null;
+        if (ColonyEvents.OnRequestNeighborsEvent != null)
+        {
+             neighbors = ColonyEvents.OnRequestNeighborsEvent.Invoke(_candidate.transform.position, groupingRadius);
+        }
+        
+        if (neighbors == null) 
+        {
+            return;
+        }
+
+        int rawCount = neighbors.Count;
+        
+        neighbors = neighbors
+            .Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && g.GetSpecies() == _candidate.GetSpecies())
             .ToList();
 
-        if (!neighbors.Contains(candidate)) neighbors.Add(candidate);
+        if (!neighbors.Contains(_candidate)) neighbors.Add(_candidate);
 
         if (neighbors.Count >= requiredPimusToCreate)
         {
             Vector3 centroid = Vector3.zero;
-            foreach (IColonyAgent n in neighbors) centroid += n.GetTransform().position;
+            foreach (I_ColonyAgent n in neighbors) centroid += n.transform.position;
             centroid /= neighbors.Count;
+            
+             List<I_ColonyAgent> group = null;
+             if(ColonyEvents.OnRequestNeighborsEvent != null)
+                group = ColonyEvents.OnRequestNeighborsEvent.Invoke(centroid, groupingRadius);
 
-            List<IColonyAgent> group = GetNeighborsFromBuckets(centroid)
-                .Where(g => g != null && !_assignment.ContainsKey(g) && g.CanFormColony() && string.Equals(g.GetSpecies(), candidate.GetSpecies(), StringComparison.OrdinalIgnoreCase) && Vector3.Distance(g.GetTransform().position, centroid) <= groupingRadius)
-                .ToList();
+             if (group != null)
+             {
+                 group = group.Where(g => g != null && !assignment.ContainsKey(g) && g.CanFormColony() && g.GetSpecies() == _candidate.GetSpecies()).ToList();
 
-            if (group.Count >= requiredPimusToCreate)
-            {
-                CreateColony(centroid, group);
-            }
+                 if (group.Count >= requiredPimusToCreate)
+                 {
+                     CreateColony(centroid, group);
+                 }
+             }
         }
     }
 
-    private List<IColonyAgent> GetNeighborsFromBuckets(Vector3 position)
+    private void CreateColony(Vector3 _colonySpawnPoint, List<I_ColonyAgent> _members)
     {
-        List<IColonyAgent> results = new List<IColonyAgent>();
-        int cx = Mathf.FloorToInt(position.x / _cellSize);
-        int cz = Mathf.FloorToInt(position.z / _cellSize);
-
-        for (int dx = -1; dx <= 1; dx++)
-            for (int dz = -1; dz <= 1; dz++)
-            {
-                int nx = cx + dx;
-                int nz = cz + dz;
-                long key = ((long)nx << 32) ^ (uint)nz;
-                if (_spatialBuckets.TryGetValue(key, out List<IColonyAgent> list))
-                {
-                    foreach (IColonyAgent go in list)
-                        if (go != null && !results.Contains(go)) results.Add(go);
-                }
-            }
-
-        results = results.Where(g => g != null && Vector3.Distance(g.GetTransform().position, position) <= groupingRadius).ToList();
-        return results;
-    }
-
-    private void CreateColony(Vector3 _colonySpawnPoint, List<IColonyAgent> _members)
-    {
-        _members = _members.Where(m => m != null && !_assignment.ContainsKey(m)).ToList();
+        _members = _members.Where(m => m != null && !assignment.ContainsKey(m)).ToList();
 
         Colony colony = Instantiate(colonyPrefab, _colonySpawnPoint, Quaternion.identity, transform).GetComponent<Colony>();
         colony.InitColony();
-        colony.Id = _nextColonyId++;
+        colony.Id = nextColonyId++;
 
         colony.name = $"Colony {colony.Id}";
 
-        foreach (IColonyAgent m in _members)
+        if (_members.Count > 0 && _members[0] != null)
         {
-            _assignment[m] = colony;
-            colony.Members.Add(m);
+            colony.ColonySpecies = _members[0].GetSpecies();
+        }
+
+        foreach (I_ColonyAgent m in _members)
+        {
+            assignment[m] = colony;
+            colony.AddMember(m);
             m.SetCurrentColony(colony);
         }
 
@@ -289,36 +260,236 @@ public class ColonieSystem : MonoBehaviour
 
         colony.InfluenceRadius = defaultInfluenceRadius;
 
-        _colonies.Add(colony);
+        colonies.Add(colony);
 
-        foreach (IColonyAgent m in colony.Members)
-            OnMemberJoined?.Invoke(colony, m);
+        foreach (I_ColonyAgent m in colony.Members)
+            OnMemberJoinedEvent?.Invoke(colony, m);
 
-        OnColonyCreated?.Invoke(colony);
+        OnColonyCreatedEvent?.Invoke(colony);
     }
 
-    public IColony GetColonyForAgent(IColonyAgent agent)
+    private void RemoveAgentFromColony(I_ColonyAgent _agent, Colony _colony)
     {
-        if (agent == null) return null;
-        if (_assignment.TryGetValue(agent, out Colony col)) return col;
-        return null;
+        if (_agent == null || _colony == null) return;
+        _colony.RemoveMember(_agent);
+        _colony.Inhabitants = _colony.Members.Count;
+        _colony.BlackBoard.AddValueOrModify("Habitant", _colony.Inhabitants);
+
+        _agent.SetCurrentColony(null);
+        OnMemberLeftEvent?.Invoke(_colony, _agent);
     }
 
-    public List<IColony> GetAllColonies()
+    public string GetSaveID()
     {
-        return _colonies.Cast<IColony>().ToList();
+        return "ColonieSystem";
     }
 
-    private void RemoveAgentFromColony(IColonyAgent agent, Colony colony)
+    public string CaptureState()
     {
-        if (agent == null || colony == null) return;
+        ColonySystemSaveData systemData = new ColonySystemSaveData();
+        systemData.nextColonyId = nextColonyId;
 
-        colony.Members.Remove(agent);
-        colony.Inhabitants = colony.Members.Count;
+        foreach (Colony col in colonies)
+        {
+            if (col == null) continue;
 
-        agent.SetCurrentColony(null);
-        OnMemberLeft?.Invoke(colony, agent);
+            ColonySaveData colData = new ColonySaveData();
+            colData.id = col.Id;
+            colData.name = col.name;
+            colData.position = col.transform.position;
+            colData.influenceRadius = col.InfluenceRadius;
+            colData.maxPop = col.MaxInhabitants;
+            colData.species = col.ColonySpecies.ToString();
 
-        Debug.Log($"Agent {agent.GetGameObject().GetInstanceID()} left Colony Id={colony.Id} (now {colony.Inhabitants}/{colony.MaxInhabitants})");
+            // Blackboard Export
+            if (col.BlackBoard != null)
+            {
+                Dictionary<string, object> bbValues = col.BlackBoard.BbValues();
+                foreach (KeyValuePair<string, object> kvp in bbValues)
+                {
+                    BlackboardEntry entry = new BlackboardEntry { key = kvp.Key };
+                    if (kvp.Value is int iVal) { entry.type = "int"; entry.intVal = iVal; }
+                    else if (kvp.Value is float fVal) { entry.type = "float"; entry.floatVal = fVal; }
+                    else if (kvp.Value is bool bVal) { entry.type = "bool"; entry.boolVal = bVal; }
+                    else if (kvp.Value is string sVal) { entry.type = "string"; entry.stringVal = sVal; }
+                    else continue; 
+                    colData.blackboard.Add(entry);
+                }
+            }
+
+            // Agents
+            foreach (I_ColonyAgent member in col.Members)
+            {
+                if (member == null) continue;
+                MonoBehaviour memberMono = member as MonoBehaviour;
+                if (memberMono == null) continue;
+
+                AgentSaveData agentData = new AgentSaveData();
+                agentData.species = member.GetSpecies().ToString();
+                agentData.position = memberMono.transform.position;
+
+                AIStats stats = memberMono.GetComponent<AIStats>();
+                if (stats != null)
+                {
+                    agentData.hunger = stats.GetHunger();
+                    agentData.health = stats.GetHealth();
+                    agentData.maxHealth = stats.maxHealth;
+                }
+
+                // Inventory
+                AIInventory inventory = memberMono.GetComponent<AIInventory>();
+                if (inventory != null && inventory.HasRessource())
+                {
+                    agentData.carriedItem = new InventoryItemData
+                    {
+                        type = (int)inventory.GetRessourceType(),
+                        amount = (int)inventory.GetRessourceTransportedNumber()
+                    };
+                }
+
+                colData.agents.Add(agentData);
+            }
+
+            // Diplomacy
+            if (col.DiplomaticRelations != null)
+            {
+                foreach (KeyValuePair<int, ColonyRelation> relKvp in col.DiplomaticRelations)
+                {
+                    colData.relations.Add(new ColonyRelationData
+                    {
+                        targetId = relKvp.Key,
+                        opinion = relKvp.Value.Opinion,
+                        state = relKvp.Value.State
+                    });
+                }
+            }
+
+            systemData.colonies.Add(colData);
+        }
+
+        return JsonUtility.ToJson(systemData);
+    }
+
+    public void RestoreState(string _state)
+    {
+        foreach (I_ColonyAgent agent in knownAgents)
+        {
+             if (agent is MonoBehaviour m && m != null) Destroy(m.gameObject);
+        }
+        knownAgents.Clear();
+        assignment.Clear();
+        
+        foreach (Colony col in colonies)
+        {
+            if (col != null) Destroy(col.gameObject);
+        }
+        colonies.Clear();
+
+        if (string.IsNullOrEmpty(_state)) return;
+
+        ColonySystemSaveData data = JsonUtility.FromJson<ColonySystemSaveData>(_state);
+        if (data == null) return;
+
+        nextColonyId = data.nextColonyId;
+
+        foreach (ColonySaveData colData in data.colonies)
+        {
+            Colony col = Instantiate(colonyPrefab, colData.position, Quaternion.identity, transform).GetComponent<Colony>();
+            col.InitColony();
+            col.Id = colData.id;
+            col.name = colData.name;
+            col.InfluenceRadius = colData.influenceRadius;
+            col.MaxInhabitants = colData.maxPop;
+            col.BlackBoard.AddValueOrModify("MaxHabitant", col.MaxInhabitants);
+
+            if (Enum.TryParse(colData.species, out SpeciesType cSpec))
+            {
+                col.ColonySpecies = cSpec;
+            }
+            else
+            {
+                col.ColonySpecies = SpeciesType.Pimu; // Fallback
+            }
+
+            // Restore Blackboard
+            foreach (BlackboardEntry entry in colData.blackboard)
+            {
+                if (entry.type == "int") col.BlackBoard.AddValueOrModify(entry.key, entry.intVal);
+                else if (entry.type == "float") col.BlackBoard.AddValueOrModify(entry.key, entry.floatVal);
+                else if (entry.type == "bool") col.BlackBoard.AddValueOrModify(entry.key, entry.boolVal);
+                else if (entry.type == "string") col.BlackBoard.AddValueOrModify(entry.key, entry.stringVal);
+            }
+
+            colonies.Add(col);
+            OnColonyCreatedEvent?.Invoke(col);
+
+            // Restore Agents
+            foreach (AgentSaveData agentData in colData.agents)
+            {
+                // Parse Species
+                if (!Enum.TryParse(agentData.species, out SpeciesType type))
+                {
+                    Debug.LogWarning($"ColonieSystem: Unknown species '{agentData.species}'. Defaulting to Pimu.");
+                    type = SpeciesType.Pimu;
+                }
+
+                // Get Prefab
+                if (!agentPrefabs.TryGetValue(type, out GameObject prefab) || prefab == null)
+                {
+                    Debug.LogError($"ColonieSystem: Missing prefab for species '{type}'! Cannot respawn agent.");
+                    continue;
+                }
+
+                GameObject agentObj = Instantiate(prefab, agentData.position, Quaternion.identity, agentParent); 
+                I_ColonyAgent agent = agentObj.GetComponent<I_ColonyAgent>();
+                
+                if (agent != null)
+                {
+                    // Update Agent Type
+                    if (agentObj.TryGetComponent(out ColonyAgent colAgent))
+                    {
+                        colAgent.speciesType = type;
+                    }
+
+                    // Restore Stats
+                    AIStats stats = agentObj.GetComponent<AIStats>();
+                    if (stats != null)
+                    {
+                        stats.hunger = agentData.hunger;
+                        stats.SetHealth((int)agentData.health);
+                        stats.maxHealth = (int)agentData.maxHealth;
+                    }
+
+                    // Restore Inventory
+                    if (agentData.carriedItem.amount > 0)
+                    {
+                         AIInventory inventory = agentObj.GetComponent<AIInventory>();
+                         if (inventory != null)
+                         {
+                             inventory.AddRessources((uint)agentData.carriedItem.amount, (RessourceType)agentData.carriedItem.type);
+                         }
+                    }
+
+                    // Force Join logic
+                    knownAgents.Add(agent);
+                    assignment[agent] = col;
+                    col.AddMember(agent);
+                    
+                    OnMemberJoinedEvent?.Invoke(col, agent);
+                }
+            }
+            
+            // Restore Diplomacy
+            foreach (ColonyRelationData relData in colData.relations)
+            {
+                ColonyRelation rel = col.GetRelationData(relData.targetId);
+                rel.Opinion = relData.opinion;
+                rel.State = relData.state;
+            }
+
+            // Sync Inhabitants count
+            col.Inhabitants = col.Members.Count;
+            col.BlackBoard.AddValueOrModify("Habitant", col.Inhabitants);
+        }
     }
 }

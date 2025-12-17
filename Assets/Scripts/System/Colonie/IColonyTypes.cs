@@ -1,32 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-
-public interface IColony
+public interface I_Colony
 {
     int GetId();
-    
+
     Vector3 GetColonyCenter();
-    
+
     int GetInhabitants();
-   
+
     int GetMaxInhabitants();
-    
-    IReadOnlyList<IColonyAgent> GetMembers();
+
+    ColonyRelation GetRelationData(int _otherId);
+
+    float GetInfluenceRadius();
 }
 
-public interface IColonyAgent
+public interface I_ColonyAgent
 {
-  
-    Transform GetTransform();
-    
-    GameObject GetGameObject();
-    
+    Transform transform { get; }
+
     bool CanFormColony();
-    
-    string GetSpecies();
-    
-    void SetCurrentColony(IColony colony);
-    
-    IColony GetCurrentColony();
+
+    SpeciesType GetSpecies();
+
+    void SetCurrentColony(I_Colony _colony);
 }

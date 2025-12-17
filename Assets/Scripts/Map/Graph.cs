@@ -18,12 +18,12 @@ public class Graph : MonoBehaviour
     private void Awake()
     {
         MapEditorScript.GetCell += GetCellFromWorldPos;
-        WorldGeneration.InitGraph += InitGraph;
+        WorldGeneration.OnInitGraphEvent += InitGraph;
+        SaveEvents.OnGraphRefreshRequestedEvent += InitGraph;
         PathFinding.GetCell += GetCell;
         PathFinding.GetCellFromWorldPos += GetCellFromWorldPos;
         PathFinding.GetCells += GetCellsFromDict;
         AgentActions.CellToWorld += CellToWorld;
-        GameSceneController.InitGraph += InitGraph;
         Colony.WorldToCellPos += WorldToCellPos;
         Colony.CellToWorld += CellToWorld;
         Colony.GetCell += GetCell;
@@ -111,12 +111,12 @@ public class Graph : MonoBehaviour
     private void OnDestroy()
     {
         MapEditorScript.GetCell -= GetCellFromWorldPos;
-        WorldGeneration.InitGraph -= InitGraph;
+        WorldGeneration.OnInitGraphEvent -= InitGraph;
+        SaveEvents.OnGraphRefreshRequestedEvent -= InitGraph;
         PathFinding.GetCell -= GetCell;
         PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
         PathFinding.GetCells -= GetCellsFromDict;
         AgentActions.CellToWorld -= CellToWorld;
-        GameSceneController.InitGraph -= InitGraph;
         Colony.WorldToCellPos -= WorldToCellPos;
         Colony.CellToWorld -= CellToWorld;
         Colony.GetCell -= GetCell;

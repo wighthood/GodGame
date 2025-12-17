@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerControl : MonoBehaviour
+public class PlayerControl : MonoBehaviour, ISaveable
 {
     [SerializeField] private float speed = 12f;
     [SerializeField] private float zoomSpeed = 12f;
@@ -75,21 +75,66 @@ public class PlayerControl : MonoBehaviour
 
         Vector3 pos = transform.position;
 
-        float halfHeight = Camera.main.orthographicSize;
-        float halfWidth = halfHeight * Camera.main.aspect;
+            float halfHeight = Camera.main.orthographicSize;
+            float halfWidth = halfHeight * Camera.main.aspect;
 
-        if (pos.x > cameraLimit.x - halfWidth)
-            pos.x = cameraLimit.x - halfWidth;
+            if (pos.x > cameraLimit.x - halfWidth)
+                pos.x = cameraLimit.x - halfWidth;
 
-        if (pos.x < -cameraLimit.x + halfWidth)
-            pos.x = -cameraLimit.x + halfWidth;
+            if (pos.x < -cameraLimit.x + halfWidth)
+                pos.x = -cameraLimit.x + halfWidth;
 
-        if (pos.y > cameraLimit.y - halfHeight)
-            pos.y = cameraLimit.y - halfHeight;
+            if (pos.y > cameraLimit.y - halfHeight)
+                pos.y = cameraLimit.y - halfHeight;
 
-        if (pos.y < -cameraLimit.y + halfHeight)
-            pos.y = -cameraLimit.y + halfHeight;
+            if (pos.y < -cameraLimit.y + halfHeight)
+                pos.y = -cameraLimit.y + halfHeight;
 
         transform.position = pos;       
+    }
+
+    private void OnEnable()
+    {
+        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
+    }
+
+    private void OnDisable()
+    {
+        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
+    }
+
+    public string GetSaveID()
+    {
+        return "PlayerControl";
+    }
+
+    public string CaptureState()
+    {
+        PlayerCameraSaveData data = new PlayerCameraSaveData();
+        data.position = transform.position;
+        if (Camera.main != null)
+        {
+            data.zoom = Camera.main.orthographicSize;
+        }
+        else
+        {
+            data.zoom = 5f; // verification default
+        }
+        
+        return JsonUtility.ToJson(data);
+    }
+
+    public void RestoreState(string _state)
+    {
+        if (string.IsNullOrEmpty(_state)) return;
+
+        PlayerCameraSaveData data = JsonUtility.FromJson<PlayerCameraSaveData>(_state);
+        if (data == null) return;
+
+        transform.position = data.position;
+        if (Camera.main != null)
+        {
+            Camera.main.orthographicSize = data.zoom;
+        }
     }
 }

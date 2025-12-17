@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 public class AIInventory : MonoBehaviour
@@ -67,7 +67,7 @@ public class AIInventory : MonoBehaviour
     }
 }
 
-[System.Serializable]
+[Serializable]
 public struct RessourceStockedData
 {
     public RessourceType ressource;
