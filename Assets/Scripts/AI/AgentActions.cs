@@ -118,7 +118,7 @@ public class AgentActions : MonoBehaviour
     public void ReproductSelf()
     {
         GameObject newPimus = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
-        newPimus.name = "Pimus";
+        newPimus.name = colonyAgent.GetSpecies().ToString();
     }
 
     public void Harvrest(RessourceType _ressource)

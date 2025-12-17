@@ -204,7 +204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ColonyAgent
   autoRegister: 1
   canFormColony: 1
-  species: Evil Shroom
+  speciesType: 1
   positionUpdateInterval: 0.5
   movementThreshold: 0.25
 --- !u!114 &-2642006060528836289

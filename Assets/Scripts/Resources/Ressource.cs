@@ -25,6 +25,17 @@ public class Ressource : MonoBehaviour
         return ressourceType;
     }
 
+    public int GetRemaining() => ressourceRemaining;
+
+    public void SetRemaining(int amount)
+    {
+        ressourceRemaining = amount;
+        if (ressourceRemaining <= 0)
+        {
+            OnEmptyRessource?.Invoke(this);
+        }
+    }
+
     public void OnHarvrestingRessource()
     {
         ressourceRemaining--;

@@ -30,7 +30,7 @@ public class PathFinding
     {
         tempNeighbors.Clear();
 
-        foreach (var d in directions)
+        foreach (Vector2Int d in directions)
         {
             Cell c = GetCell?.Invoke(cell.position + d);
             if (c != null && c.isWalkable)

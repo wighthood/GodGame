@@ -109,7 +109,8 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
                 save.ress.Add(new RessourceSaveData
                 {
                     ressourceType = r.GetRessourceType(),
-                    ressourcePos = r.transform.position
+                    ressourcePos = r.transform.position,
+                    remainingAmount = r.GetRemaining()
                 });
             }
         }
@@ -134,7 +135,15 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         {
             foreach (RessourceSaveData data in save.ress)
             {
-                AddNewRessource(data.ressourceType, data.ressourcePos);
+                GameObject resObj = AddNewRessource(data.ressourceType, data.ressourcePos);
+                if (resObj != null)
+                {
+                    Ressource r = resObj.GetComponent<Ressource>();
+                    if (r != null)
+                    {
+                        r.SetRemaining(data.remainingAmount);
+                    }
+                }
             }
         }
     }
