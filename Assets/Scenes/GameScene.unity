@@ -5233,8 +5233,8 @@ MonoBehaviour:
   resourceSpawnRate: 0.15
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
-  resourceParent: {fileID: 0}
-  agentCount: 1
+  resourceParent: {fileID: 518430962}
+  agentCount: 5
   _spawnedAgent: []
 --- !u!114 &130282018
 MonoBehaviour:
@@ -6190,7 +6190,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 2.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6235,9 +6235,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControl
   speed: 12
+  edgescrollSpeed: 0.1
   zoomSpeed: 0.5
   maxZoom: 1
   minZoom: 25
+  edge: 25
+  initialDezoom: 3
   pauseMenu: {fileID: 836012061}
   settings: {fileID: 1633554055}
   pressedMouseCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
@@ -6409,6 +6412,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: f2e1c435-8220-4a07-8d27-e217fcecd208
     m_ActionName: 'Player/Deselect[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 519420033}
+        m_TargetAssemblyTypeName: PlayerControl, Assembly-CSharp
+        m_MethodName: OnDrag
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: aab5bfd2-f686-4e7a-8f7d-44c8c034f203
+    m_ActionName: 'Player/Drag[/Mouse/middleButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -7121,6 +7140,7 @@ MonoBehaviour:
   - {fileID: 5218013249053032955, guid: 101bb3f08730bae41bd68dbc4a5ee8e6, type: 3}
   Entity:
   - {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
+  - {fileID: 4226159496368005823, guid: 885f8a7e759e710498169571ec4304f3, type: 3}
   weatherState: 00000000010000000200000003000000
   layermask:
     serializedVersion: 2
@@ -7835,6 +7855,14 @@ PrefabInstance:
     - target: {fileID: 1986018028421282394, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5600072219332144779, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_fontSize
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 5600072219332144779, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7567277562759007079, guid: bd37a86881b6da847a8ff5fb96098c5f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

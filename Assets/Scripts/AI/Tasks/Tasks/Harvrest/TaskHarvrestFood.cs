@@ -18,6 +18,6 @@ public class TaskHarvrestFood : TaskHarverestBase
         uint actualNumberStocked = actions.GetStoredRessource(ressource);
         int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
 
-        return (actualNumberStocked - actualColonyPop) / 10;
+        return ((float)actualColonyPop - (float)actualNumberStocked) / 10;
     }
 }

@@ -5,6 +5,8 @@ public class TaskReproduct : TaskBase
 {
     Transform houseTransform;
 
+    private bool hasReproducted;
+
     public override bool Do()
     {
         actions.MoveTo(houseTransform);
@@ -19,21 +21,29 @@ public class TaskReproduct : TaskBase
         BlackBoard colonyBlackboard = manager.colonieBlackboard;
         int actualPopulation = colonyBlackboard.GetValue<int>("Habitant");
         int maxPopulation = colonyBlackboard.GetValue<int>("MaxHabitant");
-        float populationFactor = 0.8f * (1 - (actualPopulation / maxPopulation));
+
+        if(actualPopulation >= maxPopulation) { return 0; }
+
+        float populationFactor = 0.8f * (1.0f - ((float)actualPopulation / (float)maxPopulation));
 
         int foodStored = (int)actions.GetStoredRessource(RessourceType.food);
-        float foodSurplusFactor = 0.2f * (foodStored - actualPopulation);
+        float foodSurplusFactor = 0.2f * ((float)foodStored - (float)actualPopulation);
 
         return actions.GetNearestHouse() != null ? populationFactor + foodSurplusFactor : 0;
     }
 
     public override void OnFinish()
     {
+        if (hasReproducted) { return; }
+        hasReproducted = true;
+        manager.colonieBlackboard.AddValueOrModify("Habitant", manager.colonieBlackboard.GetValue<int>("Habitant") - 1);
         actions.ReproductSelf();
     }
 
     public override void OnStart()
     {
+        manager.colonieBlackboard.AddValueOrModify("Habitant", manager.colonieBlackboard.GetValue<int>("Habitant") + 1);
+        hasReproducted = false;
         houseTransform = actions.GetNearestHouse();
     }
 

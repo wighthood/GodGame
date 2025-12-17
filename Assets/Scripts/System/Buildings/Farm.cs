@@ -7,12 +7,9 @@ public class Farm : MonoBehaviour
     private float farmGrowTime;
     private float currentTimer;
 
-    [SerializeField]
-    private GameObject foodPrefab;
-
     private GameObject instanciatedFood;
 
-    public static event Func<Vector3, GameObject> spawnFood;
+    public static event Func<RessourceType, Vector2, GameObject> spawnFood;
 
     private void Update()
     {
@@ -24,7 +21,8 @@ public class Farm : MonoBehaviour
         currentTimer += Time.deltaTime;
         if(currentTimer >= farmGrowTime)
         {
-            instanciatedFood = spawnFood.Invoke(transform.position);
+            instanciatedFood = spawnFood.Invoke(RessourceType.food, transform.position);
+            instanciatedFood.GetComponent<SpriteRenderer>().enabled = false;
             currentTimer = 0;
         }
     }

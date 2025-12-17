@@ -24,6 +24,7 @@ public class AIStats : MonoBehaviour
     public void TakeDamage(int _amount)
     {
         health -= _amount;
+        if(health <= 0) { Death(); }
     }
 
     public void SetHealth(int _health)
@@ -47,6 +48,10 @@ public class AIStats : MonoBehaviour
         blackBoard.ModifyValue("hunger", hunger);
     }
 
+    private void Death()
+    {
+        Destroy(gameObject);
+    }
 
     private IEnumerator Hunger()
     {

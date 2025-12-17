@@ -24,6 +24,7 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.OnAddNewRessourceEvent += AddNewRessource;
+        Farm.spawnFood += AddNewRessource;
     }
 
     private void OnEnable()
@@ -80,6 +81,7 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.OnAddNewRessourceEvent -= AddNewRessource;
+        Farm.spawnFood -= AddNewRessource;
     }
 
     public string CaptureState()

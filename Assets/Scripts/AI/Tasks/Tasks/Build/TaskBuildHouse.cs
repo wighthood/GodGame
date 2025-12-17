@@ -32,7 +32,7 @@ public class TaskBuildHouse : TaskBase
         }
         else
         {
-            if (targetRessource == null || (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f && !IsNextToRessource()))
+            if (targetRessource == null)
             {
                 GetNearestIfExiste();
                 if (targetRessource == null)
@@ -40,13 +40,25 @@ public class TaskBuildHouse : TaskBase
                     return true;
                 }
             }
-            else if (IsNextToRessource())
+            else if (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
             {
-                actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
-                if (!CanBuild())
+                if(IsNextToRessource())
                 {
-                    return false;
+                    actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
+                    if (!CanBuild())
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    GetNearestIfExiste();
+                    if (targetRessource == null)
+                    {
+                        return true;
+                    }
+                }
+                    
             }
             else
             {
@@ -65,7 +77,7 @@ public class TaskBuildHouse : TaskBase
 
     private bool IsNextToRessource()
     {
-        return Physics2D.CircleCast(transform.position, 1, Vector2.zero, 1, actions.ressourcesMask[(int)buildingTable.ressourcesNeeded[0].RessourceType - 1]);
+        return Physics2D.CircleCast(transform.position, 0.5f, Vector2.zero, 0.5f, actions.ressourcesMask[(int)buildingTable.ressourcesNeeded[0].RessourceType - 1]);
     }
 
     private void GetNearestIfExiste()
@@ -134,8 +146,11 @@ public class TaskBuildHouse : TaskBase
     {
         base.DrawActionsGizmo();
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+        if (targetRessource != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+        }
 
         if (path == null || path.Count == 0)
             return;
