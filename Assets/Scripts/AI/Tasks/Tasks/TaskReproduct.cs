@@ -7,6 +7,8 @@ public class TaskReproduct : TaskBase
 
     private bool hasReproducted;
 
+    Storage storage;
+
     public override bool Do()
     {
         actions.MoveTo(houseTransform);
@@ -16,7 +18,12 @@ public class TaskReproduct : TaskBase
 
     public override float GetPriority()
     {
-        if(manager.colonieBlackboard == null || actions.GetStorage() == null) { return 0; }
+        if (storage == null && actions.GetStorage())
+        {
+            storage = actions.GetStorage();
+        }
+
+        if (manager.colonieBlackboard == null || actions.GetStorage() == null) { return 0; }
         
         BlackBoard colonyBlackboard = manager.colonieBlackboard;
         int actualPopulation = colonyBlackboard.GetValue<int>("Habitant");
