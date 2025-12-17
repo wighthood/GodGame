@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1038975854675479161}
   - component: {fileID: -5070592110930588611}
   - component: {fileID: 3578953522131906577}
+  - component: {fileID: 2232198274003502508}
   m_Layer: 12
   m_Name: Champ
   m_TagString: Untagged
@@ -153,3 +154,17 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.625, y: 0.56087786}
   m_EdgeRadius: 0
+--- !u!114 &2232198274003502508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453019938693668466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a33ce87e7f514bc4aa7e445f6d04ac2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Farm
+  farmGrowTime: 10
+  foodPrefab: {fileID: 2453019938693668466, guid: 8766367ba106c004aac8e8db0eeefb2a, type: 3}
