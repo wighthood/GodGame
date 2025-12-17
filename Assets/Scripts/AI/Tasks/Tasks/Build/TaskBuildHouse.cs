@@ -7,10 +7,10 @@ public class TaskBuildHouse : TaskBase
     [SerializeField] private BuildingTable buildingTable;
 
     Vector3? batimentPosition;
-    public List<Cell> pathDebug = new();
+    public List<Cell> path = new();
     AIInventory inventory;
 
-    Transform targetRessource;
+    Vector3? targetRessource;
     Transform transform;
     protected Storage storage;
 
@@ -24,15 +24,15 @@ public class TaskBuildHouse : TaskBase
     {
         if (batimentPosition == null) { return true; }
 
-        if (actions.GetRessourceTransported() == buildingTable.ressourcesNeeded[0].RessourceType && actions.GetRessourceTransportedNumber() >= buildingTable.ressourcesNeeded[0].number)
+        if (CanBuild())
         {
-            pathDebug = actions.GetPath();
+            path = actions.GetPath();
             actions.MoveTo((Vector2)batimentPosition);
             return FinishCondition();
         }
         else
         {
-            if (targetRessource == null)
+            if (targetRessource == null || (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f && !IsNextToRessource()))
             {
                 GetNearestIfExiste();
                 if (targetRessource == null)
@@ -40,20 +40,22 @@ public class TaskBuildHouse : TaskBase
                     return true;
                 }
             }
+            else if (IsNextToRessource())
+            {
+                actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
+                if (!CanBuild())
+                {
+                    return false;
+                }
+            }
             else
             {
-                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                path = actions.GetPath();
+                actions.MoveTo((Vector3)targetRessource);
+
+                if (path == null)
                 {
-                    actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
-                    if (!CanBuild())
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    pathDebug = actions.GetPath();
-                    actions.MoveTo(targetRessource);
+                    GetNearestIfExiste();
                 }
             }
         }
@@ -61,9 +63,14 @@ public class TaskBuildHouse : TaskBase
         return false;
     }
 
+    private bool IsNextToRessource()
+    {
+        return Physics2D.CircleCast(transform.position, 1, Vector2.zero, 1, actions.ressourcesMask[(int)buildingTable.ressourcesNeeded[0].RessourceType - 1]);
+    }
+
     private void GetNearestIfExiste()
     {
-        Transform target = actions.GetNearestRessource(buildingTable.ressourcesNeeded[0].RessourceType);
+        Vector3? target = actions.GetNearestRessource(buildingTable.ressourcesNeeded[0].RessourceType);
 
         if (target == null)
         {
@@ -83,7 +90,7 @@ public class TaskBuildHouse : TaskBase
         {
             return 0;
         }
-        if(storage == null && actions.GetStorage())
+        if (storage == null && actions.GetStorage())
         {
             storage = actions.GetStorage();
         }
@@ -96,7 +103,7 @@ public class TaskBuildHouse : TaskBase
 
     public override void OnFinish()
     {
-        if(!CanBuild())
+        if (!CanBuild())
         {
             return;
         }
@@ -127,17 +134,20 @@ public class TaskBuildHouse : TaskBase
     {
         base.DrawActionsGizmo();
 
-        if (pathDebug == null || pathDebug.Count == 0)
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+
+        if (path == null || path.Count == 0)
             return;
 
         Gizmos.color = Color.green;
 
-        for (int i = 0; i < pathDebug.Count - 1; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
             Vector2 firstPos = new();
-            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
             Vector2 secPos = new();
-            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }

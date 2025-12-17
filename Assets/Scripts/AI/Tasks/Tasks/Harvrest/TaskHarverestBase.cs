@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public abstract class TaskHarverestBase : TaskBase
 {
     protected RessourceType ressource;
     protected uint numberMin;
-    protected Transform targetRessource;
+    protected Vector3? targetRessource;
     protected Transform transform;
     protected Storage storage;
-    public List<Cell> pathDebug = new();
+    public List<Cell> path = new();
 
     public virtual void Init(TaskManager _manager, AgentActions _action, uint _numberMin)
     {
@@ -19,7 +20,7 @@ public abstract class TaskHarverestBase : TaskBase
 
     private void GetNearestIfExiste()
     {
-        Transform target = actions.GetNearestRessource(ressource);
+        Vector3? target = actions.GetNearestRessource(ressource);
 
         if (target == null)
         {
@@ -43,13 +44,13 @@ public abstract class TaskHarverestBase : TaskBase
     {
         if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() >= 5)
         {
-            pathDebug = actions.GetPath();
+            path = actions.GetPath();
             actions.MoveTo(storage.transform);
             return FinishCondition();
         }
         else
         {
-            if (targetRessource == null)
+            if (targetRessource == null || (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f && !IsNextToRessource()))
             {
                 GetNearestIfExiste();
                 if (targetRessource == null)
@@ -57,25 +58,28 @@ public abstract class TaskHarverestBase : TaskBase
                     return true;
                 }
             }
+            else if (IsNextToRessource())
+            {
+                actions.Harvrest(ressource);
+            }
             else
             {
-                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                path = actions.GetPath();
+                actions.MoveTo((Vector3)targetRessource);
+
+                if(path ==  null)
                 {
-                    actions.Harvrest(ressource);
-                    if (actions.GetRessourceTransportedNumber() < 5)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    pathDebug = actions.GetPath();
-                    actions.MoveTo(targetRessource);
+                    GetNearestIfExiste();
                 }
             }
         }
 
         return false;
+    }
+
+    private bool IsNextToRessource()
+    {
+        return Physics2D.CircleCast(transform.position, 1, Vector2.zero, 1, actions.ressourcesMask[(int)ressource - 1]);
     }
 
     public override void OnFinish()
@@ -96,23 +100,25 @@ public abstract class TaskHarverestBase : TaskBase
         return Vector3.Distance(transform.position, storage.transform.position) < 0.5f;
     }
 
-
 #if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
 
-        if (pathDebug == null || pathDebug.Count == 0)
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
+
+        if (path == null || path.Count == 0)
             return;
 
         Gizmos.color = Color.green;
 
-        for (int i = 0; i < pathDebug.Count - 1; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
             Vector2 firstPos = new();
-            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
             Vector2 secPos = new();
-            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
