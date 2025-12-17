@@ -24,10 +24,22 @@ public class TaskBuildHouse : TaskBase
     {
         if (batimentPosition == null) { return true; }
 
+        if(actions.GetRessourceTransportedNumber() > 0 && actions.GetRessourceTransported() != buildingTable.ressourcesNeeded[0].RessourceType)
+        {
+            actions.MoveTo(storage.transform);
+            path = actions.GetPath();
+            if(Vector3.Distance(transform.position, storage.transform.position) < 0.5f)
+            {
+                actions.DropRessourcesOnStorage();
+            }
+
+            return false;
+        }
+
         if (CanBuild())
         {
-            path = actions.GetPath();
             actions.MoveTo((Vector2)batimentPosition);
+            path = actions.GetPath();
             return FinishCondition();
         }
         else
