@@ -77,7 +77,7 @@ public class TaskBuildHouse : TaskBase
 
     private bool IsNextToRessource()
     {
-        return Physics2D.CircleCast(transform.position, 1, Vector2.zero, 1, actions.ressourcesMask[(int)buildingTable.ressourcesNeeded[0].RessourceType - 1]);
+        return Physics2D.CircleCast(transform.position, 0.5f, Vector2.zero, 0.5f, actions.ressourcesMask[(int)buildingTable.ressourcesNeeded[0].RessourceType - 1]);
     }
 
     private void GetNearestIfExiste()

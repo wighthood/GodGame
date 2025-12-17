@@ -30,6 +30,12 @@ public class Graph : MonoBehaviour
 
     private void Awake()
     {
+        graph = new List<Cell>();
+        graphDict = new Dictionary<Vector2Int, Cell>();
+    }
+
+    private void OnEnable()
+    {
         MapEditorScript.GetCell += GetCellFromWorldPos;
         WorldGeneration.OnInitGraphEvent += InitGraph;
         SaveEvents.OnGraphRefreshRequestedEvent += InitGraph;
@@ -56,10 +62,6 @@ public class Graph : MonoBehaviour
 
     public void InitGraph()
     {
-        graph = new List<Cell>();
-        graphDict = new Dictionary<Vector2Int, Cell>();
-        print("reset graph");
-
         foreach (Vector3Int pos in tilemap.cellBounds.allPositionsWithin)
         {
             if (!tilemap.HasTile(pos)) continue;
@@ -195,8 +197,7 @@ public class Graph : MonoBehaviour
 #endif
     }
 
-
-    private void OnDestroy()
+    private void OnDisable()
     {
         MapEditorScript.GetCell -= GetCellFromWorldPos;
         WorldGeneration.OnInitGraphEvent -= InitGraph;
@@ -208,7 +209,7 @@ public class Graph : MonoBehaviour
         Colony.WorldToCellPos -= WorldToCellPos;
         Colony.CellToWorld -= CellToWorld;
         Colony.GetCell -= GetCell;
-        AgentActions.GetRessources += GetNearestRessouceLocation;
+        AgentActions.GetRessources -= GetNearestRessouceLocation;
         MapRessourceManager.ChangeCellRessourceInfos -= SetCellRessource;
     }
 }

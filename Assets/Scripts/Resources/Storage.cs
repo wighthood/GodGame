@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Storage : MonoBehaviour
 {
-    private readonly List<RessourceCollection> ressourcesStocked = new();
+    [SerializeField] private List<RessourceCollection> ressourcesStocked = new();
 
     public void AddRessources(RessourceType _type, uint _numberToAdd)
     {

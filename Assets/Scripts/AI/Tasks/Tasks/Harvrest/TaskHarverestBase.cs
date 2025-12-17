@@ -54,7 +54,7 @@ public abstract class TaskHarverestBase : TaskBase
                 GetNearestIfExiste();
                 if (targetRessource == null)
                 {
-                    return true;
+                    return false;
                 }
             }
             else if (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
@@ -68,7 +68,7 @@ public abstract class TaskHarverestBase : TaskBase
                     GetNearestIfExiste();
                     if (targetRessource == null)
                     {
-                        return true;
+                        return false;
                     }
                 }
             }
@@ -89,7 +89,7 @@ public abstract class TaskHarverestBase : TaskBase
 
     private bool IsNextToRessource()
     {
-        return Physics2D.CircleCast(transform.position, 1, Vector2.zero, 1, actions.ressourcesMask[(int)ressource - 1]);
+        return Physics2D.CircleCast(transform.position, 0.5f, Vector2.zero, 0.5f, actions.ressourcesMask[(int)ressource - 1]);
     }
 
     public override void OnFinish()

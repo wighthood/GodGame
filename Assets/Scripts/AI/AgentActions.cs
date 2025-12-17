@@ -259,7 +259,7 @@ public class AgentActions : MonoBehaviour
 
     public uint GetStoredRessource(RessourceType _ressourceType)
     {
-        if (((Colony)colonyAgent.GetCurrentColony()).storage)
+        if (!((Colony)colonyAgent.GetCurrentColony()).storage)
         {
             return 0;
         }
