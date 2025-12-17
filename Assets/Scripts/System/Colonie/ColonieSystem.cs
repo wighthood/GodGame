@@ -392,7 +392,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
 
         nextColonyId = data.nextColonyId;
 
-        foreach (var colData in data.colonies)
+        foreach (ColonySaveData colData in data.colonies)
         {
             Colony col = Instantiate(colonyPrefab, colData.position, Quaternion.identity, transform).GetComponent<Colony>();
             col.InitColony();
@@ -412,7 +412,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             }
 
             // Restore Blackboard
-            foreach (var entry in colData.blackboard)
+            foreach (BlackboardEntry entry in colData.blackboard)
             {
                 if (entry.type == "int") col.BlackBoard.AddValueOrModify(entry.key, entry.intVal);
                 else if (entry.type == "float") col.BlackBoard.AddValueOrModify(entry.key, entry.floatVal);
@@ -441,7 +441,7 @@ public class ColonieSystem : MonoBehaviour, ISaveable
                 }
 
                 GameObject agentObj = Instantiate(prefab, agentData.position, Quaternion.identity, agentParent); 
-                var agent = agentObj.GetComponent<I_ColonyAgent>();
+                I_ColonyAgent agent = agentObj.GetComponent<I_ColonyAgent>();
                 
                 if (agent != null)
                 {
@@ -480,9 +480,9 @@ public class ColonieSystem : MonoBehaviour, ISaveable
             }
             
             // Restore Diplomacy
-            foreach (var relData in colData.relations)
+            foreach (ColonyRelationData relData in colData.relations)
             {
-                var rel = col.GetRelationData(relData.targetId);
+                ColonyRelation rel = col.GetRelationData(relData.targetId);
                 rel.Opinion = relData.opinion;
                 rel.State = relData.state;
             }

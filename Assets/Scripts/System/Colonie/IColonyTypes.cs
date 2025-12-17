@@ -11,8 +11,6 @@ public interface I_Colony
 
     int GetMaxInhabitants();
 
-    IReadOnlyList<I_ColonyAgent> GetMembers();
-
     ColonyRelation GetRelationData(int _otherId);
 
     float GetInfluenceRadius();

@@ -1,6 +1,6 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MeteoManager : MonoBehaviour, ISaveable
 {
@@ -40,7 +40,7 @@ public class MeteoManager : MonoBehaviour, ISaveable
 
     private void MeteoChange()
     {
-        currentWeatherState = (WeatherState)UnityEngine.Random.Range(0, 4);
+        currentWeatherState = (WeatherState)Random.Range(0, 4);
         OnWeatherChanged?.Invoke(currentWeatherState);
     }
 
@@ -51,7 +51,7 @@ public class MeteoManager : MonoBehaviour, ISaveable
 
     private void WeatherTime()
     {
-        timerWeather = UnityEngine.Random.Range(weatherRange.x, weatherRange.y);
+        timerWeather = Random.Range(weatherRange.x, weatherRange.y);
     }   
 
     // ISaveable Implementation
