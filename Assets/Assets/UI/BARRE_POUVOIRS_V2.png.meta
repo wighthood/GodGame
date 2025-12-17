@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 6a866a0c6be54c84b9fe4b762604db7d
+guid: c6744248262cb654a8d48f4857e894cf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7337515200998065023
-    second: UI_ONGLET_0
+      213: 1402168402403522052
+    second: BARRE_POUVOIRS_V2_0
+  - first:
+      213: -354227709575838367
+    second: BARRE_POUVOIRS_V2_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +54,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 200
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -96,30 +99,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UI_ONGLET_0
+      name: BARRE_POUVOIRS_V2_0
       rect:
         serializedVersion: 2
-        x: 103
-        y: 91
-        width: 257
-        height: 315
+        x: 0
+        y: 0
+        width: 764
+        height: 2141
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +118,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f73c481133714d560800000000000000
-      internalID: 7337515200998065023
+      spriteID: 406f984abb0857310800000000000000
+      internalID: 1402168402403522052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BARRE_POUVOIRS_V2_1
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 2046
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 165c12166c7851bf0800000000000000
+      internalID: -354227709575838367
       vertices: []
       indices: 
       edges: []
@@ -148,7 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      UI_ONGLET_0: 7337515200998065023
+      BARRE_POUVOIRS_V2_0: 1402168402403522052
+      BARRE_POUVOIRS_V2_1: -354227709575838367
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

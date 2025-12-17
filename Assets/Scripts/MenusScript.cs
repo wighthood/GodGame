@@ -1,4 +1,6 @@
+using System.Collections;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -6,6 +8,7 @@ using UnityEngine.UI;
 public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
+    public TextMeshProUGUI text;
     
     string SavePath => Application.persistentDataPath + "/savegame.json";
     
@@ -70,6 +73,25 @@ public class MenusScript : MonoBehaviour
 
         if (AudioManager.Instance != null) 
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
+    }
+
+    public void OpenURL(string url)
+    {
+        Application.OpenURL(url);
+    }
+
+    public void DestroyShroom(GameObject shroom)
+    {
+        StartCoroutine(DestroyShroomMainMenu(shroom));
+    }
+
+    public IEnumerator DestroyShroomMainMenu(GameObject shroomMainMenu)
+    {
+        Image image = shroomMainMenu.GetComponent<Image>();
+        
+        image.enabled = false;
+        yield return new WaitForSecondsRealtime(2f);
+        image.enabled = true;
     }
     
     public void Save() { SaveEvents.OnRequestSaveEvent?.Invoke(); }

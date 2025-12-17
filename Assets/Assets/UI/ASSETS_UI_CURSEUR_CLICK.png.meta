@@ -1,0 +1,403 @@
+fileFormatVersion: 2
+guid: 3b4d46f1c90dbeb41b314e519bce37e1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6658980364002840836
+    second: ASSETS_UI_CURSEUR_CLICK_0
+  - first:
+      213: -4870633009489809021
+    second: ASSETS_UI_CURSEUR_CLICK_1
+  - first:
+      213: -2458822159155366765
+    second: ASSETS_UI_CURSEUR_CLICK_2
+  - first:
+      213: -1346796738514104188
+    second: ASSETS_UI_CURSEUR_CLICK_3
+  - first:
+      213: 1643826592375805628
+    second: ASSETS_UI_CURSEUR_CLICK_4
+  - first:
+      213: 1078468251792894090
+    second: ASSETS_UI_CURSEUR_CLICK_5
+  - first:
+      213: -3068422173539880019
+    second: ASSETS_UI_CURSEUR_CLICK_6
+  - first:
+      213: -8249333381689501254
+    second: ASSETS_UI_CURSEUR_CLICK_7
+  - first:
+      213: -7654539876163443470
+    second: ASSETS_UI_CURSEUR_CLICK_8
+  - first:
+      213: 1026613391245693592
+    second: ASSETS_UI_CURSEUR_CLICK_9
+  - first:
+      213: -2527296737418840743
+    second: ASSETS_UI_CURSEUR_CLICK_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 540
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 7
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 912
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfe2f45c3ac8693a0800000000000000
+      internalID: -6658980364002840836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_1
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 905
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38171166519086cb0800000000000000
+      internalID: -4870633009489809021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 875
+        width: 9
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3947fad064280edd0800000000000000
+      internalID: -2458822159155366765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_3
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 859
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 480563080873f4de0800000000000000
+      internalID: -1346796738514104188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_4
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 864
+        width: 47
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb696ee839b00d610800000000000000
+      internalID: 1643826592375805628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_5
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 871
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a88e6a9392d77fe00800000000000000
+      internalID: 1078468251792894090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_6
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 863
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da339355a46ca65d0800000000000000
+      internalID: -3068422173539880019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_7
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 885
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab910a60ffa748d80800000000000000
+      internalID: -8249333381689501254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_8
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 831
+        width: 9
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f42732c98c95c590800000000000000
+      internalID: -7654539876163443470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_9
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 834
+        width: 48
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 892dbdaa0734f3e00800000000000000
+      internalID: 1026613391245693592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ASSETS_UI_CURSEUR_CLICK_10
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 217
+        width: 690
+        height: 604
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 955752ce10d3decd0800000000000000
+      internalID: -2527296737418840743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ASSETS_UI_CURSEUR_CLICK_0: -6658980364002840836
+      ASSETS_UI_CURSEUR_CLICK_1: -4870633009489809021
+      ASSETS_UI_CURSEUR_CLICK_10: -2527296737418840743
+      ASSETS_UI_CURSEUR_CLICK_2: -2458822159155366765
+      ASSETS_UI_CURSEUR_CLICK_3: -1346796738514104188
+      ASSETS_UI_CURSEUR_CLICK_4: 1643826592375805628
+      ASSETS_UI_CURSEUR_CLICK_5: 1078468251792894090
+      ASSETS_UI_CURSEUR_CLICK_6: -3068422173539880019
+      ASSETS_UI_CURSEUR_CLICK_7: -8249333381689501254
+      ASSETS_UI_CURSEUR_CLICK_8: -7654539876163443470
+      ASSETS_UI_CURSEUR_CLICK_9: 1026613391245693592
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
