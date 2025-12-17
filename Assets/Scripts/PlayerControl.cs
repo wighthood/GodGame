@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     [SerializeField] private float maxZoom = 1f;
     [SerializeField] private float minZoom = 25f;
     [SerializeField] private float edge = 10f;
+    [SerializeField] private float initialDezoom = 60f;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject settings;
     [SerializeField] private Texture2D pressedMouseCursor;
@@ -25,6 +27,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private Vector3 _difference;
     private Camera _maincamera;
     private bool _isDragging;
+    private bool _InitDezoom = false;
 
     private Vector3 GetMousePosition => _maincamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
@@ -35,6 +38,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     public void OnDrag(InputAction.CallbackContext ctx)
     {
+        if (!_InitDezoom) return;
         if (ctx.started) _origin = GetMousePosition;
         _isDragging = ctx.started || ctx.performed;
     }
@@ -42,6 +46,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private void LateUpdate()
     {
         if (!_isDragging) return;
+        if (_InitDezoom) return;
         if (pauseMenu.activeSelf)
             return;
 
@@ -52,7 +57,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     private void onEdgeScroll()
     {
-        if(pauseMenu.activeSelf)
+        if(pauseMenu.activeSelf || !_InitDezoom)
             return;
         if (Mouse.current.position.ReadValue().x > Screen.width - edge)
         {
@@ -76,12 +81,13 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (!_InitDezoom) return;
         _direction = context.ReadValue<Vector2>();
     }
 
     public void Zoom(InputAction.CallbackContext context)
     {
-        if (Camera.main != null && Time.timeScale > 0f)
+        if (Camera.main != null && Time.timeScale > 0f && _InitDezoom)
         {
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>() * zoomSpeed, maxZoom, minZoom);
         }
@@ -124,11 +130,25 @@ public class PlayerControl : MonoBehaviour, ISaveable
         cameraLimit.y = (float)worldGeneration.MapHeight() / 2;
     }
 
+
     private void Update()
     {
         transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
         CameraLimit();
         onEdgeScroll();
+
+        if (!_InitDezoom && SaveEvents.ShouldLoadOnStart == false)
+        {
+            if (Camera.main.orthographicSize < 10 )
+            {
+                Camera.main.orthographicSize += initialDezoom * Time.deltaTime;
+            }
+            else
+            {
+                _InitDezoom = true;
+            }
+        }
+        
     }
 
     private void OnEnable()
