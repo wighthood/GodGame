@@ -17,6 +17,8 @@ public class PlayerControl : MonoBehaviour, ISaveable
     [SerializeField] private Texture2D normalMouseCursor;
     [SerializeField] private Vector2 cameraLimit;
 
+    [SerializeField] private Animator powerBarAnimator;
+
     public WorldGeneration worldGeneration;
 
     private Vector2 _direction;
@@ -216,5 +218,17 @@ public class PlayerControl : MonoBehaviour, ISaveable
             pos.y = -cameraLimit.y + halfHeight;
 
         transform.position = pos;
+    }
+    
+    public void ClosePowerBar()
+    {
+        powerBarAnimator.SetBool("IsClosing", true);
+        powerBarAnimator.SetBool("IsOpen", false);
+    }
+
+    public void OpenPowerBar()
+    {
+        powerBarAnimator.SetBool("IsClosing", false);
+        powerBarAnimator.SetBool("IsOpen", true);
     }
 }
