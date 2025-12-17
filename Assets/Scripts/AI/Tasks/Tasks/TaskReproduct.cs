@@ -36,11 +36,13 @@ public class TaskReproduct : TaskBase
     {
         if (hasReproducted) { return; }
         hasReproducted = true;
+        manager.colonieBlackboard.AddValueOrModify("Habitant", manager.colonieBlackboard.GetValue<int>("Habitant") - 1);
         actions.ReproductSelf();
     }
 
     public override void OnStart()
     {
+        manager.colonieBlackboard.AddValueOrModify("Habitant", manager.colonieBlackboard.GetValue<int>("Habitant") + 1);
         hasReproducted = false;
         houseTransform = actions.GetNearestHouse();
     }
