@@ -21,6 +21,9 @@ public class TaskReproduct : TaskBase
         BlackBoard colonyBlackboard = manager.colonieBlackboard;
         int actualPopulation = colonyBlackboard.GetValue<int>("Habitant");
         int maxPopulation = colonyBlackboard.GetValue<int>("MaxHabitant");
+
+        if(actualPopulation >= maxPopulation) { return 0; }
+
         float populationFactor = 0.8f * (1.0f - ((float)actualPopulation / (float)maxPopulation));
 
         int foodStored = (int)actions.GetStoredRessource(RessourceType.food);
