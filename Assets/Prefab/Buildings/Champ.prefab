@@ -105,8 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Building
   Sprites:
-  - {fileID: -3240157506411019949, guid: 52eeca343121b644393673472b45025b, type: 3}
-  BuildingTable: {fileID: 0}
+  - {fileID: 21300000, guid: 142ebbea9278a644798f93f6ca9175b7, type: 3}
+  BuildingTable: {fileID: 11400000, guid: 89b16201396c516488dc737b1d91969d, type: 2}
 --- !u!61 &3578953522131906577
 BoxCollider2D:
   m_ObjectHideFlags: 0

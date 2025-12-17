@@ -28,6 +28,8 @@ public class Graph : MonoBehaviour
         new(-1, -1),
     };
 
+    private int currentSearchId = 0;
+
     private void Awake()
     {
         graph = new List<Cell>();
@@ -76,15 +78,15 @@ public class Graph : MonoBehaviour
         }
     }
 
-    public Vector2Int WorldToCellPos(Vector3 worldPos)
+    public Vector2Int WorldToCellPos(Vector3 _worldPos)
     {
-        Vector3Int cell = tilemap.WorldToCell(worldPos);
+        Vector3Int cell = tilemap.WorldToCell(_worldPos);
         return new Vector2Int(cell.x, cell.y);
     }
 
-    public Vector3 CellToWorld(Vector2Int cellPos)
+    public Vector3 CellToWorld(Vector2Int _cellPos)
     {
-        Vector3 world = tilemap.CellToWorld(new Vector3Int(cellPos.x, cellPos.y, 0));
+        Vector3 world = tilemap.CellToWorld(new Vector3Int(_cellPos.x, _cellPos.y, 0));
         return world + new Vector3(0.5f, 0.5f, 0f);
     }
 
@@ -106,54 +108,36 @@ public class Graph : MonoBehaviour
         return cell;
     }
 
-    private void ResetCells()
-    {
-        foreach (Cell cell in GetCellsFromDict())
-            cell.Reset();
-    }
-
     private Vector3? GetNearestRessouceLocation(RessourceType _ressource, Vector2 _agentPosition)
     {
         Cell start = GetCellFromWorldPos(_agentPosition);
+        if (start == null) return null;
 
-        ResetCells();
+        currentSearchId++;
 
-        Queue<Cell> open = new Queue<Cell>();
+        Queue<Cell> open = new();
+        start.visitedId = currentSearchId;
         open.Enqueue(start);
 
-        int security = 0;
-
-        while(open.Count > 0 && security < 10000)
+        while (open.Count > 0)
         {
             Cell current = open.Dequeue();
-            current.inClosedSet = true;
-            if (HasRessource(current, _ressource))
-            {
-                return CellToWorld(current.position);
-            }
 
-            AddAllNeighbors(current.position, open);
-            security++;
+            if (current.Ressources == (byte)_ressource)
+                return CellToWorld(current.position);
+
+            foreach (Vector2Int d in directions)
+            {
+                Cell cell = GetCell(current.position + d);
+                if (cell == null || !cell.isWalkable) continue;
+                if (cell.visitedId == currentSearchId) continue;
+
+                cell.visitedId = currentSearchId;
+                open.Enqueue(cell);
+            }
         }
 
         return null;
-    }
-
-    private void AddAllNeighbors(Vector2Int _cellPosition, Queue<Cell> _cells)
-    {
-        foreach (Vector2Int d in directions)
-        {
-            Cell c = GetCell(_cellPosition + d);
-            if (c != null && c.isWalkable && !c.inClosedSet)
-            {
-                _cells.Enqueue(c);
-            }
-        }
-    }
-
-    private bool HasRessource(Cell _cell, RessourceType _ressourceType)
-    {
-        return _cell.Ressources == (byte)_ressourceType;
     }
 
     private void SetCellRessource(Vector3 ressourcePosition, RessourceType _type)

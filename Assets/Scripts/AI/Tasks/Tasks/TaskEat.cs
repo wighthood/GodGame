@@ -4,9 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
 public class TaskEat : TaskBase
 {
-    private Vector3 targetFoodSource;
-    private bool isArrive;
-    public List<Cell> pathDebug = new();
+    private Vector3? targetFoodSource;
+    public List<Cell> path = new();
     Transform transform;
     private bool isArrivedToRessource;
     private Transform storageTransform;
@@ -39,6 +38,7 @@ public class TaskEat : TaskBase
             if (storageTransform == null)
             {
                 storageTransform = actions.GetStorage().transform;
+                return false;
             }
 
             if (isArrivedToRessource)
@@ -59,21 +59,42 @@ public class TaskEat : TaskBase
                 GetNearestFoodIfExiste();
                 if (targetFoodSource == null)
                 {
-                    return true;
+                    return false;
                 }
             }
-
-            if (isArrive)
+            else if (Vector3.Distance(transform.position, (Vector3)targetFoodSource) < 0.5f)
             {
-                actions.Harvrest(RessourceType.food);
+                if (IsNextToRessource())
+                {
+                    actions.Harvrest(RessourceType.food);
+                }
+                else
+                {
+                    GetNearestFoodIfExiste();
+                    if (targetFoodSource == null)
+                    {
+                        return false;
+                    }
+                }
             }
             else
             {
-                isArrive = actions.MoveTo(targetFoodSource);
-                pathDebug = actions.GetPath();
+                path = actions.GetPath();
+                actions.MoveTo((Vector3)targetFoodSource);
+
+                if (path == null)
+                {
+                    GetNearestFoodIfExiste();
+                }
             }
-            return false;
         }
+
+        return false;
+    }
+
+    private bool IsNextToRessource()
+    {
+        return Physics2D.CircleCast(transform.position, 0.5f, Vector2.zero, 0.5f, actions.ressourcesMask[(int)RessourceType.food - 1]);
     }
 
     public override float GetPriority()
@@ -89,7 +110,7 @@ public class TaskEat : TaskBase
 
     public override void OnStart()
     {
-        //Debug.Log("Hungry !");
+        targetFoodSource = null;
     }
 
     protected override bool FinishCondition()
@@ -102,17 +123,17 @@ public class TaskEat : TaskBase
     {
         base.DrawActionsGizmo();
 
-        if (pathDebug == null || pathDebug.Count == 0)
+        if (path == null || path.Count == 0)
             return;
 
         Gizmos.color = Color.green;
 
-        for (int i = 0; i < pathDebug.Count - 1; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
             Vector2 firstPos = new();
-            firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
+            firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
             Vector2 secPos = new();
-            secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
+            secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }

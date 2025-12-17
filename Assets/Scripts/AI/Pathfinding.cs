@@ -133,6 +133,7 @@ public class Cell
     public Cell parent;
     public bool inClosedSet;
     public byte Ressources;
+    public int visitedId;
 
     public Cell(int x, int y, bool walkable)
     {
