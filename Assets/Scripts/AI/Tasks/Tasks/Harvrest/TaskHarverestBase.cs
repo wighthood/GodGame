@@ -41,11 +41,22 @@ public abstract class TaskHarverestBase : TaskBase
 
     public override bool Do()
     {
-        if (actions.GetRessourceTransported() == ressource && actions.GetRessourceTransportedNumber() >= 5)
+        if (actions.GetRessourceTransportedNumber() > 0)
         {
             path = actions.GetPath();
             actions.MoveTo(storage.transform);
-            return FinishCondition();
+            if(FinishCondition())
+            {
+                if(actions.GetRessourceTransported() == ressource)
+                {
+                    return true;
+                }
+                else
+                {
+                    actions.DropRessourcesOnStorage();
+                    return false;
+                }
+            }
         }
         else
         {
