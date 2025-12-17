@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1038975854675479161}
   - component: {fileID: -5070592110930588611}
   - component: {fileID: 3578953522131906577}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Champ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
+    oldSize: {x: 0.8385093, y: 0.8385093}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
