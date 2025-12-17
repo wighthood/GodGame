@@ -38,6 +38,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     public void OnDrag(InputAction.CallbackContext ctx)
     {
+        if (!_InitDezoom) return;
         if (ctx.started) _origin = GetMousePosition;
         _isDragging = ctx.started || ctx.performed;
     }
@@ -45,6 +46,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private void LateUpdate()
     {
         if (!_isDragging) return;
+        if (_InitDezoom) return;
         if (pauseMenu.activeSelf)
             return;
 
@@ -55,7 +57,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     private void onEdgeScroll()
     {
-        if(pauseMenu.activeSelf)
+        if(pauseMenu.activeSelf || !_InitDezoom)
             return;
         if (Mouse.current.position.ReadValue().x > Screen.width - edge)
         {
@@ -79,12 +81,13 @@ public class PlayerControl : MonoBehaviour, ISaveable
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (!_InitDezoom) return;
         _direction = context.ReadValue<Vector2>();
     }
 
     public void Zoom(InputAction.CallbackContext context)
     {
-        if (Camera.main != null && Time.timeScale > 0f)
+        if (Camera.main != null && Time.timeScale > 0f && _InitDezoom)
         {
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>() * zoomSpeed, maxZoom, minZoom);
         }
@@ -134,7 +137,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
         CameraLimit();
         onEdgeScroll();
 
-        if (!_InitDezoom)
+        if (!_InitDezoom && SaveEvents.ShouldLoadOnStart == false)
         {
             if (Camera.main.orthographicSize < 10 )
             {
