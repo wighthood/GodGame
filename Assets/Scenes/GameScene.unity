@@ -5233,8 +5233,8 @@ MonoBehaviour:
   resourceSpawnRate: 0.15
   agentPrefab: {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
   agentParent: {fileID: 188331454}
-  resourceParent: {fileID: 0}
-  agentCount: 1
+  resourceParent: {fileID: 518430962}
+  agentCount: 5
   _spawnedAgent: []
 --- !u!114 &130282018
 MonoBehaviour:
@@ -7140,6 +7140,7 @@ MonoBehaviour:
   - {fileID: 5218013249053032955, guid: 101bb3f08730bae41bd68dbc4a5ee8e6, type: 3}
   Entity:
   - {fileID: 4226159496368005823, guid: fbb6771e487847a43896324bee886299, type: 3}
+  - {fileID: 4226159496368005823, guid: 885f8a7e759e710498169571ec4304f3, type: 3}
   weatherState: 00000000010000000200000003000000
   layermask:
     serializedVersion: 2

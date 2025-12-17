@@ -1,0 +1,331 @@
+fileFormatVersion: 2
+guid: 9fa8ab39a085c4a4287e220f9e2d6a4a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4263754655466250739
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_0
+  - first:
+      213: -3215808689981347782
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_1
+  - first:
+      213: 7207900912306936537
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_2
+  - first:
+      213: -722013581733070392
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_3
+  - first:
+      213: -3997232617708272729
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_4
+  - first:
+      213: 6965418880433445611
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_5
+  - first:
+      213: 5768524448928835526
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_6
+  - first:
+      213: 7122024137007069458
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_7
+  - first:
+      213: 1088625455759944410
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_8
+  - first:
+      213: -406771748972555521
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_9
+  - first:
+      213: 6945193826375378530
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_10
+  - first:
+      213: 7407799248323044078
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_11
+  - first:
+      213: -4874278652104579697
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_12
+  - first:
+      213: -4070952105656390106
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_13
+  - first:
+      213: -6857304759809431733
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_14
+  - first:
+      213: 4784999782307905612
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_15
+  - first:
+      213: -587194360261281229
+    second: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 512
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_0
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1121
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0e148f2bb914d4c0800000000000000
+      internalID: -4263754655466250739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_1
+      rect:
+        serializedVersion: 2
+        x: 1341
+        y: 1121
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a382c08d8072f53d0800000000000000
+      internalID: -3215808689981347782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_2
+      rect:
+        serializedVersion: 2
+        x: 2426
+        y: 1121
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dad44ec0bb970460800000000000000
+      internalID: 7207900912306936537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_3
+      rect:
+        serializedVersion: 2
+        x: 3511
+        y: 1121
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c9fac90974eaf5f0800000000000000
+      internalID: -722013581733070392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_4
+      rect:
+        serializedVersion: 2
+        x: 4596
+        y: 1121
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a3c4e8cc1af688c0800000000000000
+      internalID: -3997232617708272729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_5
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 97
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bead80041932aa060800000000000000
+      internalID: 6965418880433445611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_6
+      rect:
+        serializedVersion: 2
+        x: 1341
+        y: 97
+        width: 512
+        height: 1024
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c72f806c6aed0050800000000000000
+      internalID: 5768524448928835526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5f1ae479eb6fda74a8d0e163b3885175
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":512.0,"y":1024.0},"gridSpriteOffset":{"x":256.0,"y":15.0},"gridSpritePadding":{"x":573.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_0: -4263754655466250739
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_1: -3215808689981347782
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_2: 7207900912306936537
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_3: -722013581733070392
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_4: -3997232617708272729
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_5: 6965418880433445611
+      ANIM_ASSETS_FX_REPRODUCTION_SPRITESHEET_6: 5768524448928835526
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -25,6 +25,8 @@ public class AgentActions : MonoBehaviour
     public Vector3 Velocity => (transform.position - lastPos) / Time.deltaTime;
     private Coroutine harvrestingCoroutine;
 
+    [SerializeField] private GameObject reproductionFeedback;
+
     #region values for animations
 
     private Vector3 lastPos = Vector3.zero;
@@ -119,6 +121,7 @@ public class AgentActions : MonoBehaviour
     {
         GameObject newPimus = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newPimus.name = colonyAgent.GetSpecies().ToString();
+        Instantiate(reproductionFeedback, transform.position + Vector3.up, Quaternion.identity);
     }
 
     public void Harvrest(RessourceType _ressource)
@@ -259,7 +262,7 @@ public class AgentActions : MonoBehaviour
 
     public uint GetStoredRessource(RessourceType _ressourceType)
     {
-        if (((Colony)colonyAgent.GetCurrentColony()).storage)
+        if (!((Colony)colonyAgent.GetCurrentColony()).storage)
         {
             return 0;
         }
