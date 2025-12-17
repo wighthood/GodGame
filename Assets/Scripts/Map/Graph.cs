@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,7 +9,6 @@ using UnityEngine.Tilemaps;
 public class Graph : MonoBehaviour
 {
     [SerializeField] private List<TileBase> notWalkableSprites = new();
-    [SerializeField] private LayerMask ressourcesMask;
 
     public List<Cell> graph { get; private set; }
     public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
@@ -41,6 +42,7 @@ public class Graph : MonoBehaviour
         Colony.CellToWorld += CellToWorld;
         Colony.GetCell += GetCell;
         AgentActions.GetRessources += GetNearestRessouceLocation;
+        MapRessourceManager.ChangeCellRessourceInfos += SetCellRessource;
 
         tilemap = GetComponent<Tilemap>();
     }
@@ -116,14 +118,13 @@ public class Graph : MonoBehaviour
 
         int security = 0;
 
-        while(open.Count > 0 || security < 100)
+        while(open.Count > 0 && security < 1000)
         {
             Cell current = open.Dequeue();
             current.inClosedSet = true;
-            Vector3 cellWorldPositon = CellToWorld(current.position);
-            if (HasRessource(cellWorldPositon, _ressource))
+            if (HasRessource(current, _ressource))
             {
-                return cellWorldPositon;
+                return CellToWorld(current.position);
             }
 
             AddAllNeighbors(current.position, open);
@@ -135,7 +136,7 @@ public class Graph : MonoBehaviour
 
     private void AddAllNeighbors(Vector2Int _cellPosition, Queue<Cell> _cells)
     {
-        foreach (var d in directions)
+        foreach (Vector2Int d in directions)
         {
             Cell c = GetCell(_cellPosition + d);
             if (c != null && c.isWalkable && !c.inClosedSet)
@@ -145,13 +146,21 @@ public class Graph : MonoBehaviour
         }
     }
 
-    private bool HasRessource(Vector2 _location, RessourceType _ressourceType)
+    private bool HasRessource(Cell _cell, RessourceType _ressourceType)
     {
-        return Physics2D.Raycast(_location, Vector2.zero, 1, ressourcesMask);
+        return _cell.Ressources == (byte)_ressourceType;
+    }
+
+    private void SetCellRessource(Vector3 ressourcePosition, RessourceType _type)
+    {
+        Cell cell = GetCellFromWorldPos(ressourcePosition);
+
+        cell.Ressources = (byte)_type;
     }
 
     private void OnDrawGizmosSelected()
     {
+#if UNITY_EDITOR
         if (graphDict != null)
         {
             Vector3 size = new(0.5f, 0.5f, 0.1f);
@@ -160,7 +169,17 @@ public class Graph : MonoBehaviour
             {
                 if (cell.isWalkable)
                 {
-                    Gizmos.color = Color.blue;
+                    if(cell.Ressources > 0)
+                    {
+                        Gizmos.color = Color.green;
+                        GUIStyle style = new GUIStyle();
+                        style.normal.textColor = Color.darkGreen;
+                        Handles.Label(new Vector3(cell.position.x, cell.position.y) + Vector3.up * 1f, $"ressource : {cell.Ressources} ({(RessourceType)cell.Ressources})", style);
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.blue;
+                    }
                     Gizmos.DrawCube(CellToWorld(cell.position), size);
                 }
                 else
@@ -169,6 +188,7 @@ public class Graph : MonoBehaviour
                     Gizmos.DrawCube(CellToWorld(cell.position), size);
                 }
             }
+#endif
         }
     }
 
@@ -186,5 +206,6 @@ public class Graph : MonoBehaviour
         Colony.CellToWorld -= CellToWorld;
         Colony.GetCell -= GetCell;
         AgentActions.GetRessources += GetNearestRessouceLocation;
+        MapRessourceManager.ChangeCellRessourceInfos -= SetCellRessource;
     }
 }

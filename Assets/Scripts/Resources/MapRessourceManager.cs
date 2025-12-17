@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
 
     [SerializeField]
     private List<GameObject> ressourcePrefab = new();
+
+    public static event Action<Vector3, RessourceType> ChangeCellRessourceInfos;
 
     private void Awake()
     {
@@ -37,7 +40,10 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
     {
         GameObject newRessource = null;
         newRessource = Instantiate(ressourcePrefab[(int)_ressourceType], _position, Quaternion.identity, transform);
-        AddRessourceInDictionary(newRessource.GetComponent<Ressource>());
+
+        Ressource ressource = newRessource.GetComponent<Ressource>();
+        ChangeCellRessourceInfos?.Invoke(ressource.transform.position, ressource.GetRessourceType());
+        AddRessourceInDictionary(ressource);
         return newRessource;
     }
 
@@ -61,31 +67,11 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
         return ressources[_type];
     }
 
-    public Transform GetNearestRessource(RessourceType _type, Transform _fromEntity)
-    {
-        List<Ressource> ressourcesList = GetRessources(_type);
-
-        if (ressourcesList == null || ressourcesList.Count == 0) return null;
-
-        float nearestDistance = float.MaxValue;
-
-        Transform nearestRessource = ressourcesList[0].transform;
-        foreach (Ressource ressource in ressourcesList)
-        {
-            if (ressource.GetRessourceType() == _type && Vector3.Distance(_fromEntity.position, ressource.transform.position) < nearestDistance)
-            {
-                nearestDistance = Vector3.Distance(_fromEntity.position, nearestRessource.transform.position);
-                nearestRessource = ressource.transform;
-            }
-        }
-
-        return nearestRessource;
-    }
-
     private void RemoveFromListForDestroy(Ressource _ressource)
     {
         if (!ressources.ContainsKey(_ressource.GetRessourceType())) return;
         ressources[_ressource.GetRessourceType()].Remove(_ressource);
+        ChangeCellRessourceInfos?.Invoke(_ressource.transform.position, RessourceType.none);
         Destroy(_ressource.gameObject);
     }
 

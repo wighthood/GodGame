@@ -7379,9 +7379,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5377ea7da4cdb4aa88491281cabf55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColonyOverlayManager
-  territoryPrefab: {fileID: 8561790539606533045, guid: dcc9eeb00d8e42746a6174edbc95f8fd, type: 3}
-  zoomInThreshold: 10
-  zoomOutThreshold: 50
 --- !u!4 &1576850745
 Transform:
   m_ObjectHideFlags: 0

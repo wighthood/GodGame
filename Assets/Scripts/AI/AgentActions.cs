@@ -15,7 +15,7 @@ public class AgentActions : MonoBehaviour
     private Vector2 currentTargetWorld;
 
     [SerializeField]
-    private List<LayerMask> ressourcesMask = new List<LayerMask>();
+    public List<LayerMask> ressourcesMask = new List<LayerMask>();
 
     public static event Func<RessourceType, Vector2, Vector3?> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
@@ -131,7 +131,7 @@ public class AgentActions : MonoBehaviour
 
     private IEnumerator WaitAndHarvrest(float _buildTime, RessourceType _ressource)
     {
-        Ressource targetRessource = GetHarvrestRessources(_ressource);
+        Ressource targetRessource = GetHarvrestRessource(_ressource);
         
         if (targetRessource == null)
         {
@@ -140,16 +140,9 @@ public class AgentActions : MonoBehaviour
             yield break;
         }
         
-        while (isHarvesting)
+        while (isHarvesting && targetRessource)
         {
             _buildTime -= Time.deltaTime;
-            
-            if (targetRessource == null)
-            {
-                isHarvesting = false;
-                harvrestingCoroutine = null;
-                yield break; // On arrête pour éviter le crash
-            }
 
             if (_buildTime <= 0)
             {
@@ -168,14 +161,9 @@ public class AgentActions : MonoBehaviour
         harvrestingCoroutine = null;
     }
 
-    private Ressource GetHarvrestRessources(RessourceType _ressource)
-    {
-        return GetHarvrestRessource(_ressource);
-    }
-
     private Ressource GetHarvrestRessource(RessourceType _ressource)
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 0.5f, Vector2.zero, 0.5f, ressourcesMask[(int)_ressource - 1]);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 1, Vector2.zero, 1, ressourcesMask[(int)_ressource - 1]);
 
         if (hits.Length == 0) return null;
 
