@@ -4,9 +4,11 @@ using UnityEngine.InputSystem;
 public class PlayerControl : MonoBehaviour, ISaveable
 {
     [SerializeField] private float speed = 12f;
+    [SerializeField] private float edgescrollSpeed = 0.1f;
     [SerializeField] private float zoomSpeed = 12f;
     [SerializeField] private float maxZoom = 1f;
     [SerializeField] private float minZoom = 25f;
+    [SerializeField] private float edge = 10f;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject settings;
     [SerializeField] private Texture2D pressedMouseCursor;
@@ -40,10 +42,35 @@ public class PlayerControl : MonoBehaviour, ISaveable
     private void LateUpdate()
     {
         if (!_isDragging) return;
+        if (pauseMenu.activeSelf)
+            return;
 
         _difference = GetMousePosition - transform.position;
         transform.position = _origin - _difference;
         CameraLimit();
+    }
+
+    private void onEdgeScroll()
+    {
+        if(pauseMenu.activeSelf)
+            return;
+        if (Mouse.current.position.ReadValue().x > Screen.width - edge)
+        {
+            transform.position = transform.position + Vector3.right * edgescrollSpeed;
+        }
+        if (Mouse.current.position.ReadValue().x < edge)
+        {
+            transform.position = transform.position + Vector3.left * edgescrollSpeed;
+        }
+        if (Mouse.current.position.ReadValue().y > Screen.height - edge)
+        {
+            transform.position = transform.position + Vector3.up * edgescrollSpeed;
+        }
+        if (Mouse.current.position.ReadValue().y < edge)
+        {
+            transform.position = transform.position + Vector3.down * edgescrollSpeed;
+        }
+        return;
     }
 
 
@@ -101,6 +128,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
     {
         transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
         CameraLimit();
+        onEdgeScroll();
     }
 
     private void OnEnable()
