@@ -19,7 +19,6 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
     private void Awake()
     {
         Ressource.OnEmptyRessource += RemoveFromListForDestroy;
-        AgentActions.GetRessources += GetNearestRessource;
         MapEditorScript.AddNewRessource += AddNewRessource;
         WorldGeneration.OnAddNewRessourceEvent += AddNewRessource;
     }
@@ -93,7 +92,6 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
     private void OnDestroy()
     {
         Ressource.OnEmptyRessource -= RemoveFromListForDestroy;
-        AgentActions.GetRessources -= GetNearestRessource;
         MapEditorScript.AddNewRessource -= AddNewRessource;
         WorldGeneration.OnAddNewRessourceEvent -= AddNewRessource;
     }

@@ -40,6 +40,7 @@ public class Graph : MonoBehaviour
         Colony.WorldToCellPos += WorldToCellPos;
         Colony.CellToWorld += CellToWorld;
         Colony.GetCell += GetCell;
+        AgentActions.GetRessources += GetNearestRessouceLocation;
 
         tilemap = GetComponent<Tilemap>();
     }
@@ -112,9 +113,12 @@ public class Graph : MonoBehaviour
 
         Queue<Cell> open = new Queue<Cell>();
         open.Enqueue(start);
-        while(open.Count > 0)
+
+        int security = 0;
+
+        while(open.Count > 0 || security < 100)
         {
-            Cell current = open.Peek();
+            Cell current = open.Dequeue();
             current.inClosedSet = true;
             Vector3 cellWorldPositon = CellToWorld(current.position);
             if (HasRessource(cellWorldPositon, _ressource))
@@ -123,6 +127,7 @@ public class Graph : MonoBehaviour
             }
 
             AddAllNeighbors(current.position, open);
+            security++;
         }
 
         return null;
@@ -142,13 +147,7 @@ public class Graph : MonoBehaviour
 
     private bool HasRessource(Vector2 _location, RessourceType _ressourceType)
     {
-        RaycastHit2D hit = Physics2D.Raycast(_location, Vector2.zero, 1, ressourcesMask);
-        if (hit.collider)
-        {
-            return hit.collider.GetComponent<Ressource>().GetRessourceType() == _ressourceType;
-        }
-
-        return false;
+        return Physics2D.Raycast(_location, Vector2.zero, 1, ressourcesMask);
     }
 
     private void OnDrawGizmosSelected()
@@ -186,5 +185,6 @@ public class Graph : MonoBehaviour
         Colony.WorldToCellPos -= WorldToCellPos;
         Colony.CellToWorld -= CellToWorld;
         Colony.GetCell -= GetCell;
+        AgentActions.GetRessources += GetNearestRessouceLocation;
     }
 }

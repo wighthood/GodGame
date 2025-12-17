@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
 public class TaskEat : TaskBase
 {
-    private Transform targetFoodSource;
+    private Vector3 targetFoodSource;
     private bool isArrive;
     public List<Cell> pathDebug = new();
     Transform transform;
@@ -20,13 +19,13 @@ public class TaskEat : TaskBase
 
     private void GetNearestFoodIfExiste()
     {
-        Transform target = actions.GetNearestRessource(RessourceType.food);
+        Vector3? target = actions.GetNearestRessource(RessourceType.food);
 
         if (target == null)
         {
             return;
         }
-        targetFoodSource = target;
+        targetFoodSource = (Vector3)target;
     }
 
     public override bool Do()

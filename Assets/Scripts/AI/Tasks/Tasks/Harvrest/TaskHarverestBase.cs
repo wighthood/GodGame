@@ -5,7 +5,7 @@ public abstract class TaskHarverestBase : TaskBase
 {
     protected RessourceType ressource;
     protected uint numberMin;
-    protected Transform targetRessource;
+    protected Vector3? targetRessource;
     protected Transform transform;
     protected Storage storage;
     public List<Cell> pathDebug = new();
@@ -19,7 +19,7 @@ public abstract class TaskHarverestBase : TaskBase
 
     private void GetNearestIfExiste()
     {
-        Transform target = actions.GetNearestRessource(ressource);
+        Vector3? target = actions.GetNearestRessource(ressource);
 
         if (target == null)
         {
@@ -59,7 +59,7 @@ public abstract class TaskHarverestBase : TaskBase
             }
             else
             {
-                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                if (targetRessource != null && Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
                 {
                     actions.Harvrest(ressource);
                     if (actions.GetRessourceTransportedNumber() < 5)
@@ -70,7 +70,7 @@ public abstract class TaskHarverestBase : TaskBase
                 else
                 {
                     pathDebug = actions.GetPath();
-                    actions.MoveTo(targetRessource);
+                    actions.MoveTo((Vector3)targetRessource);
                 }
             }
         }

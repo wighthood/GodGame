@@ -10,7 +10,7 @@ public class TaskBuildHouse : TaskBase
     public List<Cell> pathDebug = new();
     AIInventory inventory;
 
-    Transform targetRessource;
+    Vector3? targetRessource;
     Transform transform;
     protected Storage storage;
 
@@ -42,7 +42,7 @@ public class TaskBuildHouse : TaskBase
             }
             else
             {
-                if (targetRessource != null && Vector3.Distance(transform.position, targetRessource.position) < 0.5f)
+                if (targetRessource != null && Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
                 {
                     actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
                     if (!CanBuild())
@@ -53,7 +53,7 @@ public class TaskBuildHouse : TaskBase
                 else
                 {
                     pathDebug = actions.GetPath();
-                    actions.MoveTo(targetRessource);
+                    actions.MoveTo((Vector3)targetRessource);
                 }
             }
         }
@@ -63,7 +63,7 @@ public class TaskBuildHouse : TaskBase
 
     private void GetNearestIfExiste()
     {
-        Transform target = actions.GetNearestRessource(buildingTable.ressourcesNeeded[0].RessourceType);
+        Vector3? target = actions.GetNearestRessource(buildingTable.ressourcesNeeded[0].RessourceType);
 
         if (target == null)
         {

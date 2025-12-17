@@ -17,7 +17,7 @@ public class AgentActions : MonoBehaviour
     [SerializeField]
     private List<LayerMask> ressourcesMask = new List<LayerMask>();
 
-    public static event Func<RessourceType, Transform, Transform> GetRessources;
+    public static event Func<RessourceType, Vector2, Vector3?> GetRessources;
     public static event Func<Vector2Int, Vector3> CellToWorld;
 
     ColonyAgent colonyAgent;
@@ -279,9 +279,9 @@ public class AgentActions : MonoBehaviour
         return ((Colony)colonyAgent.GetCurrentColony()).storage.GetRessourceNumber(_ressourceType);
     }
 
-    public Transform GetNearestRessource(RessourceType _ressourceType)
+    public Vector3? GetNearestRessource(RessourceType _ressourceType)
     {
-        return GetRessources.Invoke(_ressourceType, transform);
+        return GetRessources.Invoke(_ressourceType, transform.position);
     }
 
     public Transform GetNearestHouse()
