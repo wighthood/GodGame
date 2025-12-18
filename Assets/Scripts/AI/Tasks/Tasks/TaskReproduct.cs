@@ -18,25 +18,25 @@ public class TaskReproduct : TaskBase
 
     public override float GetPriority()
     {
-        if (storage == null && actions.GetStorage())
-        {
-            storage = actions.GetStorage();
-        }
+        if (manager.colonieBlackboard == null) return 0;
+        if (actions.GetNearestHouse() == null) return 0;
 
-        if (manager.colonieBlackboard == null || actions.GetStorage() == null) { return 0; }
-        
-        BlackBoard colonyBlackboard = manager.colonieBlackboard;
-        int actualPopulation = colonyBlackboard.GetValue<int>("Habitant");
-        int maxPopulation = colonyBlackboard.GetValue<int>("MaxHabitant");
+        BlackBoard blackboard = manager.colonieBlackboard;
 
-        if(actualPopulation >= maxPopulation) { return 0; }
-
-        float populationFactor = 0.8f * (1.0f - ((float)actualPopulation / (float)maxPopulation));
+        int population = blackboard.GetValue<int>("Habitant");
+        int maxPopulation = blackboard.GetValue<int>("MaxHabitant");
+        if (population >= maxPopulation) return 0;
 
         int foodStored = (int)actions.GetStoredRessource(RessourceType.food);
-        float foodSurplusFactor = 0.2f * ((float)foodStored - (float)actualPopulation);
 
-        return actions.GetNearestHouse() != null ? populationFactor + foodSurplusFactor : 0;
+        float populationRatio = 1f - ((float)population / (float)maxPopulation);
+        float foodRatio = Mathf.Clamp01((float)foodStored / (float)(population * 2f));
+
+        float priority =
+            (populationRatio * 0.6f) +
+            (foodRatio * 0.4f);
+
+        return actions.GetNearestHouse() != null ? priority : 0;
     }
 
     public override void OnFinish()
