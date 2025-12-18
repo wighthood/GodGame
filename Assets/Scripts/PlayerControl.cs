@@ -4,198 +4,176 @@ using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour, ISaveable
 {
-    [SerializeField] private float speed = 12f;
-    [SerializeField] private float edgescrollSpeed = 0.1f;
-    [SerializeField] private float zoomSpeed = 12f;
-    [SerializeField] private float maxZoom = 1f;
-    [SerializeField] private float minZoom = 25f;
-    [SerializeField] private float edge = 10f;
-    [SerializeField] private float initialDezoom = 60f;
-    [SerializeField] private GameObject pauseMenu;
-    [SerializeField] private GameObject settings;
-    [SerializeField] private Texture2D pressedMouseCursor;
-    [SerializeField] private Texture2D normalMouseCursor;
-    [SerializeField] private Vector2 cameraLimit;
+    [Header("Movement")]
+    [SerializeField] float speed = 12f;
+    [SerializeField] float edgeScrollSpeed = 20f;
+    [SerializeField] float edgeSize = 10f;
 
     [SerializeField] private Animator powerBarAnimator;
 
+    [Header("Zoom")]
+    [SerializeField] float zoomSpeed = 12f;
+    [SerializeField] float minZoom = 5f;
+    [SerializeField] float maxZoom = 25f;
+    [SerializeField] float initialDezoomSpeed = 60f;
+
+    [Header("UI")]
+    [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject settings;
+    [SerializeField] Texture2D pressedCursor;
+    [SerializeField] Texture2D normalCursor;
+
+    [Header("World")]
+    [SerializeField] Vector2 cameraLimit;
     public WorldGeneration worldGeneration;
 
-    private Vector2 _direction;
+    Camera cam;
+    Vector2 moveInput;
+    Vector3 dragOrigin;
+    bool isDragging;
+    bool initZoomDone;
 
-    float oldCameraZoom;
+    Vector3 MouseWorldPos => cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-    private Vector3 _origin;
-    private Vector3 _difference;
-    private Camera _maincamera;
-    private bool _isDragging;
-    private bool _InitDezoom = false;
-
-    private Vector3 GetMousePosition => _maincamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-
-    private void Awake()
+    void Awake()
     {
-        _maincamera = Camera.main;
+        cam = Camera.main;
     }
 
-    public void OnDrag(InputAction.CallbackContext ctx)
+    void Start()
     {
-        if (!_InitDezoom) return;
-        if (ctx.started) _origin = GetMousePosition;
-        _isDragging = ctx.started || ctx.performed;
+        Cursor.SetCursor(normalCursor, Vector2.zero, CursorMode.Auto);
+        cameraLimit = new Vector2(
+            worldGeneration.MapWidth() / 2f,
+            worldGeneration.MapHeight() / 2f
+        );
+
+        StartCoroutine(InitZoom());
     }
 
-    private void LateUpdate()
+    void Update()
     {
-        if (!_isDragging) return;
-        if (_InitDezoom) return;
-        if (pauseMenu.activeSelf)
+        if (!initZoomDone)
+        {
             return;
+        }
 
-        _difference = GetMousePosition - transform.position;
-        transform.position = _origin - _difference;
+        MoveCamera();
+        EdgeScroll();
         CameraLimit();
     }
 
-    private void onEdgeScroll()
+    void LateUpdate()
     {
-        if(pauseMenu.activeSelf || !_InitDezoom)
-            return;
-        if (Mouse.current.position.ReadValue().x > Screen.width - edge)
-        {
-            transform.position = transform.position + Vector3.right * edgescrollSpeed;
-        }
-        if (Mouse.current.position.ReadValue().x < edge)
-        {
-            transform.position = transform.position + Vector3.left * edgescrollSpeed;
-        }
-        if (Mouse.current.position.ReadValue().y > Screen.height - edge)
-        {
-            transform.position = transform.position + Vector3.up * edgescrollSpeed;
-        }
-        if (Mouse.current.position.ReadValue().y < edge)
-        {
-            transform.position = transform.position + Vector3.down * edgescrollSpeed;
-        }
-        return;
+        if (!isDragging || !initZoomDone || pauseMenu.activeSelf) return;
+
+        Vector3 delta = MouseWorldPos - dragOrigin;
+        transform.position -= delta;
+        CameraLimit();
     }
 
-
-    public void Move(InputAction.CallbackContext context)
+    public void Move(InputAction.CallbackContext ctx)
     {
-        if (!_InitDezoom) return;
-        _direction = context.ReadValue<Vector2>();
+        if (!initZoomDone) return;
+        moveInput = ctx.ReadValue<Vector2>();
     }
 
     public void Zoom(InputAction.CallbackContext context)
     {
-        if (Camera.main != null && Time.timeScale > 0f && _InitDezoom)
+        if (Camera.main != null && Time.timeScale > 0f && initZoomDone)
         {
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + context.ReadValue<float>() * zoomSpeed, maxZoom, minZoom);
         }
     }
 
-    public void Pause(InputAction.CallbackContext context)
+    public void OnDrag(InputAction.CallbackContext ctx)
     {
-        if (!context.performed) return;
-        if (pauseMenu != null)
-        {
-            pauseMenu.SetActive(!pauseMenu.activeSelf);
-        }
-        else
-        {
-            Debug.LogError("No pause menu assigned");
-        }
+        if (!initZoomDone) return;
+
+        if (ctx.started)
+            dragOrigin = MouseWorldPos;
+
+        isDragging = ctx.started || ctx.performed;
+    }
+
+    public void Click(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+            Cursor.SetCursor(pressedCursor, Vector2.zero, CursorMode.Auto);
+        else if (ctx.canceled)
+            Cursor.SetCursor(normalCursor, Vector2.zero, CursorMode.Auto);
+    }
+
+    public void Pause(InputAction.CallbackContext ctx)
+    {
+        if (!ctx.performed) return;
+
+        pauseMenu.SetActive(!pauseMenu.activeSelf);
         settings.SetActive(false);
         MenusScript.Pause();
     }
 
-    public void Click(InputAction.CallbackContext context)
+    void MoveCamera()
     {
-        if (context.started)
+        transform.Translate(moveInput * speed * Time.deltaTime, Space.World);
+    }
+
+    void EdgeScroll()
+    {
+        if (pauseMenu.activeSelf) return;
+
+        Vector3 dir = Vector3.zero;
+        Vector2 mouse = Mouse.current.position.ReadValue();
+
+        if (mouse.x > Screen.width - edgeSize) dir += Vector3.right;
+        if (mouse.x < edgeSize) dir += Vector3.left;
+        if (mouse.y > Screen.height - edgeSize) dir += Vector3.up;
+        if (mouse.y < edgeSize) dir += Vector3.down;
+
+        transform.position += dir * edgeScrollSpeed * Time.deltaTime;
+    }
+
+    private IEnumerator InitZoom()
+    {
+        while (cam.orthographicSize < 10)
         {
-            Cursor.SetCursor(pressedMouseCursor, Vector2.zero, CursorMode.Auto);
+            cam.orthographicSize = Mathf.Clamp(cam.orthographicSize + initialDezoomSpeed, maxZoom, minZoom);
+            CameraLimit();
+            yield return null;
         }
-
-        if (context.canceled)
-        {
-            Cursor.SetCursor(normalMouseCursor, Vector2.zero, CursorMode.Auto);
-        }
+        initZoomDone = true;
     }
 
-    private void Start()
+    void CameraLimit()
     {
-        Cursor.SetCursor(normalMouseCursor, Vector2.zero, CursorMode.Auto);
-        oldCameraZoom = Camera.main.orthographicSize;
+        float halfH = cam.orthographicSize;
+        float halfW = halfH * cam.aspect;
 
-        cameraLimit.x = (float)worldGeneration.MapWidth() / 2;
-        cameraLimit.y = (float)worldGeneration.MapHeight() / 2;
+        Vector3 pos = transform.position;
+        pos.x = Mathf.Clamp(pos.x, -cameraLimit.x + halfW, cameraLimit.x - halfW);
+        pos.y = Mathf.Clamp(pos.y, -cameraLimit.y + halfH, cameraLimit.y - halfH);
+        transform.position = pos;
     }
 
-
-    private void Update()
-    {
-        transform.Translate(_direction * (speed * Time.deltaTime), Space.World);
-        CameraLimit();
-        onEdgeScroll();
-
-        if (!_InitDezoom && SaveEvents.ShouldLoadOnStart == false)
-        {
-            if (Camera.main.orthographicSize < 10 )
-            {
-                Camera.main.orthographicSize += initialDezoom * Time.deltaTime;
-            }
-            else
-            {
-                _InitDezoom = true;
-            }
-        }
-        
-    }
-
-    private void OnEnable()
-    {
-        SaveEvents.OnRegisterSaveableEvent?.Invoke(this);
-    }
-
-    private void OnDisable()
-    {
-        SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
-    }
-
-    public string GetSaveID()
-    {
-        return "PlayerControl";
-    }
+    public string GetSaveID() => "PlayerControl";
 
     public string CaptureState()
     {
-        PlayerCameraSaveData data = new PlayerCameraSaveData();
-        data.position = transform.position;
-        if (Camera.main != null)
+        return JsonUtility.ToJson(new PlayerCameraSaveData
         {
-            data.zoom = Camera.main.orthographicSize;
-        }
-        else
-        {
-            data.zoom = 5f; // verification default
-        }
-
-        return JsonUtility.ToJson(data);
+            position = transform.position,
+            zoom = cam.orthographicSize
+        });
     }
 
-    public void RestoreState(string _state)
+    public void RestoreState(string state)
     {
-        if (string.IsNullOrEmpty(_state)) return;
+        if (string.IsNullOrEmpty(state)) return;
 
-        PlayerCameraSaveData data = JsonUtility.FromJson<PlayerCameraSaveData>(_state);
-        if (data == null) return;
-
+        var data = JsonUtility.FromJson<PlayerCameraSaveData>(state);
         transform.position = data.position;
-        if (Camera.main != null)
-        {
-            Camera.main.orthographicSize = data.zoom;
-        }
+        cam.orthographicSize = data.zoom;
+        initZoomDone = true;
     }
 
     private void CameraLimit()

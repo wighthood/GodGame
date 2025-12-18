@@ -210,6 +210,8 @@ public class AgentActions : MonoBehaviour
 
     public Storage GetStorage()
     {
+        if(colonyAgent.GetCurrentColony() == null) { return null; }
+
         return ((Colony)colonyAgent.GetCurrentColony()).storage;
     }
 

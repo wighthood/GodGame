@@ -6042,8 +6042,8 @@ RectTransform:
   m_GameObject: {fileID: 466387368}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.00008, y: 1.00008, z: 1.00008}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 865834969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6101,8 +6101,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Sauvegarde r\xE9ussie !"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 07882a63b55c0cb4ebc01eecda5ebd9e, type: 2}
+  m_sharedMaterial: {fileID: -7501727571343387644, guid: 07882a63b55c0cb4ebc01eecda5ebd9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6381,16 +6381,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControl
   speed: 12
-  edgescrollSpeed: 0.1
+  edgeScrollSpeed: 20
+  edgeSize: 10
   zoomSpeed: 0.5
-  maxZoom: 1
   minZoom: 25
-  edge: 25
-  initialDezoom: 3
+  maxZoom: 1
+  initialDezoomSpeed: 0.1
   pauseMenu: {fileID: 836012061}
   settings: {fileID: 1633554055}
-  pressedMouseCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
-  normalMouseCursor: {fileID: 2800000, guid: 5cb946e2bc8bb0a4d94b1e7560471854, type: 3}
+  pressedCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
+  normalCursor: {fileID: 2800000, guid: 5cb946e2bc8bb0a4d94b1e7560471854, type: 3}
   cameraLimit: {x: 100, y: 100}
   powerBarAnimator: {fileID: 220095226}
   worldGeneration: {fileID: 130282017}
