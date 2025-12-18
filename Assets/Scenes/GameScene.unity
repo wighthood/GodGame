@@ -5896,8 +5896,8 @@ RectTransform:
   m_GameObject: {fileID: 466387368}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.00008, y: 1.00008, z: 1.00008}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 865834969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5955,8 +5955,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Sauvegarde r\xE9ussie !"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 07882a63b55c0cb4ebc01eecda5ebd9e, type: 2}
+  m_sharedMaterial: {fileID: -7501727571343387644, guid: 07882a63b55c0cb4ebc01eecda5ebd9e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6240,7 +6240,7 @@ MonoBehaviour:
   zoomSpeed: 0.5
   minZoom: 10
   maxZoom: 1
-  initialDezoomSpeed: 0.5
+  initialDezoomSpeed: 0.1
   pauseMenu: {fileID: 836012061}
   settings: {fileID: 1633554055}
   pressedCursor: {fileID: 2800000, guid: 01304d798d6ba6f4c8f455decf9be171, type: 3}
