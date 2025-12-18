@@ -175,28 +175,6 @@ public class PlayerControl : MonoBehaviour, ISaveable
         cam.orthographicSize = data.zoom;
         initZoomDone = true;
     }
-
-    private void CameraLimit()
-    {
-        Vector3 pos = transform.position;
-
-        float halfHeight = Camera.main.orthographicSize;
-        float halfWidth = halfHeight * Camera.main.aspect;
-
-        if (pos.x > cameraLimit.x - halfWidth)
-            pos.x = cameraLimit.x - halfWidth;
-
-        if (pos.x < -cameraLimit.x + halfWidth)
-            pos.x = -cameraLimit.x + halfWidth;
-
-        if (pos.y > cameraLimit.y - halfHeight)
-            pos.y = cameraLimit.y - halfHeight;
-
-        if (pos.y < -cameraLimit.y + halfHeight)
-            pos.y = -cameraLimit.y + halfHeight;
-
-        transform.position = pos;
-    }
     
     public void ClosePowerBar()
     {
