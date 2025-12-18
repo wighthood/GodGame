@@ -6238,7 +6238,7 @@ MonoBehaviour:
   edgeScrollSpeed: 20
   edgeSize: 10
   zoomSpeed: 0.5
-  minZoom: 10
+  minZoom: 25
   maxZoom: 1
   initialDezoomSpeed: 0.1
   pauseMenu: {fileID: 836012061}
