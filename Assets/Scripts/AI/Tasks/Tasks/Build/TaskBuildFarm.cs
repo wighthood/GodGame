@@ -15,6 +15,6 @@ public class TaskBuildFarm : TaskBuildHouse
         int actualPop = manager.colonieBlackboard.GetValue<int>("Habitant");
         int foodNeeded = actualPop - ((int)actualFoodStored + actualFarmBuilded);
 
-        return (float)foodNeeded / (float)actualPop;
+        return foodNeeded / (float)actualPop;
     }
 }

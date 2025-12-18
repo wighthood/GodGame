@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class ReproductionFeedback : MonoBehaviour
 {
-    Animator animator;
+    private Animator animator;
 
-    void Start()
+    private void Start()
     {
         animator = GetComponent<Animator>();
     }

@@ -12,12 +12,10 @@ public enum RessourceType
 
 public class MapRessourceManager : MonoBehaviour, ISaveable
 {
-    private Dictionary<RessourceType, List<Ressource>> ressources = new();
 
     [SerializeField]
-    private List<GameObject> ressourcePrefab = new();
-
-    public static event Action<Vector3, RessourceType> ChangeCellRessourceInfos;
+    private List<GameObject> ressourcePrefab = new List<GameObject>();
+    private readonly Dictionary<RessourceType, List<Ressource>> ressources = new Dictionary<RessourceType, List<Ressource>>();
 
     private void Awake()
     {
@@ -35,45 +33,6 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
     private void OnDisable()
     {
         SaveEvents.OnUnregisterSaveableEvent?.Invoke(this);
-    }
-
-    public GameObject AddNewRessource(RessourceType _ressourceType, Vector2 _position)
-    {
-        GameObject newRessource = null;
-        newRessource = Instantiate(ressourcePrefab[(int)_ressourceType], _position, Quaternion.identity, transform);
-
-        Ressource ressource = newRessource.GetComponent<Ressource>();
-        ChangeCellRessourceInfos?.Invoke(ressource.transform.position, ressource.GetRessourceType());
-        AddRessourceInDictionary(ressource);
-        return newRessource;
-    }
-
-    private void AddRessourceInDictionary(Ressource _ressource)
-    {
-        if (!ressources.ContainsKey(_ressource.GetRessourceType()))
-        {
-            ressources[_ressource.GetRessourceType()] = new List<Ressource>() { _ressource };
-            return;
-        }
-
-        ressources[_ressource.GetRessourceType()].Add(_ressource);
-    }
-
-    public List<Ressource> GetRessources(RessourceType _type)
-    {
-        if(!ressources.ContainsKey(_type))
-        {
-            return null;
-        }
-        return ressources[_type];
-    }
-
-    private void RemoveFromListForDestroy(Ressource _ressource)
-    {
-        if (!ressources.ContainsKey(_ressource.GetRessourceType())) return;
-        ressources[_ressource.GetRessourceType()].Remove(_ressource);
-        ChangeCellRessourceInfos?.Invoke(_ressource.transform.position, RessourceType.none);
-        Destroy(_ressource.gameObject);
     }
 
     private void OnDestroy()
@@ -96,7 +55,7 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
                 {
                     ressourceType = r.GetRessourceType(),
                     ressourcePos = r.transform.position,
-                    remainingAmount = r.GetRemaining()
+                    remainingAmount = r.GetRemaining(),
                 });
             }
         }
@@ -113,7 +72,7 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
             }
         }
         ressources.Clear();
-        
+
         if (string.IsNullOrEmpty(_state)) return;
 
         RessourceSave save = JsonUtility.FromJson<RessourceSave>(_state);
@@ -138,6 +97,45 @@ public class MapRessourceManager : MonoBehaviour, ISaveable
     {
         return "Ressources";
     }
+
+    public static event Action<Vector3, RessourceType> ChangeCellRessourceInfos;
+
+    public GameObject AddNewRessource(RessourceType _ressourceType, Vector2 _position)
+    {
+        GameObject newRessource = null;
+        newRessource = Instantiate(ressourcePrefab[(int)_ressourceType], _position, Quaternion.identity, transform);
+
+        Ressource ressource = newRessource.GetComponent<Ressource>();
+        ChangeCellRessourceInfos?.Invoke(ressource.transform.position, ressource.GetRessourceType());
+        AddRessourceInDictionary(ressource);
+        return newRessource;
+    }
+
+    private void AddRessourceInDictionary(Ressource _ressource)
+    {
+        if (!ressources.ContainsKey(_ressource.GetRessourceType()))
+        {
+            ressources[_ressource.GetRessourceType()] = new List<Ressource> { _ressource };
+            return;
+        }
+
+        ressources[_ressource.GetRessourceType()].Add(_ressource);
+    }
+
+    public List<Ressource> GetRessources(RessourceType _type)
+    {
+        if (!ressources.ContainsKey(_type))
+        {
+            return null;
+        }
+        return ressources[_type];
+    }
+
+    private void RemoveFromListForDestroy(Ressource _ressource)
+    {
+        if (!ressources.ContainsKey(_ressource.GetRessourceType())) return;
+        ressources[_ressource.GetRessourceType()].Remove(_ressource);
+        ChangeCellRessourceInfos?.Invoke(_ressource.transform.position, RessourceType.none);
+        Destroy(_ressource.gameObject);
+    }
 }
-
-

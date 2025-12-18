@@ -17,7 +17,7 @@ public class DiplomacyDebug : MonoBehaviour
 
         Debug.Log($"DiplomacyDebug: Triggering relation change between {Source.name} and {Target.name} with amount {Amount}.");
         DiplomacyEvent.TriggerRelationChange(Source, Target, Amount);
-        
+
         // Check result
         ColonyRelation relation = Target.GetRelationData(Source.GetId());
         Debug.Log($"DiplomacyDebug: Resulting relation in Target (towards Source): Opinion={relation.Opinion}, State={relation.State}");

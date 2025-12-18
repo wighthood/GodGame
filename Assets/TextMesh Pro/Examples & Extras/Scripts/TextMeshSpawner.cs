@@ -1,26 +1,21 @@
 using UnityEngine;
-using System.Collections;
-
 
 namespace TMPro.Examples
 {
-    
+
     public class TextMeshSpawner : MonoBehaviour
     {
 
-        public int SpawnType = 0;
+        public int SpawnType;
         public int NumberOfNPC = 12;
 
         public Font TheFont;
 
         private TextMeshProFloatingText floatingText_Script;
 
-        void Awake()
-        {
+        private void Awake() { }
 
-        }
-
-        void Start()
+        private void Start()
         {
 
             for (int i = 0; i < NumberOfNPC; i++)
@@ -74,6 +69,5 @@ namespace TMPro.Examples
                 }
             }
         }
-
     }
 }

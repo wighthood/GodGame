@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Wandering", menuName = "Tasks/Wandering")]
 public class TaskWandering : TaskBase
 {
-    Vector3 targetPos;
     private bool isFinished;
-    public List<Cell> pathDebug = new();
-    Transform transform;
+    public List<Cell> pathDebug = new List<Cell>();
+    private Vector3 targetPos;
+    private Transform transform;
 
     public override void Init(TaskManager _manager, AgentActions _actions)
     {
@@ -28,10 +27,7 @@ public class TaskWandering : TaskBase
         return 0.35f;
     }
 
-    public override void OnFinish()
-    {
-        
-    }
+    public override void OnFinish() { }
 
     public override void OnStart()
     {
@@ -45,7 +41,7 @@ public class TaskWandering : TaskBase
         return cond;
     }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -57,12 +53,12 @@ public class TaskWandering : TaskBase
 
         for (int i = 0; i < pathDebug.Count - 1; i++)
         {
-            Vector2 firstPos = new();
+            Vector2 firstPos = new Vector2();
             firstPos.Set(pathDebug[i].position.x + 0.5f, pathDebug[i].position.y + 0.5f);
-            Vector2 secPos = new();
+            Vector2 secPos = new Vector2();
             secPos.Set(pathDebug[i + 1].position.x + 0.5f, pathDebug[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
-#endif
+    #endif
 }

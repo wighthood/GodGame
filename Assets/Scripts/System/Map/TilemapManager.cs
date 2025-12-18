@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -22,7 +21,7 @@ public class TilemapManager : MonoBehaviour, ISaveable
     public string CaptureState()
     {
         TilemapSave save = new TilemapSave();
-        
+
         // BuildTilemapData logic
         foreach (Vector3Int pos in tilemap.cellBounds.allPositionsWithin)
         {
@@ -30,14 +29,14 @@ public class TilemapManager : MonoBehaviour, ISaveable
             {
                 TileBase tile = tilemap.GetTile(pos);
                 int id = Array.IndexOf(palette, tile);
-                
+
                 if (id != -1)
                 {
                     save.tiles.Add(new TileSaveData
                     {
                         x = pos.x,
                         y = pos.y,
-                        tileId = id
+                        tileId = id,
                     });
                 }
                 else
@@ -68,7 +67,7 @@ public class TilemapManager : MonoBehaviour, ISaveable
             }
             else
             {
-                 Debug.LogWarning($"TilemapManager: TileID {data.tileId} out of range (Palette size: {palette.Length}).");
+                Debug.LogWarning($"TilemapManager: TileID {data.tileId} out of range (Palette size: {palette.Length}).");
             }
         }
 

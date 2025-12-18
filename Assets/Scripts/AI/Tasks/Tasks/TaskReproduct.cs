@@ -3,9 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Reproduct", menuName = "Tasks/Reproduct")]
 public class TaskReproduct : TaskBase
 {
-    Transform houseTransform;
 
     private bool hasReproducted;
+    private Transform houseTransform;
 
     public override bool Do()
     {
@@ -27,12 +27,12 @@ public class TaskReproduct : TaskBase
 
         int foodStored = (int)actions.GetStoredRessource(RessourceType.food);
 
-        float populationRatio = 1f - ((float)population / (float)maxPopulation);
-        float foodRatio = Mathf.Clamp01((float)foodStored / (float)(population * 2f));
+        float populationRatio = 1f - population / (float)maxPopulation;
+        float foodRatio = Mathf.Clamp01(foodStored / (population * 2f));
 
         float priority =
-            (populationRatio * 0.6f) +
-            (foodRatio * 0.4f);
+            populationRatio * 0.6f +
+            foodRatio * 0.4f;
 
         return actions.GetNearestHouse() != null ? priority : 0;
     }

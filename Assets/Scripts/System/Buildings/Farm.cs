@@ -9,21 +9,21 @@ public class Farm : MonoBehaviour
 
     private GameObject instanciatedFood;
 
-    public static event Func<RessourceType, Vector2, GameObject> spawnFood;
-
     private void Update()
     {
-        if(instanciatedFood != null)
+        if (instanciatedFood != null)
         {
             return;
         }
 
         currentTimer += Time.deltaTime;
-        if(currentTimer >= farmGrowTime)
+        if (currentTimer >= farmGrowTime)
         {
             instanciatedFood = spawnFood.Invoke(RessourceType.food, transform.position);
             instanciatedFood.GetComponent<SpriteRenderer>().enabled = false;
             currentTimer = 0;
         }
     }
+
+    public static event Func<RessourceType, Vector2, GameObject> spawnFood;
 }

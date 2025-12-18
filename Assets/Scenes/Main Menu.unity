@@ -4024,7 +4024,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1207601072}
   - component: {fileID: 1207601073}
-  - component: {fileID: 1207601074}
   m_Layer: 0
   m_Name: LoadSystem
   m_TagString: Untagged
@@ -4059,24 +4058,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19581a515fc71f6478f6eaea6081ecfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
-  tilePalette:
-  - {fileID: 11400000, guid: f4642cb960d5ed24aad6c5d7f61f84fd, type: 2}
-  - {fileID: 11400000, guid: 53fb5df4badbc5c42a98f044708eac19, type: 2}
-  - {fileID: 11400000, guid: 6525a2751a96cb64aade574308155310, type: 2}
---- !u!114 &1207601074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1207601070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eb06b51faf726646bcd5dc77a51b03a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameModeManager
-  saveManager: {fileID: 1207601073}
-  currentMode: 0
 --- !u!1 &1244521274
 GameObject:
   m_ObjectHideFlags: 0
@@ -10289,7 +10270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Buttons
   buttonLoad: {fileID: 494499343}
-  text: {fileID: 2030173230}
+  textLoad: {fileID: 2030173230}
 --- !u!1 &1562461646
 GameObject:
   m_ObjectHideFlags: 0

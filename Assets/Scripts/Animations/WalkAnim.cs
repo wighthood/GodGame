@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "WalkAnim", menuName = "Animation/WalkAnim")]
-class WalkAnim : SO_AnimBase
+internal class WalkAnim : SO_AnimBase
 {
-    AgentActions agentActions;
-    SpriteRenderer spriteRenderer;
+    private AgentActions agentActions;
+    private SpriteRenderer spriteRenderer;
 
     public override bool CanPlay(GameObject _entity)
     {
-        if(!agentActions)
+        if (!agentActions)
         {
             agentActions = _entity.GetComponent<AgentActions>();
         }
@@ -23,11 +23,11 @@ class WalkAnim : SO_AnimBase
 
     public override void OnPlaying(GameObject _entity)
     {
-        if(agentActions.Velocity.x > 0)
+        if (agentActions.Velocity.x > 0)
         {
             spriteRenderer.flipX = true;
         }
-        else if(agentActions.Velocity.x < 0)
+        else if (agentActions.Velocity.x < 0)
         {
             spriteRenderer.flipX = false;
         }

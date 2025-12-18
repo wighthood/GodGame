@@ -29,7 +29,7 @@ public class AIInventory : MonoBehaviour
 
     public bool AddRessources(uint _amount, RessourceType ressource)
     {
-        if(HasRessource() && GetRessourceType() != ressource)
+        if (HasRessource() && GetRessourceType() != ressource)
         {
             return false;
         }
@@ -55,7 +55,7 @@ public class AIInventory : MonoBehaviour
     {
         ressourceStockedData.amount -= _amount;
 
-        if(ressourceStockedData.amount <= 0)
+        if (ressourceStockedData.amount <= 0)
         {
             ResetRessource();
         }

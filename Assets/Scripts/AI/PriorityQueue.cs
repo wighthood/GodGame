@@ -3,9 +3,12 @@ using System.Collections.Generic;
 
 public class PriorityQueue<T>
 {
-    private List<(T item, float priority)> heap = new();
+    private readonly List<(T item, float priority)> heap = new List<(T item, float priority)>();
 
-    public int Count => heap.Count;
+    public int Count
+    {
+        get { return heap.Count; }
+    }
 
     public void Enqueue(T item, float priority)
     {
@@ -19,7 +22,7 @@ public class PriorityQueue<T>
         T top = heap[0].item;
         heap[0] = heap[heap.Count - 1];
         heap.RemoveAt(heap.Count - 1);
-        if(heap.Count > 1)
+        if (heap.Count > 1)
             HeapifyDown(0);
         return top;
     }
@@ -57,8 +60,10 @@ public class PriorityQueue<T>
 
     public bool Contains(T item)
     {
-        foreach (var element in heap)
+        foreach ((T item, float priority) element in heap)
+        {
             if (EqualityComparer<T>.Default.Equals(element.item, item)) return true;
+        }
         return false;
     }
 }

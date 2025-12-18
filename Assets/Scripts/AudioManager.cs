@@ -1,42 +1,30 @@
+using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
-    [SerializeField] AudioClip[] audioClips;
-    public float storedVolume { get; private set; } = 0.5f;
     public enum SoundType
     {
         Music_Menu,
-        Music_game
+        Music_game,
         //pour ajouter des son, ajouter des SoundType ici.
-    }
-
-    [System.Serializable]
-    public class Sound
-    {
-        public SoundType Type;
-        public AudioClip Clip;
-
-
-        [Range(0f, 1f)]
-        public float volume = 1f;
-
-        [HideInInspector]
-        public AudioSource Source;
     }
 
     //Singleton
     public static AudioManager Instance;
+    [SerializeField] private AudioClip[] audioClips;
 
     //tout les sont et leus types, a mettre dans l'inspecteur
     public Sound[] AllSound;
 
-    //Runtime collection
-    private Dictionary<SoundType, Sound> _soundDictionary = new Dictionary<SoundType, Sound>();
+    public SoundType SelectedSound;
     private AudioSource _musicSource;
+
+    //Runtime collection
+    private readonly Dictionary<SoundType, Sound> _soundDictionary = new Dictionary<SoundType, Sound>();
+    public float storedVolume { get; private set; } = 0.5f;
 
     private void Awake()
     {
@@ -50,7 +38,7 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(this);
 
         //mise en place des sons
-        foreach (var s in AllSound)
+        foreach (Sound s in AllSound)
         {
             _soundDictionary[s.Type] = s;
         }
@@ -74,8 +62,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public SoundType SelectedSound;
-
     //appel pour jouer un son
     public void play(SoundType type)
     {
@@ -85,13 +71,13 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        //Crée un nouvel objet Son
-        var soundObj = new GameObject($"Sound_{type}");
-        var audioSrc = soundObj.AddComponent<AudioSource>();
+        //Crï¿½e un nouvel objet Son
+        GameObject soundObj = new GameObject($"Sound_{type}");
+        AudioSource audioSrc = soundObj.AddComponent<AudioSource>();
 
-        //propriété du son
+        //propriï¿½tï¿½ du son
         audioSrc.clip = s.Clip;
-        audioSrc.volume = s.volume * storedVolume;// times storedVolume
+        audioSrc.volume = s.volume * storedVolume; // times storedVolume
 
         //play the sound
         audioSrc.Play();
@@ -102,10 +88,10 @@ public class AudioManager : MonoBehaviour
     //change les musiques
     public void ChangeMusic(SoundType type)
     {
-        if (!_soundDictionary.TryGetValue(type,out Sound track))
+        if (!_soundDictionary.TryGetValue(type, out Sound track))
         {
             Debug.LogWarning($"music track {type} not found!");
-            return; 
+            return;
         }
 
         _musicSource.loop = !_musicSource.loop;
@@ -119,5 +105,19 @@ public class AudioManager : MonoBehaviour
     {
         storedVolume = volume;
         _musicSource.volume = volume;
+    }
+
+    [Serializable]
+    public class Sound
+    {
+        public SoundType Type;
+        public AudioClip Clip;
+
+
+        [Range(0f, 1f)]
+        public float volume = 1f;
+
+        [HideInInspector]
+        public AudioSource Source;
     }
 }

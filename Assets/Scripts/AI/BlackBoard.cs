@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BlackBoard
 {
-    private Dictionary<string, object> blackBoardValues = new Dictionary<string, object>();
+    private readonly Dictionary<string, object> blackBoardValues = new Dictionary<string, object>();
 
     public T GetValue<T>(string _varName)
     {
@@ -44,7 +44,7 @@ public class BlackBoard
         if (blackBoardValues.ContainsKey(_varName)) blackBoardValues[_varName] = value;
         else blackBoardValues[_varName] = value;
     }
-    
+
     public Dictionary<string, object> BbValues()
     {
         return blackBoardValues;

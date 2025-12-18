@@ -3,12 +3,12 @@ using UnityEngine;
 
 public abstract class TaskHarverestBase : TaskBase
 {
-    protected RessourceType ressource;
     protected uint numberMin;
+    public List<Cell> path = new List<Cell>();
+    protected RessourceType ressource;
+    protected Storage storage;
     protected Vector3? targetRessource;
     protected Transform transform;
-    protected Storage storage;
-    public List<Cell> path = new();
 
     public virtual void Init(TaskManager _manager, AgentActions _action, uint _numberMin)
     {
@@ -36,7 +36,7 @@ public abstract class TaskHarverestBase : TaskBase
         storage = actions.GetStorage();
         uint actualNumberStocked = actions.GetStoredRessource(ressource);
 
-        return 1 - ((float)actualNumberStocked / (float)numberMin);
+        return 1 - actualNumberStocked / (float)numberMin;
     }
 
     public override bool Do()
@@ -45,17 +45,14 @@ public abstract class TaskHarverestBase : TaskBase
         {
             path = actions.GetPath();
             actions.MoveTo(storage.transform);
-            if(FinishCondition())
+            if (FinishCondition())
             {
-                if(actions.GetRessourceTransported() == ressource)
+                if (actions.GetRessourceTransported() == ressource)
                 {
                     return true;
                 }
-                else
-                {
-                    actions.DropRessourcesOnStorage();
-                    return false;
-                }
+                actions.DropRessourcesOnStorage();
+                return false;
             }
         }
         else
@@ -121,12 +118,12 @@ public abstract class TaskHarverestBase : TaskBase
         return Vector3.Distance(transform.position, storage.transform.position) < 0.5f;
     }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
 
-        if(targetRessource != null)
+        if (targetRessource != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawCube((Vector3)targetRessource, new Vector3(0.5f, 0.5f, 0.1f));
@@ -139,12 +136,12 @@ public abstract class TaskHarverestBase : TaskBase
 
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 firstPos = new();
+            Vector2 firstPos = new Vector2();
             firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
-            Vector2 secPos = new();
+            Vector2 secPos = new Vector2();
             secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
-#endif
+    #endif
 }

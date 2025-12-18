@@ -1,6 +1,5 @@
-using UnityEngine;
 using System.Collections;
-
+using UnityEngine;
 
 namespace TMPro.Examples
 {
@@ -8,27 +7,27 @@ namespace TMPro.Examples
     public class Benchmark01 : MonoBehaviour
     {
 
-        public int BenchmarkType = 0;
+        private const string label01 = "The <#0050FF>count is: </color>{0}";
+        private const string label02 = "The <color=#0050FF>count is: </color>";
+
+        public int BenchmarkType;
 
         public TMP_FontAsset TMProFont;
         public Font TextMeshFont;
-
-        private TextMeshPro m_textMeshPro;
-        private TextContainer m_textContainer;
-        private TextMesh m_textMesh;
-
-        private const string label01 = "The <#0050FF>count is: </color>{0}";
-        private const string label02 = "The <color=#0050FF>count is: </color>";
 
         //private string m_string;
         //private int m_frame;
 
         private Material m_material01;
         private Material m_material02;
+        private TextContainer m_textContainer;
+        private TextMesh m_textMesh;
+
+        private TextMeshPro m_textMeshPro;
 
 
 
-        IEnumerator Start()
+        private IEnumerator Start()
         {
 
 
@@ -99,7 +98,7 @@ namespace TMPro.Examples
 
                 }
                 else if (BenchmarkType == 1)
-                    m_textMesh.text = label02 + (i % 1000).ToString();
+                    m_textMesh.text = label02 + (i % 1000);
 
                 yield return null;
             }

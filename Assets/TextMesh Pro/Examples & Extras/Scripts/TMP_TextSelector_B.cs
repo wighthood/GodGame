@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System.Collections.Generic;
-
 
 #pragma warning disable 0618 // Disabled warning due to SetVertices being deprecated until new release with SetMesh() is available.
 
@@ -12,29 +8,29 @@ namespace TMPro.Examples
 
     public class TMP_TextSelector_B : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerUpHandler
     {
-        public RectTransform TextPopup_Prefab_01;
-
-        private RectTransform m_TextPopup_RectTransform;
-        private TextMeshProUGUI m_TextPopup_TMPComponent;
         private const string k_LinkText = "You have selected link <#ffff00>";
         private const string k_WordText = "Word Index: <#ffff00>";
-
-
-        private TextMeshProUGUI m_TextMeshPro;
-        private Canvas m_Canvas;
-        private Camera m_Camera;
+        public RectTransform TextPopup_Prefab_01;
 
         // Flags
         private bool isHoveringObject;
-        private int m_selectedWord = -1;
-        private int m_selectedLink = -1;
+
+        private TMP_MeshInfo[] m_cachedMeshInfoVertexData;
+        private Camera m_Camera;
+        private Canvas m_Canvas;
         private int m_lastIndex = -1;
 
         private Matrix4x4 m_matrix;
+        private int m_selectedLink = -1;
+        private int m_selectedWord = -1;
 
-        private TMP_MeshInfo[] m_cachedMeshInfoVertexData;
 
-        void Awake()
+        private TextMeshProUGUI m_TextMeshPro;
+
+        private RectTransform m_TextPopup_RectTransform;
+        private TextMeshProUGUI m_TextPopup_TMPComponent;
+
+        private void Awake()
         {
             m_TextMeshPro = gameObject.GetComponent<TextMeshProUGUI>();
 
@@ -48,37 +44,14 @@ namespace TMPro.Examples
                 m_Camera = m_Canvas.worldCamera;
 
             // Create pop-up text object which is used to show the link information.
-            m_TextPopup_RectTransform = Instantiate(TextPopup_Prefab_01) as RectTransform;
+            m_TextPopup_RectTransform = Instantiate(TextPopup_Prefab_01);
             m_TextPopup_RectTransform.SetParent(m_Canvas.transform, false);
             m_TextPopup_TMPComponent = m_TextPopup_RectTransform.GetComponentInChildren<TextMeshProUGUI>();
             m_TextPopup_RectTransform.gameObject.SetActive(false);
         }
 
 
-        void OnEnable()
-        {
-            // Subscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
-        }
-
-        void OnDisable()
-        {
-            // UnSubscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
-        }
-
-
-        void ON_TEXT_CHANGED(Object obj)
-        {
-            if (obj == m_TextMeshPro)
-            {
-                // Update cached vertex data.
-                m_cachedMeshInfoVertexData = m_TextMeshPro.textInfo.CopyMeshInfoVertexData();
-            }
-        }
-
-
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (isHoveringObject)
             {
@@ -242,7 +215,7 @@ namespace TMPro.Examples
                 int linkIndex = TMP_TextUtilities.FindIntersectingLink(m_TextMeshPro, Input.mousePosition, m_Camera);
 
                 // Clear previous link selection if one existed.
-                if ((linkIndex == -1 && m_selectedLink != -1) || linkIndex != m_selectedLink)
+                if (linkIndex == -1 && m_selectedLink != -1 || linkIndex != m_selectedLink)
                 {
                     m_TextPopup_RectTransform.gameObject.SetActive(false);
                     m_selectedLink = -1;
@@ -290,17 +263,16 @@ namespace TMPro.Examples
         }
 
 
-        public void OnPointerEnter(PointerEventData eventData)
+        private void OnEnable()
         {
-            //Debug.Log("OnPointerEnter()");
-            isHoveringObject = true;
+            // Subscribe to event fired when text object has been regenerated.
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
         }
 
-
-        public void OnPointerExit(PointerEventData eventData)
+        private void OnDisable()
         {
-            //Debug.Log("OnPointerExit()");
-            isHoveringObject = false;
+            // UnSubscribe to event fired when text object has been regenerated.
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
         }
 
 
@@ -447,13 +419,37 @@ namespace TMPro.Examples
         }
 
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            //Debug.Log("OnPointerEnter()");
+            isHoveringObject = true;
+        }
+
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            //Debug.Log("OnPointerExit()");
+            isHoveringObject = false;
+        }
+
+
         public void OnPointerUp(PointerEventData eventData)
         {
             //Debug.Log("OnPointerUp()");
         }
 
 
-        void RestoreCachedVertexAttributes(int index)
+        private void ON_TEXT_CHANGED(Object obj)
+        {
+            if (obj == m_TextMeshPro)
+            {
+                // Update cached vertex data.
+                m_cachedMeshInfoVertexData = m_TextMeshPro.textInfo.CopyMeshInfoVertexData();
+            }
+        }
+
+
+        private void RestoreCachedVertexAttributes(int index)
         {
             if (index == -1 || index > m_TextMeshPro.textInfo.characterCount - 1) return;
 

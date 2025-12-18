@@ -7,14 +7,14 @@ public class MeteoEffect : MonoBehaviour
     [HideInInspector] public WeatherState oldState;
 
     public Light2D mainLight;
-    private ParticleSystem particuleSystem;
-    private Coroutine stormCoroutine;
 
     [SerializeField] private GameObject fog;
     [SerializeField] private GameObject rain;
     [SerializeField] private Animator animatorRain;
-    [SerializeField] private float lightningMinDelay = 3f; 
+    [SerializeField] private float lightningMinDelay = 3f;
     [SerializeField] private float lightningMaxDelay = 8f;
+    private ParticleSystem particuleSystem;
+    private Coroutine stormCoroutine;
 
 
 
@@ -24,10 +24,23 @@ public class MeteoEffect : MonoBehaviour
             particuleSystem = fog.GetComponent<ParticleSystem>();
     }
 
+    private void Start()
+    {
+        MeteoManager.OnWeatherChanged += OnMeteoChange;
+        fog.SetActive(false);
+        rain.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+        MeteoManager.OnWeatherChanged -= OnMeteoChange;
+    }
+
     private void OnMeteoChange(WeatherState currentState)
     {
         EndWeather();
-        
+
         switch (currentState)
         {
             case WeatherState.Sunny:
@@ -38,9 +51,9 @@ public class MeteoEffect : MonoBehaviour
                 Debug.Log("Rain");
                 rain.SetActive(true);
                 animatorRain.SetBool("IsActive", true);
-                
+
                 break;
-           case WeatherState.Storm:
+            case WeatherState.Storm:
                 Debug.Log("Storm");
                 rain.SetActive(true);
                 animatorRain.SetBool("IsActive", true);
@@ -63,10 +76,10 @@ public class MeteoEffect : MonoBehaviour
                 Debug.Log("Poison");
                 mainLight.intensity = 0.8f;
                 break;*/
-           /* case WeatherState.Care:
-                Debug.Log("Care");
-                mainLight.intensity = 1f;
-                break;*/
+            /* case WeatherState.Care:
+                 Debug.Log("Care");
+                 mainLight.intensity = 1f;
+                 break;*/
         }
         oldState = currentState;
     }
@@ -77,7 +90,7 @@ public class MeteoEffect : MonoBehaviour
         {
             case WeatherState.Sunny:
                 Debug.Log("fin Sunny");
-                
+
                 break;
             case WeatherState.Rain:
                 Debug.Log("fin rain");
@@ -103,32 +116,19 @@ public class MeteoEffect : MonoBehaviour
                 StartCoroutine(WeatherFade());
                 break;
 
-           /* case WeatherState.Poison:
-                Debug.Log("fin poison");
-                break;*/
-            
-           /* case WeatherState.Care:
-                Debug.Log("fin care");
-                break;*/
-        }
-    }
-  
-    private void Start()
-    {
-        MeteoManager.OnWeatherChanged += OnMeteoChange;  
-        fog.SetActive(false);
-        rain.SetActive(false);
-    }
+            /* case WeatherState.Poison:
+                 Debug.Log("fin poison");
+                 break;*/
 
-    private void OnDestroy()
-    {
-        StopAllCoroutines();
-        MeteoManager.OnWeatherChanged -= OnMeteoChange;  
+            /* case WeatherState.Care:
+                 Debug.Log("fin care");
+                 break;*/
+        }
     }
 
     private IEnumerator WeatherFade()
     {
-        particuleSystem.Stop(); 
+        particuleSystem.Stop();
 
         int maxParticles = particuleSystem.main.maxParticles;
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[maxParticles];
@@ -140,11 +140,11 @@ public class MeteoEffect : MonoBehaviour
             for (int i = 0; i < count; i++)
             {
                 Color color = particles[i].startColor;
-                color.a -= 0.01f; 
+                color.a -= 0.01f;
                 color.a = Mathf.Max(color.a, 0f);
                 particles[i].startColor = color;
 
-                
+
                 if (color.a <= 0f)
                     particles[i].remainingLifetime = 0f;
             }
@@ -166,7 +166,7 @@ public class MeteoEffect : MonoBehaviour
             float baseIntensity = mainLight.intensity;
 
             yield return new WaitForSeconds(Random.Range(lightningMinDelay, lightningMaxDelay));
-        
+
             mainLight.intensity = 1.5f;
             yield return new WaitForSeconds(0.05f);
 

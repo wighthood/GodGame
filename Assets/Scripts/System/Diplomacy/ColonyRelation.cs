@@ -1,12 +1,14 @@
-[System.Serializable]
+using System;
+
+[Serializable]
 public enum RelationState
 {
     Neutral,
     War,
-    Ally
+    Ally,
 }
 
-[System.Serializable]
+[Serializable]
 public class ColonyRelation
 {
     public float Opinion;

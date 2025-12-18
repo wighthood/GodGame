@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class SaveNotificationUI : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class SaveNotificationUI : MonoBehaviour
     private void OnSaveCompleted()
     {
         if (notificationGroup == null) return;
-        
+
         StopAllCoroutines();
         StartCoroutine(ShowNotificationRoutine());
     }

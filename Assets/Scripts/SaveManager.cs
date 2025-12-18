@@ -1,13 +1,13 @@
-using UnityEngine;
-using System.Collections.Generic;
-using System.IO;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 [Serializable]
 public class SaveFileStructure
 {
-    public List<SystemSaveData> SystemsData = new();
+    public List<SystemSaveData> SystemsData = new List<SystemSaveData>();
 }
 
 [Serializable]
@@ -20,9 +20,12 @@ public class SystemSaveData
 [DefaultExecutionOrder(-10)] // Ensure SaveManager initializes early
 public class SaveManager : MonoBehaviour
 {
-    private string SavePath => Application.persistentDataPath + "/savegame.json";
-    
-    private List<ISaveable> _saveables = new();
+
+    private readonly List<ISaveable> _saveables = new List<ISaveable>();
+    private string SavePath
+    {
+        get { return Application.persistentDataPath + "/savegame.json"; }
+    }
 
     private IEnumerator Start()
     {
@@ -67,7 +70,7 @@ public class SaveManager : MonoBehaviour
                 _saveables.RemoveAt(i);
                 continue;
             }
-            
+
             if (_saveables[i].GetSaveID() == id)
             {
                 Debug.LogWarning($"SaveManager: Remplacement du système sauvegardable ID: '{id}'");
@@ -91,9 +94,9 @@ public class SaveManager : MonoBehaviour
     public void SaveGame()
     {
         Debug.Log("Début de la sauvegarde...");
-        
+
         SaveFileStructure globalSave = new SaveFileStructure();
-        
+
         foreach (ISaveable saveable in _saveables)
         {
             string id = saveable.GetSaveID();
@@ -101,21 +104,21 @@ public class SaveManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(data))
             {
-                globalSave.SystemsData.Add(new SystemSaveData 
-                { 
-                    ID = id, 
-                    JsonData = data 
+                globalSave.SystemsData.Add(new SystemSaveData
+                {
+                    ID = id,
+                    JsonData = data,
                 });
             }
         }
-        
+
         string finalJson = JsonUtility.ToJson(globalSave, true);
         File.WriteAllText(SavePath, finalJson);
-        
+
         Debug.Log($"Sauvegarde terminée avec succès ! ({globalSave.SystemsData.Count} systèmes sauvegardés)");
         SaveEvents.OnSaveCompletedEvent?.Invoke();
     }
-    
+
     public void LoadGame()
     {
         if (!File.Exists(SavePath))
@@ -125,12 +128,12 @@ public class SaveManager : MonoBehaviour
         }
 
         Debug.Log("Chargement de la partie...");
-        
+
         string json = File.ReadAllText(SavePath);
         SaveFileStructure globalSave = JsonUtility.FromJson<SaveFileStructure>(json);
 
         if (globalSave == null) return;
-        
+
         Dictionary<string, string> dataMap = new Dictionary<string, string>();
         foreach (SystemSaveData data in globalSave.SystemsData)
         {
@@ -141,11 +144,11 @@ public class SaveManager : MonoBehaviour
             }
             dataMap.Add(data.ID, data.JsonData);
         }
-        
+
         foreach (ISaveable saveable in _saveables)
         {
             string id = saveable.GetSaveID();
-            
+
             if (dataMap.TryGetValue(id, out string systemJson))
             {
                 saveable.RestoreState(systemJson);
@@ -155,7 +158,7 @@ public class SaveManager : MonoBehaviour
                 Debug.LogWarning($"SaveManager: Pas de données trouvées pour le système '{id}'.");
             }
         }
-        
+
         Debug.Log("Chargement terminé !");
     }
 }
