@@ -5,5 +5,5 @@ using UnityEngine;
 public class BuildingTable : ScriptableObject
 {
     public BuildType buildType;
-    public List<RessourceCollection> ressourcesNeeded = new();
+    public List<RessourceCollection> ressourcesNeeded = new List<RessourceCollection>();
 }

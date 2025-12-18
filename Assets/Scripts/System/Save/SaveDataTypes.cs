@@ -15,6 +15,7 @@ public class RessourceSaveData
     public RessourceType ressourceType;
     public int remainingAmount;
 }
+
 [Serializable]
 public class TilemapSave
 {
@@ -104,7 +105,7 @@ public class MapBuildingSystemSaveData
 public class BuildingSaveData
 {
     public Vector3 position;
-    public int buildTypeId; 
+    public int buildTypeId;
     public int ownerColonyId; // -1 if none
     public List<InventoryItemData> storedItems = new List<InventoryItemData>();
 }

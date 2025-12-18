@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,33 +8,34 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(Tilemap))]
 public class Graph : MonoBehaviour
 {
-    [SerializeField] private List<TileBase> notWalkableSprites = new();
 
-    public List<Cell> graph { get; private set; }
-    public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
-
-    public static System.Func<Graph> OnGetGraph;
-
-    private Tilemap tilemap;
+    public static Func<Graph> OnGetGraph;
 
     public static Vector2Int[] directions =
     {
         Vector2Int.up,
         Vector2Int.right,
         Vector2Int.left,
-        Vector2Int.down,
-        new(1, 1),
-        new(1, -1),
-        new(-1, 1),
-        new(-1, -1),
+        Vector2Int.down, new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1),
     };
+    [SerializeField] private List<TileBase> notWalkableSprites = new List<TileBase>();
 
-    private int currentSearchId = 0;
+    private int currentSearchId;
+
+    private Tilemap tilemap;
+
+    public List<Cell> graph { get; private set; }
+    public Dictionary<Vector2Int, Cell> graphDict { get; private set; }
 
     private void Awake()
     {
         graph = new List<Cell>();
         graphDict = new Dictionary<Vector2Int, Cell>();
+    }
+
+    private void Start()
+    {
+        tilemap = GetComponent<Tilemap>();
     }
 
     private void OnEnable()
@@ -52,9 +54,54 @@ public class Graph : MonoBehaviour
         MapRessourceManager.ChangeCellRessourceInfos += SetCellRessource;
     }
 
-    private void Start()
+    private void OnDisable()
     {
-        tilemap = GetComponent<Tilemap>();
+        MapEditorScript.GetCell -= GetCellFromWorldPos;
+        WorldGeneration.OnInitGraphEvent -= InitGraph;
+        SaveEvents.OnGraphRefreshRequestedEvent -= InitGraph;
+        PathFinding.GetCell -= GetCell;
+        PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
+        PathFinding.GetCells -= GetCellsFromDict;
+        AgentActions.CellToWorld -= CellToWorld;
+        Colony.WorldToCellPos -= WorldToCellPos;
+        Colony.CellToWorld -= CellToWorld;
+        Colony.GetCell -= GetCell;
+        AgentActions.GetRessources -= GetNearestRessouceLocation;
+        MapRessourceManager.ChangeCellRessourceInfos -= SetCellRessource;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        #if UNITY_EDITOR
+        if (graphDict != null)
+        {
+            Vector3 size = new Vector3(0.5f, 0.5f, 0.1f);
+            Gizmos.color = Color.blue;
+            foreach (Cell cell in graphDict.Values)
+            {
+                if (cell.isWalkable)
+                {
+                    if (cell.Ressources > 0)
+                    {
+                        Gizmos.color = Color.green;
+                        GUIStyle style = new GUIStyle();
+                        style.normal.textColor = Color.darkGreen;
+                        Handles.Label(new Vector3(cell.position.x, cell.position.y) + Vector3.up * 1f, $"ressource : {cell.Ressources} ({(RessourceType)cell.Ressources})", style);
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.blue;
+                    }
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawCube(CellToWorld(cell.position), size);
+                }
+            }
+        }
+        #endif
     }
 
     public List<Cell> GetCellsFromDict()
@@ -115,7 +162,7 @@ public class Graph : MonoBehaviour
 
         currentSearchId++;
 
-        Queue<Cell> open = new();
+        Queue<Cell> open = new Queue<Cell>();
         start.visitedId = currentSearchId;
         open.Enqueue(start);
 
@@ -145,55 +192,5 @@ public class Graph : MonoBehaviour
         Cell cell = GetCellFromWorldPos(ressourcePosition);
 
         cell.Ressources = (byte)_type;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-#if UNITY_EDITOR
-        if (graphDict != null)
-        {
-            Vector3 size = new(0.5f, 0.5f, 0.1f);
-            Gizmos.color = Color.blue;
-            foreach (Cell cell in graphDict.Values)
-            {
-                if (cell.isWalkable)
-                {
-                    if(cell.Ressources > 0)
-                    {
-                        Gizmos.color = Color.green;
-                        GUIStyle style = new GUIStyle();
-                        style.normal.textColor = Color.darkGreen;
-                        Handles.Label(new Vector3(cell.position.x, cell.position.y) + Vector3.up * 1f, $"ressource : {cell.Ressources} ({(RessourceType)cell.Ressources})", style);
-                    }
-                    else
-                    {
-                        Gizmos.color = Color.blue;
-                    }
-                    Gizmos.DrawCube(CellToWorld(cell.position), size);
-                }
-                else
-                {
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawCube(CellToWorld(cell.position), size);
-                }
-            }
-        }
-#endif
-    }
-
-    private void OnDisable()
-    {
-        MapEditorScript.GetCell -= GetCellFromWorldPos;
-        WorldGeneration.OnInitGraphEvent -= InitGraph;
-        SaveEvents.OnGraphRefreshRequestedEvent -= InitGraph;
-        PathFinding.GetCell -= GetCell;
-        PathFinding.GetCellFromWorldPos -= GetCellFromWorldPos;
-        PathFinding.GetCells -= GetCellsFromDict;
-        AgentActions.CellToWorld -= CellToWorld;
-        Colony.WorldToCellPos -= WorldToCellPos;
-        Colony.CellToWorld -= CellToWorld;
-        Colony.GetCell -= GetCell;
-        AgentActions.GetRessources -= GetNearestRessouceLocation;
-        MapRessourceManager.ChangeCellRessourceInfos -= SetCellRessource;
     }
 }

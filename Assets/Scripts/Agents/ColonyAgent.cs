@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-
+﻿using System.Collections;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,7 +7,7 @@ using UnityEditor;
 public enum SpeciesType
 {
     Pimu,
-    EvilPimu
+    EvilPimu,
 }
 
 [DisallowMultipleComponent]
@@ -22,27 +21,29 @@ public class ColonyAgent : MonoBehaviour, I_ColonyAgent
     [Header("Optimization Settings")]
     public float positionUpdateInterval = 0.5f;
     public float movementThreshold = 0.25f;
-    
+
+    private I_Colony _currentColony;
+    private Coroutine checkRoutine;
+
     private Vector3 lastPosition;
     private bool registered;
     private float sqrMovementThreshold;
     private WaitForSeconds waitObj;
-    private Coroutine checkRoutine;
 
-    void Awake()
+    private void Awake()
     {
         sqrMovementThreshold = movementThreshold * movementThreshold;
-        
+
         waitObj = new WaitForSeconds(positionUpdateInterval);
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         lastPosition = transform.position;
         checkRoutine = StartCoroutine(CheckingPosition());
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         if (registered)
         {
@@ -51,8 +52,37 @@ public class ColonyAgent : MonoBehaviour, I_ColonyAgent
         }
         if (checkRoutine != null) StopCoroutine(checkRoutine);
     }
-    
-    IEnumerator CheckingPosition()
+
+    #if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, 0.12f);
+
+        I_Colony col = GetCurrentColony();
+        string label = "No colony";
+        if (col != null)
+        {
+            label = $"Colony {col.GetId()} - {col.GetInhabitants()}/{col.GetMaxInhabitants()}";
+        }
+        Handles.Label(transform.position + Vector3.up * 1.2f, label);
+    }
+    #endif
+
+    public SpeciesType GetSpecies()
+    {
+        return speciesType;
+    }
+    public bool CanFormColony()
+    {
+        return canFormColony;
+    }
+    public void SetCurrentColony(I_Colony _colony)
+    {
+        _currentColony = _colony;
+    }
+
+    private IEnumerator CheckingPosition()
     {
         yield return null;
 
@@ -64,7 +94,7 @@ public class ColonyAgent : MonoBehaviour, I_ColonyAgent
         while (true)
         {
             yield return waitObj;
-            
+
             CheckMovement();
         }
     }
@@ -93,27 +123,8 @@ public class ColonyAgent : MonoBehaviour, I_ColonyAgent
     {
         RegisterAgent();
     }
-
-    public SpeciesType GetSpecies() => speciesType;
-    public bool CanFormColony() => canFormColony;
-
-    private I_Colony _currentColony;
-    public void SetCurrentColony(I_Colony _colony) => _currentColony = _colony;
-    public I_Colony GetCurrentColony() => _currentColony;
-
-#if UNITY_EDITOR
-    void OnDrawGizmos()
+    public I_Colony GetCurrentColony()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, 0.12f);
-
-        I_Colony col = GetCurrentColony();
-        string label = "No colony";
-        if (col != null)
-        {
-            label = $"Colony {col.GetId()} - {col.GetInhabitants()}/{col.GetMaxInhabitants()}";
-        }
-        Handles.Label(transform.position + Vector3.up * 1.2f, label);
+        return _currentColony;
     }
-#endif
 }

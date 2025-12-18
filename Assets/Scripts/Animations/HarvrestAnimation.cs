@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HarvrestAnim", menuName = "Animation/HarvrestAnim")]
 public class HarvrestAnimation : SO_AnimBase
 {
-    AgentActions agentActions;
+    private AgentActions agentActions;
 
     public override bool CanPlay(GameObject _entity)
     {

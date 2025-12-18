@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-
+﻿using System.Collections;
+using UnityEngine;
 
 namespace TMPro.Examples
 {
@@ -12,45 +11,45 @@ namespace TMPro.Examples
         public float SpeedMultiplier = 1.0f;
         public float ScaleMultiplier = 1.0f;
         public float RotationMultiplier = 1.0f;
-
-        private TMP_Text m_TextComponent;
         private bool hasTextChanged;
 
+        private TMP_Text m_TextComponent;
 
-        void Awake()
+
+        private void Awake()
         {
             m_TextComponent = GetComponent<TMP_Text>();
         }
 
-        void OnEnable()
+
+        private void Start()
+        {
+            StartCoroutine(AnimateVertexColors());
+        }
+
+        private void OnEnable()
         {
             // Subscribe to event fired when text object has been regenerated.
             TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
         }
 
 
-        void Start()
-        {
-            StartCoroutine(AnimateVertexColors());
-        }
-
-
-        void ON_TEXT_CHANGED(Object obj)
+        private void ON_TEXT_CHANGED(Object obj)
         {
             if (obj = m_TextComponent)
                 hasTextChanged = true;
         }
 
         /// <summary>
-        /// Method to animate vertex colors of a TMP Text object.
+        ///     Method to animate vertex colors of a TMP Text object.
         /// </summary>
         /// <returns></returns>
-        IEnumerator AnimateVertexColors()
+        private IEnumerator AnimateVertexColors()
         {
 
             // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the first frame.
@@ -156,6 +155,5 @@ namespace TMPro.Examples
                 yield return new WaitForSeconds(0.1f);
             }
         }
-
     }
 }

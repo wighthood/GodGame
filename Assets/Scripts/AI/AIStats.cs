@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class AIStats : MonoBehaviour
 {
-    private BlackBoard blackBoard;
 
     [Range(0, 1)]
     public float hunger;
@@ -11,6 +10,7 @@ public class AIStats : MonoBehaviour
     public int health;
 
     public int maxHealth;
+    private BlackBoard blackBoard;
 
     private void Start()
     {
@@ -24,7 +24,7 @@ public class AIStats : MonoBehaviour
     public void TakeDamage(int _amount)
     {
         health -= _amount;
-        if(health <= 0) { Death(); }
+        if (health <= 0) { Death(); }
     }
 
     public void SetHealth(int _health)

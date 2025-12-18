@@ -14,18 +14,44 @@ public class Ressource : MonoBehaviour
 
     [SerializeField]
     private TileBase[] tiles;
-   
-    public static event Action<Ressource> OnEmptyRessource;
-    public static event Func<Vector3, TileBase> GetTile;
 
     public bool isBeeingHarversted { get; set; }
+
+    private void Start()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (!spriteRenderer) { return; }
+
+        if (ressourceType == RessourceType.wood)
+        {
+            if (GetTile.Invoke(transform.position) == tiles[1])
+            {
+                spriteRenderer.sprite = Sprites[Random.Range(1, Sprites.Length)];
+            }
+            else
+            {
+                spriteRenderer.sprite = Sprites[0];
+            }
+        }
+        else
+        {
+            spriteRenderer.sprite = Sprites[Random.Range(0, Sprites.Length)];
+        }
+    }
+
+    public static event Action<Ressource> OnEmptyRessource;
+    public static event Func<Vector3, TileBase> GetTile;
 
     public RessourceType GetRessourceType()
     {
         return ressourceType;
     }
 
-    public int GetRemaining() => ressourceRemaining;
+    public int GetRemaining()
+    {
+        return ressourceRemaining;
+    }
 
     public void SetRemaining(int amount)
     {
@@ -43,29 +69,6 @@ public class Ressource : MonoBehaviour
         if (ressourceRemaining <= 0)
         {
             OnEmptyRessource?.Invoke(this);
-        }
-    }
-
-    private void Start()
-    {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if(!spriteRenderer) { return; }
-
-        if (ressourceType == RessourceType.wood)
-        {
-            if (GetTile.Invoke(transform.position) == tiles[1])
-            {
-                spriteRenderer.sprite = Sprites[Random.Range(1, Sprites.Length)];
-            }
-            else
-            {
-                spriteRenderer.sprite = Sprites[0];
-            }
-        }
-        else
-        {
-            spriteRenderer.sprite = Sprites[Random.Range(0, Sprites.Length)];
         }
     }
 }

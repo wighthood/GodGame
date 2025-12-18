@@ -7,8 +7,8 @@ using UnityEditor;
 [Serializable]
 public abstract class TaskBase : ScriptableObject
 {
-    protected TaskManager manager;
     protected AgentActions actions;
+    protected TaskManager manager;
 
     public virtual void Init(TaskManager _manager, AgentActions _actions)
     {
@@ -26,12 +26,12 @@ public abstract class TaskBase : ScriptableObject
 
     public abstract float GetPriority();
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     public virtual void DrawActionsGizmo()
     {
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.green;
         Handles.Label(manager.transform.position + Vector3.up * 0.75f + Vector3.left, $"doing {name}", style);
     }
-#endif
+    #endif
 }

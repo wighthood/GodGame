@@ -10270,7 +10270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Buttons
   buttonLoad: {fileID: 494499343}
-  textLoad: {fileID: 2030173230}
+  textLoad: {fileID: 0}
 --- !u!1 &1562461646
 GameObject:
   m_ObjectHideFlags: 0

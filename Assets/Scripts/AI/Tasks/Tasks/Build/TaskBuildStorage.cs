@@ -12,7 +12,7 @@ public class TaskBuildStorage : TaskBuildHouse
 
         bool shouldBuildOne = manager.colonieBlackboard.GetValue<bool>("HasStorage");
 
-        return shouldBuildOne == true ? 0 : 1;
+        return shouldBuildOne ? 0 : 1;
     }
 
     public override void OnStart()

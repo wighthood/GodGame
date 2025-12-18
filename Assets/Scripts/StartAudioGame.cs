@@ -3,21 +3,21 @@ using UnityEngine.UI;
 
 public class StartAudioGame : MonoBehaviour
 {
-    private AudioManager sound;
 
     [SerializeField] private Slider _slider;
+    private AudioManager sound;
 
-    void Start()
+    private void Start()
     {
         sound = AudioManager.Instance;
-        //faire un code intermédiare pour conntroler le slider.
+        //faire un code intermï¿½diare pour conntroler le slider.
 
-        //changer le slider au début
+        //changer le slider au dï¿½but
         _slider.value = sound.storedVolume;
     }
 
 
-    
+
     public void ChangeVolume(float volume)
     {
         sound.ChangeVolume(_slider.value);

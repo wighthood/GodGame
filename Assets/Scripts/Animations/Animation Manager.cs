@@ -1,21 +1,19 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Animator))]
 public class AnimationManager : MonoBehaviour
 {
     [SerializeField] private List<AnimCreator> animationCreators = new List<AnimCreator>();
-    private List<SO_AnimBase> animations = new List<SO_AnimBase>();
+    private readonly List<SO_AnimBase> animations = new List<SO_AnimBase>();
 
     private Animator animator;
-
-    private string newAnimationName;
-    private string currentAnimName;
     private SO_AnimBase currentAnimation;
+    private string currentAnimName;
 
     private bool isInitialized;
+
+    private string newAnimationName;
 
     private void Start()
     {
@@ -28,17 +26,22 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        UpdateAnimationState();
+    }
+
+    private void OnDestroy()
+    {
+        if (animator != null) return;
+    }
+
     private void InitTasks()
     {
         foreach (AnimCreator animCreator in animationCreators)
         {
             animations.Add(animCreator.CreateAnim());
         }
-    }
-
-    private void Update()
-    {
-        UpdateAnimationState();
     }
 
     private void UpdateAnimationState()
@@ -76,10 +79,5 @@ public class AnimationManager : MonoBehaviour
     {
         if (currentAnimName == "") { return; }
         animator.CrossFade(currentAnimName, 0.1f);
-    }
-
-    private void OnDestroy()
-    {
-        if(animator != null) return;
     }
 }

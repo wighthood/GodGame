@@ -4,10 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class AgentSpatialSystem : MonoBehaviour
 {
-    private float cellSize = 5f;
-    private Dictionary<long, List<I_ColonyAgent>> spatialBuckets = new Dictionary<long, List<I_ColonyAgent>>();
-    private HashSet<I_ColonyAgent> registeredAgents = new HashSet<I_ColonyAgent>();
-    
+    private readonly float cellSize = 5f;
+    private readonly HashSet<I_ColonyAgent> registeredAgents = new HashSet<I_ColonyAgent>();
+    private readonly Dictionary<long, List<I_ColonyAgent>> spatialBuckets = new Dictionary<long, List<I_ColonyAgent>>();
+
     private void OnEnable()
     {
         ColonyEvents.OnRegisterAgentEvent += RegisterAgent;
@@ -62,7 +62,7 @@ public class AgentSpatialSystem : MonoBehaviour
     {
         int x = Mathf.FloorToInt(_pos.x / cellSize);
         int z = Mathf.FloorToInt(_pos.z / cellSize);
-        return ((long)x << 32) ^ (uint)z;
+        return (long)x << 32 ^ (uint)z;
     }
 
     private void AddToBucket(I_ColonyAgent _a)
@@ -104,14 +104,14 @@ public class AgentSpatialSystem : MonoBehaviour
             {
                 int nx = cx + dx;
                 int nz = cz + dz;
-                long key = ((long)nx << 32) ^ (uint)nz;
+                long key = (long)nx << 32 ^ (uint)nz;
 
                 if (spatialBuckets.TryGetValue(key, out List<I_ColonyAgent> list))
                 {
                     foreach (I_ColonyAgent agent in list)
                     {
-                        if (agent == null || (agent is UnityEngine.Object obj && obj == null)) continue;
-                        
+                        if (agent == null || agent is Object obj && obj == null) continue;
+
                         if (Vector3.Distance(agent.transform.position, _position) <= _radius)
                         {
                             results.Add(agent);

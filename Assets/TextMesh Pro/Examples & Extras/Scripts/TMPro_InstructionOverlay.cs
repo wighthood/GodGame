@@ -1,27 +1,25 @@
 ﻿using UnityEngine;
-using System.Collections;
-
 
 namespace TMPro.Examples
 {
-    
+
     public class TMPro_InstructionOverlay : MonoBehaviour
     {
 
-        public enum FpsCounterAnchorPositions { TopLeft, BottomLeft, TopRight, BottomRight };
-
-        public FpsCounterAnchorPositions AnchorPosition = FpsCounterAnchorPositions.BottomLeft;
+        public enum FpsCounterAnchorPositions { TopLeft, BottomLeft, TopRight, BottomRight }
 
         private const string instructions = "Camera Control - <#ffff00>Shift + RMB\n</color>Zoom - <#ffff00>Mouse wheel.";
 
-        private TextMeshPro m_TextMeshPro;
-        private TextContainer m_textContainer;
-        private Transform m_frameCounter_transform;
+        public FpsCounterAnchorPositions AnchorPosition = FpsCounterAnchorPositions.BottomLeft;
         private Camera m_camera;
+        private Transform m_frameCounter_transform;
+        private TextContainer m_textContainer;
+
+        private TextMeshPro m_TextMeshPro;
 
         //private FpsCounterAnchorPositions last_AnchorPosition;
 
-        void Awake()
+        private void Awake()
         {
             if (!enabled)
                 return;
@@ -53,7 +51,7 @@ namespace TMPro.Examples
 
 
 
-        void Set_FrameCounter_Position(FpsCounterAnchorPositions anchor_position)
+        private void Set_FrameCounter_Position(FpsCounterAnchorPositions anchor_position)
         {
 
             switch (anchor_position)

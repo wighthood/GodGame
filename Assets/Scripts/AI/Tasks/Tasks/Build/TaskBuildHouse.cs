@@ -6,13 +6,13 @@ public class TaskBuildHouse : TaskBase
 {
     [SerializeField] private BuildingTable buildingTable;
 
-    Vector3? batimentPosition;
-    public List<Cell> path = new();
-    AIInventory inventory;
-
-    Vector3? targetRessource;
-    Transform transform;
+    private Vector3? batimentPosition;
+    private AIInventory inventory;
+    public List<Cell> path = new List<Cell>();
     protected Storage storage;
+
+    private Vector3? targetRessource;
+    private Transform transform;
 
     public override void Init(TaskManager _manager, AgentActions _actions)
     {
@@ -24,11 +24,11 @@ public class TaskBuildHouse : TaskBase
     {
         if (batimentPosition == null) { return true; }
 
-        if(actions.GetRessourceTransportedNumber() > 0 && actions.GetRessourceTransported() != buildingTable.ressourcesNeeded[0].RessourceType)
+        if (actions.GetRessourceTransportedNumber() > 0 && actions.GetRessourceTransported() != buildingTable.ressourcesNeeded[0].RessourceType)
         {
             actions.MoveTo(storage.transform);
             path = actions.GetPath();
-            if(Vector3.Distance(transform.position, storage.transform.position) < 0.5f)
+            if (Vector3.Distance(transform.position, storage.transform.position) < 0.5f)
             {
                 actions.DropRessourcesOnStorage();
             }
@@ -42,9 +42,25 @@ public class TaskBuildHouse : TaskBase
             path = actions.GetPath();
             return FinishCondition();
         }
-        else
+        if (targetRessource == null)
         {
+            GetNearestIfExiste();
             if (targetRessource == null)
+            {
+                return true;
+            }
+        }
+        else if (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
+        {
+            if (IsNextToRessource())
+            {
+                actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
+                if (!CanBuild())
+                {
+                    return false;
+                }
+            }
+            else
             {
                 GetNearestIfExiste();
                 if (targetRessource == null)
@@ -52,35 +68,16 @@ public class TaskBuildHouse : TaskBase
                     return true;
                 }
             }
-            else if (Vector3.Distance(transform.position, (Vector3)targetRessource) < 0.5f)
-            {
-                if(IsNextToRessource())
-                {
-                    actions.Harvrest(buildingTable.ressourcesNeeded[0].RessourceType);
-                    if (!CanBuild())
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    GetNearestIfExiste();
-                    if (targetRessource == null)
-                    {
-                        return true;
-                    }
-                }
-                    
-            }
-            else
-            {
-                path = actions.GetPath();
-                actions.MoveTo((Vector3)targetRessource);
 
-                if (path == null)
-                {
-                    GetNearestIfExiste();
-                }
+        }
+        else
+        {
+            path = actions.GetPath();
+            actions.MoveTo((Vector3)targetRessource);
+
+            if (path == null)
+            {
+                GetNearestIfExiste();
             }
         }
 
@@ -122,7 +119,7 @@ public class TaskBuildHouse : TaskBase
         int actualColonyPop = manager.colonieBlackboard.GetValue<int>("Habitant");
         int maxColonyPop = manager.colonieBlackboard.GetValue<int>("MaxHabitant");
 
-        return (float)actualColonyPop / (float)maxColonyPop;
+        return actualColonyPop / (float)maxColonyPop;
     }
 
     public override void OnFinish()
@@ -153,7 +150,7 @@ public class TaskBuildHouse : TaskBase
         return Vector3.Distance(transform.position, (Vector2)batimentPosition) < 0.25f && CanBuild();
     }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -171,12 +168,12 @@ public class TaskBuildHouse : TaskBase
 
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 firstPos = new();
+            Vector2 firstPos = new Vector2();
             firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
-            Vector2 secPos = new();
+            Vector2 secPos = new Vector2();
             secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
-#endif
+    #endif
 }

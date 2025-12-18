@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PathFinding
 {
-    private List<Cell> tempNeighbors = new();
-    private List<Cell> path = new();
+    private readonly List<Cell> path = new List<Cell>();
 
-    private int pathIndex = 0;
+    private int pathIndex;
+    private readonly List<Cell> tempNeighbors = new List<Cell>();
 
-    
+
 
     public static event Func<Vector2Int, Cell> GetCell;
     public static event Func<Vector3, Cell> GetCellFromWorldPos;
@@ -34,7 +34,7 @@ public class PathFinding
     {
         int dx = Mathf.Abs(Target.position.x - start.position.x);
         int dy = Mathf.Abs(Target.position.y - start.position.y);
-        return 10 * (dx + dy) + (4 * Mathf.Min(dx, dy));
+        return 10 * (dx + dy) + 4 * Mathf.Min(dx, dy);
     }
 
     public Cell PeekNextPoint()
@@ -82,8 +82,8 @@ public class PathFinding
             {
                 if (neighbor.inClosedSet) continue;
 
-                int moveCost = (neighbor.position.x != current.position.x &&
-                                neighbor.position.y != current.position.y) ? 14 : 10;
+                int moveCost = neighbor.position.x != current.position.x &&
+                               neighbor.position.y != current.position.y ? 14 : 10;
 
                 int tentativeG = current.gCost + moveCost;
 
@@ -121,17 +121,19 @@ public class PathFinding
     private void ResetCells()
     {
         foreach (Cell cell in GetCells?.Invoke())
+        {
             cell.Reset();
+        }
     }
 }
 
 public class Cell
 {
-    public Vector2Int position;
     public int gCost = int.MaxValue;
+    public bool inClosedSet;
     public bool isWalkable;
     public Cell parent;
-    public bool inClosedSet;
+    public Vector2Int position;
     public byte Ressources;
     public int visitedId;
 

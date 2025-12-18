@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -34,7 +33,7 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private Sprite[] WeatherImages;
 
     [Header("setup not walkable tiles")]
-    [SerializeField] private List<TileBase> notWalkableSprites = new();
+    [SerializeField] private List<TileBase> notWalkableSprites = new List<TileBase>();
 
     [Header("setup the different references")]
     [SerializeField] private GameObject tileBar;
@@ -43,18 +42,14 @@ public class MapEditorScript : MonoBehaviour
     [SerializeField] private GameObject entityBar;
     [SerializeField] private Transform AgentParent;
 
-    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
-    public static event Func<Vector3, Cell> GetCell;
-    public static event Action<Cell> OnGraphChange;
-
     private Camera _camera;
-    private TileBase _selectedTile;
-    private GameObject _selectedObject;
-    private bool _isPainting = false;
     private Vector2 _cellposForRaycast;
+    private bool _isPainting;
+    private GameObject _selectedObject;
+    private TileBase _selectedTile;
 
 
-    void Start()
+    private void Start()
     {
         Ressource.GetTile += GetTile;
 
@@ -72,7 +67,7 @@ public class MapEditorScript : MonoBehaviour
                 buttonImage.sprite = T.m_DefaultSprite;
             }
             button.onClick.AddListener(() =>
-               SetSelector(null, tile));
+                SetSelector(null, tile));
         }
         foreach (GameObject prefab in Prefabs)
         {
@@ -90,8 +85,8 @@ public class MapEditorScript : MonoBehaviour
             Image buttonImage = newButton.GetComponent<Image>();
             Button button = newButton.GetComponent<Button>();
             buttonImage.sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-            button.onClick.AddListener((() =>
-                SetSelector(prefab)));
+            button.onClick.AddListener(() =>
+                SetSelector(prefab));
         }
         int i = 0;
         foreach (WeatherState state in weatherState)
@@ -105,6 +100,34 @@ public class MapEditorScript : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (_selectedTile == null && _selectedObject == null) return;
+        if (_camera == null) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (!_isPainting) return;
+
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
+        if (_selectedTile)
+        {
+            PaintTile(mousePosition);
+        }
+        else if (_selectedObject)
+        {
+            PaintObject(mousePosition);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        Ressource.GetTile -= GetTile;
+    }
+
+    public static event Func<RessourceType, Vector2, GameObject> AddNewRessource;
+    public static event Func<Vector3, Cell> GetCell;
+    public static event Action<Cell> OnGraphChange;
+
     public void HideButtons()
     {
         tileBar.SetActive(false);
@@ -113,12 +136,12 @@ public class MapEditorScript : MonoBehaviour
         weatherBar.SetActive(false);
     }
 
-    public void Tilebutton ()
+    public void Tilebutton()
     {
         HideButtons();
         tileBar.SetActive(true);
     }
-    
+
     public void Ressourcebutton()
     {
         HideButtons();
@@ -163,7 +186,7 @@ public class MapEditorScript : MonoBehaviour
             _selectedObject = null;
         }
     }
-    
+
     // REFACTO WHY IS HERE ?
     public void Paint(InputAction.CallbackContext context)
     {
@@ -191,25 +214,6 @@ public class MapEditorScript : MonoBehaviour
     {
         _result = Physics2D.Raycast(_start, Camera.main.transform.forward, layermask);
         return _result.collider;
-    }
-
-    private void Update()
-    {
-        if (_selectedTile == null && _selectedObject == null) return;
-        if (_camera == null) return;
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-        if (!_isPainting) return;
-
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-
-        if (_selectedTile)
-        {
-            PaintTile(mousePosition);
-        }
-        else if (_selectedObject)
-        {
-            PaintObject(mousePosition);
-        }
     }
 
     private void PaintTile(Vector2 _mousePosition)
@@ -250,7 +254,7 @@ public class MapEditorScript : MonoBehaviour
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + treeOffset);
             }
-            else if (ressource.GetRessourceType() == RessourceType.food )
+            else if (ressource.GetRessourceType() == RessourceType.food)
             {
                 AddNewRessource.Invoke(ressource.GetRessourceType(), cellpos + berryBushOffset);
             }
@@ -264,10 +268,5 @@ public class MapEditorScript : MonoBehaviour
             GameObject SpawnedObject = Instantiate(_selectedObject, cellpos, Quaternion.identity, AgentParent);
             _isPainting = false;
         }
-    }
-
-    private void OnDestroy()
-    {
-        Ressource.GetTile -= GetTile;
     }
 }

@@ -11,35 +11,32 @@ public class WorldGeneration : MonoBehaviour
     [SerializeField] private int mapHeight;
     [SerializeField] private int scale;
     [SerializeField] private int octaves;
-    [SerializeField, Range(0f, 1f)] private float persistence;
+    [SerializeField] [Range(0f, 1f)] private float persistence;
     [SerializeField] private float lacunarity;
     [SerializeField] private Vector2 offset;
 
     [Header("Map Generation Settings")]
-    [SerializeField] private List<TileWithWeight> tiles = new();
+    [SerializeField] private List<TileWithWeight> tiles = new List<TileWithWeight>();
 
     [Header("Resources Generation Settings")]
     [SerializeField] private SO_RessourcesNoiseRules rules;
-    [SerializeField, Range(0, .5f)] private float resourceSpawnRate;
+    [SerializeField] [Range(0, .5f)] private float resourceSpawnRate;
 
     [SerializeField] private GameObject agentPrefab;
     [SerializeField] private Transform agentParent;
     [SerializeField] private Transform resourceParent;
     public int agentCount;
 
+    [HideInInspector] public List<GameObject> _spawnedAgent = new List<GameObject>();
+    private readonly List<GameObject> _spawnedItem = new List<GameObject>();
+    private readonly List<(int, int)> _spawnedLocation = new List<(int, int)>();
+
     private Tilemap _tilemap;
-    private List<(int, int)> _spawnedLocation = new();
-    private List<GameObject> _spawnedItem = new();
+    private readonly Vector3 stoneOffSet = new Vector3(0, -0.29f, 0);
 
-    [HideInInspector] public List<GameObject> _spawnedAgent = new();
+    private readonly Vector3 treeOffSet = new Vector3(0, 0.2f, 0);
 
-    public static event Func<RessourceType, Vector2, GameObject> OnAddNewRessourceEvent;
-    public static event Action OnInitGraphEvent;
-
-    private Vector3 treeOffSet = new Vector3(0, 0.2f, 0);
-    private Vector3 stoneOffSet = new Vector3(0, -0.29f, 0);
-
-    void Awake()
+    private void Awake()
     {
         _tilemap = GetComponent<Tilemap>();
     }
@@ -53,6 +50,9 @@ public class WorldGeneration : MonoBehaviour
     {
         SaveEvents.OnNewGameStartEvent -= GenerateWorld;
     }
+
+    public static event Func<RessourceType, Vector2, GameObject> OnAddNewRessourceEvent;
+    public static event Action OnInitGraphEvent;
 
     private void GenerateWorld()
     {
@@ -95,7 +95,7 @@ public class WorldGeneration : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                Vector3Int cell = new(x - mapWidth / 2, y - mapHeight / 2, 0);
+                Vector3Int cell = new Vector3Int(x - mapWidth / 2, y - mapHeight / 2, 0);
 
                 if (_tilemap.GetTile(cell) == tiles[2].tile)
                     continue;
@@ -107,7 +107,7 @@ public class WorldGeneration : MonoBehaviour
                 foreach (RessourceRule rule in rules.ressourceRules)
                 {
                     if (noiseValue >= rule.minNoise && noiseValue <= rule.maxNoise
-                        && !_spawnedLocation.Contains(position))
+                                                    && !_spawnedLocation.Contains(position))
                     {
                         SpawnResource(rule.type, pos, position);
                         break;

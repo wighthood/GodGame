@@ -8,11 +8,13 @@ using UnityEngine.UI;
 public class MenusScript : MonoBehaviour
 {
     public Button buttonLoad;
-    public TextMeshProUGUI text;
     public TextMeshProUGUI textLoad;
-    
-    string SavePath => Application.persistentDataPath + "/savegame.json";
-    
+
+    private string SavePath
+    {
+        get { return Application.persistentDataPath + "/savegame.json"; }
+    }
+
     public void Start()
     {
         if (File.Exists(SavePath))
@@ -42,7 +44,7 @@ public class MenusScript : MonoBehaviour
     {
         Application.Quit();
     }
-    
+
     public static void Pause()
     {
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
@@ -52,13 +54,13 @@ public class MenusScript : MonoBehaviour
     {
         Time.timeScale = pause ? 1 : 0;
     }
-    
+
     public void OnClickPlay()
     {
         SaveEvents.ShouldLoadOnStart = false;
         SceneManager.LoadScene("GameScene");
-        
-        if (AudioManager.Instance != null) 
+
+        if (AudioManager.Instance != null)
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 
@@ -74,7 +76,7 @@ public class MenusScript : MonoBehaviour
         SaveEvents.ShouldLoadOnStart = true;
         SceneManager.LoadScene("GameScene");
 
-        if (AudioManager.Instance != null) 
+        if (AudioManager.Instance != null)
             AudioManager.Instance.ChangeMusic(AudioManager.SoundType.Music_game);
     }
 
@@ -91,11 +93,14 @@ public class MenusScript : MonoBehaviour
     public IEnumerator DestroyShroomMainMenu(GameObject shroomMainMenu)
     {
         Image image = shroomMainMenu.GetComponent<Image>();
-        
+
         image.enabled = false;
         yield return new WaitForSecondsRealtime(2f);
         image.enabled = true;
     }
-    
-    public void Save() { SaveEvents.OnRequestSaveEvent?.Invoke(); }
+
+    public void Save()
+    {
+        SaveEvents.OnRequestSaveEvent?.Invoke();
+    }
 }

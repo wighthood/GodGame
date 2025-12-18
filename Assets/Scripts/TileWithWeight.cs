@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[System.Serializable]
+[Serializable]
 public class TileWithWeight
 {
     public TileBase tile;
-    [Range(0f,1f)]public float weight;
+    [Range(0f, 1f)] public float weight;
 }

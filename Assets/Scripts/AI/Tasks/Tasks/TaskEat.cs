@@ -4,11 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Eat", menuName = "Tasks/Eat")]
 public class TaskEat : TaskBase
 {
-    private Vector3? targetFoodSource;
-    public List<Cell> path = new();
-    Transform transform;
     private bool isArrivedToRessource;
+    public List<Cell> path = new List<Cell>();
     private Transform storageTransform;
+    private Vector3? targetFoodSource;
+    private Transform transform;
 
     public override void Init(TaskManager _manager, AgentActions _actions)
     {
@@ -33,7 +33,7 @@ public class TaskEat : TaskBase
         {
             return true;
         }
-        else if (manager.colonieBlackboard != null && actions.GetStorage() != null && actions.HasRessourceInColony(RessourceType.food))
+        if (manager.colonieBlackboard != null && actions.GetStorage() != null && actions.HasRessourceInColony(RessourceType.food))
         {
             if (storageTransform == null)
             {
@@ -46,15 +46,24 @@ public class TaskEat : TaskBase
                 actions.TakeRessourcesFromStorage(RessourceType.food, 1);
                 return FinishCondition();
             }
-            else
+            isArrivedToRessource = actions.MoveTo(storageTransform);
+            return false;
+        }
+        if (targetFoodSource == null)
+        {
+            GetNearestFoodIfExiste();
+            if (targetFoodSource == null)
             {
-                isArrivedToRessource = actions.MoveTo(storageTransform);
                 return false;
             }
         }
-        else
+        else if (Vector3.Distance(transform.position, (Vector3)targetFoodSource) < 0.5f)
         {
-            if (targetFoodSource == null)
+            if (IsNextToRessource())
+            {
+                actions.Harvrest(RessourceType.food);
+            }
+            else
             {
                 GetNearestFoodIfExiste();
                 if (targetFoodSource == null)
@@ -62,30 +71,15 @@ public class TaskEat : TaskBase
                     return false;
                 }
             }
-            else if (Vector3.Distance(transform.position, (Vector3)targetFoodSource) < 0.5f)
-            {
-                if (IsNextToRessource())
-                {
-                    actions.Harvrest(RessourceType.food);
-                }
-                else
-                {
-                    GetNearestFoodIfExiste();
-                    if (targetFoodSource == null)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                path = actions.GetPath();
-                actions.MoveTo((Vector3)targetFoodSource);
+        }
+        else
+        {
+            path = actions.GetPath();
+            actions.MoveTo((Vector3)targetFoodSource);
 
-                if (path == null)
-                {
-                    GetNearestFoodIfExiste();
-                }
+            if (path == null)
+            {
+                GetNearestFoodIfExiste();
             }
         }
 
@@ -118,7 +112,7 @@ public class TaskEat : TaskBase
         return actions.HasRessource(RessourceType.food);
     }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
     public override void DrawActionsGizmo()
     {
         base.DrawActionsGizmo();
@@ -130,12 +124,12 @@ public class TaskEat : TaskBase
 
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 firstPos = new();
+            Vector2 firstPos = new Vector2();
             firstPos.Set(path[i].position.x + 0.5f, path[i].position.y + 0.5f);
-            Vector2 secPos = new();
+            Vector2 secPos = new Vector2();
             secPos.Set(path[i + 1].position.x + 0.5f, path[i + 1].position.y + 0.5f);
             Gizmos.DrawLine(firstPos, secPos);
         }
     }
-#endif
+    #endif
 }

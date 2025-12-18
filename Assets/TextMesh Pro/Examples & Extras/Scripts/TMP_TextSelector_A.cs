@@ -1,23 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
-
 
 namespace TMPro.Examples
 {
 
     public class TMP_TextSelector_A : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private TextMeshPro m_TextMeshPro;
 
         private Camera m_Camera;
 
         private bool m_isHoveringObject;
-        private int m_selectedLink = -1;
         private int m_lastCharIndex = -1;
         private int m_lastWordIndex = -1;
+        private int m_selectedLink = -1;
+        private TextMeshPro m_TextMeshPro;
 
-        void Awake()
+        private void Awake()
         {
             m_TextMeshPro = gameObject.GetComponent<TextMeshPro>();
             m_Camera = Camera.main;
@@ -27,7 +25,7 @@ namespace TMPro.Examples
         }
 
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             m_isHoveringObject = false;
 
@@ -69,7 +67,7 @@ namespace TMPro.Examples
                 int linkIndex = TMP_TextUtilities.FindIntersectingLink(m_TextMeshPro, Input.mousePosition, m_Camera);
 
                 // Clear previous link selection if one existed.
-                if ((linkIndex == -1 && m_selectedLink != -1) || linkIndex != m_selectedLink)
+                if (linkIndex == -1 && m_selectedLink != -1 || linkIndex != m_selectedLink)
                 {
                     //m_TextPopup_RectTransform.gameObject.SetActive(false);
                     m_selectedLink = -1;
@@ -92,14 +90,14 @@ namespace TMPro.Examples
                     switch (linkInfo.GetLinkID())
                     {
                         case "id_01": // 100041637: // id_01
-                                      //m_TextPopup_RectTransform.position = worldPointInRectangle;
-                                      //m_TextPopup_RectTransform.gameObject.SetActive(true);
-                                      //m_TextPopup_TMPComponent.text = k_LinkText + " ID 01";
+                            //m_TextPopup_RectTransform.position = worldPointInRectangle;
+                            //m_TextPopup_RectTransform.gameObject.SetActive(true);
+                            //m_TextPopup_TMPComponent.text = k_LinkText + " ID 01";
                             break;
                         case "id_02": // 100041638: // id_02
-                                      //m_TextPopup_RectTransform.position = worldPointInRectangle;
-                                      //m_TextPopup_RectTransform.gameObject.SetActive(true);
-                                      //m_TextPopup_TMPComponent.text = k_LinkText + " ID 02";
+                            //m_TextPopup_RectTransform.position = worldPointInRectangle;
+                            //m_TextPopup_RectTransform.gameObject.SetActive(true);
+                            //m_TextPopup_TMPComponent.text = k_LinkText + " ID 02";
                             break;
                     }
                 }
@@ -152,6 +150,5 @@ namespace TMPro.Examples
             Debug.Log("OnPointerExit()");
             m_isHoveringObject = false;
         }
-
     }
 }

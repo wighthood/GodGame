@@ -5,42 +5,45 @@ using UnityEngine.InputSystem;
 public class PlayerControl : MonoBehaviour, ISaveable
 {
     [Header("Movement")]
-    [SerializeField] float speed = 12f;
-    [SerializeField] float edgeScrollSpeed = 20f;
-    [SerializeField] float edgeSize = 10f;
+    [SerializeField] private float speed = 12f;
+    [SerializeField] private float edgeScrollSpeed = 20f;
+    [SerializeField] private float edgeSize = 10f;
 
     [SerializeField] private Animator powerBarAnimator;
 
     [Header("Zoom")]
-    [SerializeField] float zoomSpeed = 12f;
-    [SerializeField] float minZoom = 5f;
-    [SerializeField] float maxZoom = 25f;
-    [SerializeField] float initialDezoomSpeed = 60f;
+    [SerializeField] private float zoomSpeed = 12f;
+    [SerializeField] private float minZoom = 5f;
+    [SerializeField] private float maxZoom = 25f;
+    [SerializeField] private float initialDezoomSpeed = 60f;
 
     [Header("UI")]
-    [SerializeField] GameObject pauseMenu;
-    [SerializeField] GameObject settings;
-    [SerializeField] Texture2D pressedCursor;
-    [SerializeField] Texture2D normalCursor;
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject settings;
+    [SerializeField] private Texture2D pressedCursor;
+    [SerializeField] private Texture2D normalCursor;
 
     [Header("World")]
-    [SerializeField] Vector2 cameraLimit;
+    [SerializeField] private Vector2 cameraLimit;
     public WorldGeneration worldGeneration;
 
-    Camera cam;
-    Vector2 moveInput;
-    Vector3 dragOrigin;
-    bool isDragging;
-    bool initZoomDone;
+    private Camera cam;
+    private Vector3 dragOrigin;
+    private bool initZoomDone;
+    private bool isDragging;
+    private Vector2 moveInput;
 
-    Vector3 MouseWorldPos => cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+    private Vector3 MouseWorldPos
+    {
+        get { return cam.ScreenToWorldPoint(Mouse.current.position.ReadValue()); }
+    }
 
-    void Awake()
+    private void Awake()
     {
         cam = Camera.main;
     }
 
-    void Start()
+    private void Start()
     {
         Cursor.SetCursor(normalCursor, Vector2.zero, CursorMode.Auto);
         cameraLimit = new Vector2(
@@ -51,7 +54,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
         StartCoroutine(InitZoom());
     }
 
-    void Update()
+    private void Update()
     {
         if (!initZoomDone)
         {
@@ -63,13 +66,37 @@ public class PlayerControl : MonoBehaviour, ISaveable
         CameraLimit();
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (!isDragging || !initZoomDone || pauseMenu.activeSelf) return;
 
         Vector3 delta = MouseWorldPos - dragOrigin;
         transform.position -= delta;
         CameraLimit();
+    }
+
+    public string GetSaveID()
+    {
+        return "PlayerControl";
+    }
+
+    public string CaptureState()
+    {
+        return JsonUtility.ToJson(new PlayerCameraSaveData
+        {
+            position = transform.position,
+            zoom = cam.orthographicSize,
+        });
+    }
+
+    public void RestoreState(string state)
+    {
+        if (string.IsNullOrEmpty(state)) return;
+
+        PlayerCameraSaveData data = JsonUtility.FromJson<PlayerCameraSaveData>(state);
+        transform.position = data.position;
+        cam.orthographicSize = data.zoom;
+        initZoomDone = true;
     }
 
     public void Move(InputAction.CallbackContext ctx)
@@ -113,12 +140,12 @@ public class PlayerControl : MonoBehaviour, ISaveable
         MenusScript.Pause();
     }
 
-    void MoveCamera()
+    private void MoveCamera()
     {
         transform.Translate(moveInput * speed * Time.deltaTime, Space.World);
     }
 
-    void EdgeScroll()
+    private void EdgeScroll()
     {
         if (pauseMenu.activeSelf) return;
 
@@ -144,7 +171,7 @@ public class PlayerControl : MonoBehaviour, ISaveable
         initZoomDone = true;
     }
 
-    void CameraLimit()
+    private void CameraLimit()
     {
         float halfH = cam.orthographicSize;
         float halfW = halfH * cam.aspect;
@@ -155,27 +182,6 @@ public class PlayerControl : MonoBehaviour, ISaveable
         transform.position = pos;
     }
 
-    public string GetSaveID() => "PlayerControl";
-
-    public string CaptureState()
-    {
-        return JsonUtility.ToJson(new PlayerCameraSaveData
-        {
-            position = transform.position,
-            zoom = cam.orthographicSize
-        });
-    }
-
-    public void RestoreState(string state)
-    {
-        if (string.IsNullOrEmpty(state)) return;
-
-        var data = JsonUtility.FromJson<PlayerCameraSaveData>(state);
-        transform.position = data.position;
-        cam.orthographicSize = data.zoom;
-        initZoomDone = true;
-    }
-    
     public void ClosePowerBar()
     {
         powerBarAnimator.SetBool("IsClosing", true);
