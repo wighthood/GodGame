@@ -163,7 +163,8 @@ public class MapEditorScript : MonoBehaviour
             _selectedObject = null;
         }
     }
-
+    
+    // REFACTO WHY IS HERE ?
     public void Paint(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -194,8 +195,10 @@ public class MapEditorScript : MonoBehaviour
 
     private void Update()
     {
-        if (_selectedTile == null && _selectedObject == null || _camera == null
-            || EventSystem.current.IsPointerOverGameObject() || !_isPainting) return;
+        if (_selectedTile == null && _selectedObject == null) return;
+        if (_camera == null) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (!_isPainting) return;
 
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
