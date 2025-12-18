@@ -7,8 +7,6 @@ public class TaskReproduct : TaskBase
 
     private bool hasReproducted;
 
-    Storage storage;
-
     public override bool Do()
     {
         actions.MoveTo(houseTransform);
